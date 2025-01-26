@@ -10,6 +10,10 @@ export const mockStocks: Stock[] = [
     riskLevel: 'low',
     marketCap: 2800000000000,
     volume: 55000000,
+    market: 'NASDAQ',
+    sector: 'Technology',
+    aiRecommendation: 'buy',
+    aiConfidenceScore: 0.85
   },
   {
     symbol: 'TSLA',
@@ -20,6 +24,10 @@ export const mockStocks: Stock[] = [
     riskLevel: 'high',
     marketCap: 750000000000,
     volume: 125000000,
+    market: 'NASDAQ',
+    sector: 'Automotive',
+    aiRecommendation: 'hold',
+    aiConfidenceScore: 0.65
   },
   {
     symbol: 'MSFT',
@@ -30,6 +38,10 @@ export const mockStocks: Stock[] = [
     riskLevel: 'low',
     marketCap: 2500000000000,
     volume: 22000000,
+    market: 'NASDAQ',
+    sector: 'Technology',
+    aiRecommendation: 'buy',
+    aiConfidenceScore: 0.92
   },
   {
     symbol: 'NVDA',
@@ -40,6 +52,10 @@ export const mockStocks: Stock[] = [
     riskLevel: 'medium',
     marketCap: 1100000000000,
     volume: 35000000,
+    market: 'NASDAQ',
+    sector: 'Technology',
+    aiRecommendation: 'buy',
+    aiConfidenceScore: 0.88
   },
   {
     symbol: 'AMD',
@@ -50,5 +66,9 @@ export const mockStocks: Stock[] = [
     riskLevel: 'medium',
     marketCap: 175000000000,
     volume: 42000000,
+    market: 'NASDAQ',
+    sector: 'Technology',
+    aiRecommendation: 'sell',
+    aiConfidenceScore: 0.78
   },
 ];
