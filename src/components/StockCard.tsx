@@ -1,6 +1,6 @@
 import { Stock } from '../types/stock';
 import { cn } from '@/lib/utils';
-import { ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
+import { ArrowUpIcon, ArrowDownIcon, TrendingUpIcon, TrendingDownIcon, MinusIcon } from 'lucide-react';
 
 interface StockCardProps {
   stock: Stock;
@@ -16,12 +16,27 @@ const formatNumber = (num: number): string => {
 export const StockCard = ({ stock }: StockCardProps) => {
   const isPositive = stock.change >= 0;
 
+  const getRecommendationIcon = (recommendation: Stock['aiRecommendation']) => {
+    switch (recommendation) {
+      case 'buy':
+        return <TrendingUpIcon className="text-green-500" size={16} />;
+      case 'sell':
+        return <TrendingDownIcon className="text-red-500" size={16} />;
+      case 'hold':
+        return <MinusIcon className="text-yellow-500" size={16} />;
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow animate-slide-up">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xl font-bold text-trading-primary">{stock.symbol}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-trading-primary">{stock.symbol}</h3>
+            <span className="text-xs font-medium text-trading-secondary">{stock.market}</span>
+          </div>
           <p className="text-sm text-trading-secondary">{stock.name}</p>
+          <p className="text-xs text-trading-secondary mt-1">{stock.sector}</p>
         </div>
         <div className={cn(
           "px-2 py-1 rounded text-xs font-semibold",
@@ -56,6 +71,20 @@ export const StockCard = ({ stock }: StockCardProps) => {
         <div>
           <p className="font-medium">Volume</p>
           <p className="text-trading-primary">{formatNumber(stock.volume)}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 pt-4 border-t">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {getRecommendationIcon(stock.aiRecommendation)}
+            <span className="text-sm font-medium capitalize">
+              AI Recommends: {stock.aiRecommendation}
+            </span>
+          </div>
+          <span className="text-xs font-medium text-trading-secondary">
+            Confidence: {(stock.aiConfidenceScore * 100).toFixed(1)}%
+          </span>
         </div>
       </div>
     </div>
