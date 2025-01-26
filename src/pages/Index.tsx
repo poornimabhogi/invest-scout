@@ -1,11 +1,31 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { mockStocks } from '../data/mockStocks';
+import { RiskLevel } from '../types/stock';
+import { StockCard } from '../components/StockCard';
+import { RiskFilter } from '../components/RiskFilter';
 
 const Index = () => {
+  const [selectedRisk, setSelectedRisk] = useState<RiskLevel | 'all'>('all');
+
+  const filteredStocks = mockStocks.filter(
+    stock => selectedRisk === 'all' || stock.riskLevel === selectedRisk
+  );
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-trading-background">
+      <div className="container py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-trading-primary mb-2">Stock Trading</h1>
+          <p className="text-trading-secondary">Discover and analyze stocks based on risk levels</p>
+        </div>
+
+        <RiskFilter selectedRisk={selectedRisk} onRiskChange={setSelectedRisk} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStocks.map((stock) => (
+            <StockCard key={stock.symbol} stock={stock} />
+          ))}
+        </div>
       </div>
     </div>
   );
