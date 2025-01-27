@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -51,11 +51,30 @@ const Auth = () => {
   const handleGuestLogin = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // First try to sign in
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: 'guest@example.com',
         password: 'guestpassword123',
       });
-      if (error) throw error;
+
+      // If sign in fails, try to create the guest account
+      if (signInError) {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: 'guest@example.com',
+          password: 'guestpassword123',
+        });
+        
+        if (signUpError) throw signUpError;
+        
+        // After creating the account, sign in
+        const { error: finalSignInError } = await supabase.auth.signInWithPassword({
+          email: 'guest@example.com',
+          password: 'guestpassword123',
+        });
+        
+        if (finalSignInError) throw finalSignInError;
+      }
+      
       navigate('/');
     } catch (error: any) {
       toast({
