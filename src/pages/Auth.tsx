@@ -52,14 +52,14 @@ const Auth = () => {
     setIsLoading(true);
     try {
       // First try to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: 'guest@example.com',
         password: 'guestpassword123',
       });
 
       // If sign in fails, try to create the guest account
       if (signInError) {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: 'guest@example.com',
           password: 'guestpassword123',
         });
@@ -74,9 +74,15 @@ const Auth = () => {
         
         if (finalSignInError) throw finalSignInError;
       }
-      
+
+      // If we get here, we're successfully logged in
+      toast({
+        title: "Success!",
+        description: "Logged in as guest",
+      });
       navigate('/');
     } catch (error: any) {
+      console.error('Guest login error:', error);
       toast({
         title: "Error",
         description: error.message,
