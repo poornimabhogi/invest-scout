@@ -33,7 +33,16 @@ export const StockCard = ({ stock }: StockCardProps) => {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-bold text-trading-primary">{stock.symbol}</h3>
-            <span className="text-xs font-medium text-trading-secondary">{stock.market}</span>
+            <span className={cn(
+              "text-xs font-medium px-2 py-1 rounded",
+              {
+                'bg-blue-100 text-blue-700': stock.market === 'NASDAQ',
+                'bg-purple-100 text-purple-700': stock.market === 'NYSE',
+                'bg-gray-100 text-gray-700': stock.market === 'OTHER'
+              }
+            )}>
+              {stock.market}
+            </span>
           </div>
           <p className="text-sm text-trading-secondary">{stock.name}</p>
           <p className="text-xs text-trading-secondary mt-1">{stock.sector}</p>
