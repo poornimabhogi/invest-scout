@@ -51,14 +51,13 @@ const Auth = () => {
   const handleGuestLogin = async () => {
     setIsLoading(true);
     try {
-      // First try to sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: 'guest@example.com',
         password: 'guestpassword123',
       });
 
-      // If sign in fails, try to create the guest account
       if (signInError) {
+        // If sign in fails, try to create the guest account
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: 'guest@example.com',
           password: 'guestpassword123',
