@@ -38,9 +38,14 @@ const Auth = () => {
         navigate('/');
       }
     } catch (error: any) {
+      console.error('Authentication error:', error);
+      let errorMessage = error.message;
+      if (error.message.includes('Email signups are disabled') || error.message.includes('Email logins are disabled')) {
+        errorMessage = 'Email authentication is currently disabled. Please try again later or contact support.';
+      }
       toast({
         title: "Error",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -50,7 +55,7 @@ const Auth = () => {
 
   const handleGuestLogin = async () => {
     setIsLoading(true);
-    const guestEmail = 'guest.user@example.com';  // Changed to a more valid email format
+    const guestEmail = 'guest.user@example.com';
     const guestPassword = 'guestpassword123';
 
     try {
@@ -61,6 +66,13 @@ const Auth = () => {
       });
 
       if (signInError) {
+        console.error('Guest sign-in error:', signInError);
+        
+        // Check if the error is due to disabled email auth
+        if (signInError.message.includes('Email logins are disabled')) {
+          throw new Error('Guest login is currently disabled. Please try again later or contact support.');
+        }
+
         // If sign in fails, try to create the guest account
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email: guestEmail,
@@ -69,6 +81,9 @@ const Auth = () => {
 
         if (signUpError) {
           console.error('Guest signup error:', signUpError);
+          if (signUpError.message.includes('Email signups are disabled')) {
+            throw new Error('Guest registration is currently disabled. Please try again later or contact support.');
+          }
           throw signUpError;
         }
 
@@ -78,7 +93,10 @@ const Auth = () => {
           password: guestPassword,
         });
 
-        if (finalSignInError) throw finalSignInError;
+        if (finalSignInError) {
+          console.error('Final guest sign-in error:', finalSignInError);
+          throw finalSignInError;
+        }
       }
 
       toast({
