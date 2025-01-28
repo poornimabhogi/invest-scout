@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      market_data: {
+        Row: {
+          asset_type: Database["public"]["Enums"]["asset_type"]
+          change: number | null
+          change_percentage: number | null
+          id: string
+          last_updated: string | null
+          market: string | null
+          market_cap: number | null
+          name: string | null
+          price: number | null
+          sector: string | null
+          symbol: string
+          volume: number | null
+        }
+        Insert: {
+          asset_type: Database["public"]["Enums"]["asset_type"]
+          change?: number | null
+          change_percentage?: number | null
+          id?: string
+          last_updated?: string | null
+          market?: string | null
+          market_cap?: number | null
+          name?: string | null
+          price?: number | null
+          sector?: string | null
+          symbol: string
+          volume?: number | null
+        }
+        Update: {
+          asset_type?: Database["public"]["Enums"]["asset_type"]
+          change?: number | null
+          change_percentage?: number | null
+          id?: string
+          last_updated?: string | null
+          market?: string | null
+          market_cap?: number | null
+          name?: string | null
+          price?: number | null
+          sector?: string | null
+          symbol?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -35,7 +80,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      asset_type: "stock" | "etf" | "crypto"
     }
     CompositeTypes: {
       [_ in never]: never
