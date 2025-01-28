@@ -9,30 +9,46 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from "sonner";
 
 const fetchMarketData = async () => {
+  console.log('Fetching market data...');
   const { data, error } = await supabase
     .from('market_data')
     .select('*');
 
   if (error) {
+    console.error('Error fetching market data:', error);
     toast.error('Failed to fetch market data');
     throw error;
   }
 
+  console.log('Raw market data:', data);
+
+  if (!data || data.length === 0) {
+    console.log('No market data found');
+    return [];
+  }
+
   // Transform the data to match our Stock type
-  return data.map((item): Stock => ({
-    symbol: item.symbol,
-    name: item.name || item.symbol,
-    price: Number(item.price) || 0,
-    change: Number(item.change) || 0,
-    changePercentage: Number(item.change_percentage) || 0,
-    marketCap: Number(item.market_cap) || 0,
-    volume: Number(item.volume) || 0,
-    market: (item.market as MarketType) || 'OTHER',
-    sector: item.sector || 'Technology',
-    riskLevel: calculateRiskLevel(Number(item.change_percentage)),
-    aiRecommendation: calculateRecommendation(Number(item.change_percentage)),
-    aiConfidenceScore: 0.85
-  }));
+  const transformedData = data.map((item): Stock => {
+    const stock = {
+      symbol: item.symbol,
+      name: item.name || item.symbol,
+      price: Number(item.price) || 0,
+      change: Number(item.change) || 0,
+      changePercentage: Number(item.change_percentage) || 0,
+      marketCap: Number(item.market_cap) || 0,
+      volume: Number(item.volume) || 0,
+      market: (item.market as MarketType) || 'OTHER',
+      sector: item.sector || 'Technology',
+      riskLevel: calculateRiskLevel(Number(item.change_percentage)),
+      aiRecommendation: calculateRecommendation(Number(item.change_percentage)),
+      aiConfidenceScore: 0.85
+    };
+    console.log('Transformed stock:', stock);
+    return stock;
+  });
+
+  console.log('Final transformed data:', transformedData);
+  return transformedData;
 };
 
 const calculateRiskLevel = (changePercentage: number): RiskLevel => {
@@ -58,6 +74,10 @@ const Index = () => {
     refetchInterval: 300000, // Refetch every 5 minutes
   });
 
+  console.log('Current stocks:', stocks);
+  console.log('Loading state:', isLoading);
+  console.log('Error state:', error);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -68,6 +88,8 @@ const Index = () => {
     const matchesRecommendation = selectedRecommendation === 'all' || stock.aiRecommendation === selectedRecommendation;
     return matchesRisk && matchesMarket && matchesRecommendation;
   });
+
+  console.log('Filtered stocks:', filteredStocks);
 
   if (isLoading) {
     return (
@@ -113,9 +135,15 @@ const Index = () => {
         />
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredStocks.map((stock) => (
-            <StockCard key={stock.symbol} stock={stock} />
-          ))}
+          {filteredStocks.length === 0 ? (
+            <div className="col-span-full text-center text-trading-secondary py-8">
+              No stocks found matching the selected filters
+            </div>
+          ) : (
+            filteredStocks.map((stock) => (
+              <StockCard key={stock.symbol} stock={stock} />
+            ))
+          )}
         </div>
       </div>
     </div>
