@@ -28,24 +28,20 @@ const fetchMarketData = async () => {
   }
 
   // Transform the data to match our Stock type
-  const transformedData = data.map((item): Stock => {
-    const stock = {
-      symbol: item.symbol,
-      name: item.name || item.symbol,
-      price: Number(item.price) || 0,
-      change: Number(item.change) || 0,
-      changePercentage: Number(item.change_percentage) || 0,
-      marketCap: Number(item.market_cap) || 0,
-      volume: Number(item.volume) || 0,
-      market: (item.market as MarketType) || 'OTHER',
-      sector: item.sector || 'Technology',
-      riskLevel: calculateRiskLevel(Number(item.change_percentage)),
-      aiRecommendation: calculateRecommendation(Number(item.change_percentage)),
-      aiConfidenceScore: 0.85
-    };
-    console.log('Transformed stock:', stock);
-    return stock;
-  });
+  const transformedData = data.map((item): Stock => ({
+    symbol: item.symbol,
+    name: item.name || item.symbol,
+    price: Number(item.price) || 0,
+    change: Number(item.change) || 0,
+    changePercentage: Number(item.change_percentage) || 0,
+    marketCap: Number(item.market_cap) || 0,
+    volume: Number(item.volume) || 0,
+    market: (item.market as MarketType) || 'OTHER',
+    sector: item.sector || 'Technology',
+    riskLevel: calculateRiskLevel(Number(item.change_percentage)),
+    aiRecommendation: calculateRecommendation(Number(item.change_percentage)),
+    aiConfidenceScore: 0.85
+  }));
 
   console.log('Final transformed data:', transformedData);
   return transformedData;
@@ -71,7 +67,7 @@ const Index = () => {
   const { data: stocks = [], isLoading, error } = useQuery({
     queryKey: ['marketData'],
     queryFn: fetchMarketData,
-    refetchInterval: 300000, // Refetch every 5 minutes
+    refetchInterval: 60000, // Refetch every minute to keep data fresh
   });
 
   console.log('Current stocks:', stocks);
