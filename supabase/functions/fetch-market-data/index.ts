@@ -40,51 +40,64 @@ Deno.serve(async (req) => {
         return { symbol, name, exchange, assetType, ipoDate, status }
       })
       .filter(stock => stock.status === 'Active' && (stock.exchange === 'NYSE' || stock.exchange === 'NASDAQ'))
-      .slice(0, 100) // Limit to first 100 stocks due to API rate limits
+      .slice(0, 100) // Limit to first 100 stocks
 
     console.log(`Found ${activeStocks.length} active stocks`)
 
-    // Fetch current prices for each stock
-    for (const stock of activeStocks) {
-      try {
-        const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock.symbol}&apikey=${Deno.env.get('ALPHA_VANTAGE_API_KEY')}`
-        const response = await fetch(quoteUrl)
-        const data = await response.json()
+    // Process stocks in smaller batches to respect API rate limits
+    const batchSize = 5;
+    for (let i = 0; i < activeStocks.length; i += batchSize) {
+      const batch = activeStocks.slice(i, i + batchSize);
+      console.log(`Processing batch ${i/batchSize + 1} of ${Math.ceil(activeStocks.length/batchSize)}`)
+      
+      await Promise.all(batch.map(async (stock) => {
+        try {
+          const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock.symbol}&apikey=${Deno.env.get('ALPHA_VANTAGE_API_KEY')}`
+          const response = await fetch(quoteUrl)
+          const data = await response.json()
 
-        if (data['Global Quote']) {
-          const quote = data['Global Quote']
-          const price = parseFloat(quote['05. price'])
-          const change = parseFloat(quote['09. change'])
-          const changePercent = parseFloat(quote['10. change percent'].replace('%', ''))
-          const volume = parseInt(quote['06. volume'])
+          if (data['Global Quote']) {
+            const quote = data['Global Quote']
+            const price = parseFloat(quote['05. price']) || 0
+            const change = parseFloat(quote['09. change']) || 0
+            const changePercent = parseFloat(quote['10. change percent'].replace('%', '')) || 0
+            const volume = parseInt(quote['06. volume']) || 0
 
-          const { error } = await supabaseClient
-            .from('market_data')
-            .upsert({
-              symbol: stock.symbol,
-              name: stock.name,
-              asset_type: stock.assetType,
-              price: price,
-              change: change,
-              change_percentage: changePercent,
-              volume: volume,
-              market: stock.exchange,
-              sector: 'N/A', // Alpha Vantage basic API doesn't provide sector info
-            }, {
-              onConflict: 'symbol,asset_type'
-            })
+            // Upsert with retry logic
+            for (let retry = 0; retry < 3; retry++) {
+              const { error } = await supabaseClient
+                .from('market_data')
+                .upsert({
+                  symbol: stock.symbol,
+                  name: stock.name,
+                  asset_type: stock.assetType,
+                  price: price,
+                  change: change,
+                  change_percentage: changePercent,
+                  volume: volume,
+                  market: stock.exchange,
+                  sector: 'N/A', // Alpha Vantage basic API doesn't provide sector info
+                }, {
+                  onConflict: 'symbol'
+                })
 
-          if (error) {
-            console.error(`Error updating ${stock.symbol}:`, error)
-          } else {
-            console.log(`Successfully updated ${stock.symbol}`)
+              if (!error) {
+                console.log(`Successfully updated ${stock.symbol}`)
+                break
+              } else if (retry === 2) {
+                console.error(`Failed to update ${stock.symbol} after 3 retries:`, error)
+              }
+            }
           }
+        } catch (error) {
+          console.error(`Error processing ${stock.symbol}:`, error)
         }
+      }))
 
-        // Add a delay to respect API rate limits (5 calls per minute on free tier)
-        await new Promise(resolve => setTimeout(resolve, 12000))
-      } catch (error) {
-        console.error(`Error processing ${stock.symbol}:`, error)
+      // Add a delay between batches to respect API rate limits
+      if (i + batchSize < activeStocks.length) {
+        console.log('Waiting 60 seconds before processing next batch...')
+        await new Promise(resolve => setTimeout(resolve, 60000))
       }
     }
 
