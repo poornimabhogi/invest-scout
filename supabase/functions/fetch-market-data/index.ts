@@ -40,9 +40,9 @@ Deno.serve(async (req) => {
         return { symbol, name, exchange, assetType, ipoDate, status }
       })
       .filter(stock => stock.status === 'Active' && (stock.exchange === 'NYSE' || stock.exchange === 'NASDAQ'))
-      .slice(0, 100) // Limit to first 100 stocks
+      .slice(0, 50) // Process 50 stocks for now
 
-    console.log(`Found ${activeStocks.length} active stocks`)
+    console.log(`Found ${activeStocks.length} active stocks to process`)
 
     // Process stocks in smaller batches to respect API rate limits
     const batchSize = 5;
@@ -50,8 +50,10 @@ Deno.serve(async (req) => {
       const batch = activeStocks.slice(i, i + batchSize);
       console.log(`Processing batch ${i/batchSize + 1} of ${Math.ceil(activeStocks.length/batchSize)}`)
       
-      await Promise.all(batch.map(async (stock) => {
+      // Process each stock in the batch
+      for (const stock of batch) {
         try {
+          console.log(`Fetching data for ${stock.symbol}...`)
           const quoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stock.symbol}&apikey=${Deno.env.get('ALPHA_VANTAGE_API_KEY')}`
           const response = await fetch(quoteUrl)
           const data = await response.json()
@@ -89,15 +91,18 @@ Deno.serve(async (req) => {
               }
             }
           }
+          
+          // Add a small delay between individual API calls
+          await new Promise(resolve => setTimeout(resolve, 12000)) // 12 second delay between calls
         } catch (error) {
           console.error(`Error processing ${stock.symbol}:`, error)
         }
-      }))
+      }
 
-      // Add a delay between batches to respect API rate limits
+      // Add a delay between batches
       if (i + batchSize < activeStocks.length) {
-        console.log('Waiting 60 seconds before processing next batch...')
-        await new Promise(resolve => setTimeout(resolve, 60000))
+        console.log('Waiting 30 seconds before processing next batch...')
+        await new Promise(resolve => setTimeout(resolve, 30000))
       }
     }
 
