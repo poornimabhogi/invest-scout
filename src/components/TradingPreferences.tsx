@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { TradingPreferences } from '@/types/trading';
+import type { Database } from '@/integrations/supabase/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-export const TradingPreferences = () => {
+type TradingRiskLevel = Database['public']['Enums']['trading_risk_level'];
+
+export const TradingPreferencesComponent = () => {
   const [maxPosition, setMaxPosition] = useState('1000');
-  const [riskLevel, setRiskLevel] = useState<'conservative' | 'moderate' | 'aggressive'>('conservative');
+  const [riskLevel, setRiskLevel] = useState<TradingRiskLevel>('conservative');
   const [maxTrades, setMaxTrades] = useState('3');
   const [stopLoss, setStopLoss] = useState('2');
   const [takeProfit, setTakeProfit] = useState('5');
@@ -19,9 +21,13 @@ export const TradingPreferences = () => {
   const { data: preferences, isLoading } = useQuery({
     queryKey: ['tradingPreferences'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
       const { data, error } = await supabase
         .from('user_trading_preferences')
         .select('*')
+        .eq('user_id', user.id)
         .single();
 
       if (error) throw error;
@@ -32,7 +38,14 @@ export const TradingPreferences = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('No user found');
+        return;
+      }
+
       const { error } = await supabase.from('user_trading_preferences').upsert({
+        user_id: user.id,
         max_position_size: parseFloat(maxPosition),
         risk_level: riskLevel,
         max_daily_trades: parseInt(maxTrades),
@@ -80,7 +93,7 @@ export const TradingPreferences = () => {
 
           <div className="space-y-2">
             <Label htmlFor="riskLevel">Risk Level</Label>
-            <Select value={riskLevel} onValueChange={(value: 'conservative' | 'moderate' | 'aggressive') => setRiskLevel(value)}>
+            <Select value={riskLevel} onValueChange={(value: TradingRiskLevel) => setRiskLevel(value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select risk level" />
               </SelectTrigger>
@@ -158,3 +171,6 @@ export const TradingPreferences = () => {
     </Card>
   );
 };
+
+// Export with a different name to avoid conflicts
+export { TradingPreferencesComponent as TradingPreferences };
