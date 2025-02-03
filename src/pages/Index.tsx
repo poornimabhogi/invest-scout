@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { LogOutIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from "sonner";
+import { TradingPreferences } from '@/components/TradingPreferences';
 
 const fetchMarketData = async () => {
   console.log('Fetching market data...');
@@ -108,8 +109,8 @@ const Index = () => {
       <div className="container py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-trading-primary mb-2">Stock Trading</h1>
-            <p className="text-trading-secondary">Discover and analyze stocks with AI-powered insights</p>
+            <h1 className="text-4xl font-bold text-trading-primary mb-2">Stock Trading Assistant</h1>
+            <p className="text-trading-secondary">Make informed trading decisions with risk management</p>
           </div>
           <Button
             variant="outline"
@@ -119,6 +120,10 @@ const Index = () => {
             <LogOutIcon size={16} />
             Sign Out
           </Button>
+        </div>
+
+        <div className="mb-8">
+          <TradingPreferences />
         </div>
 
         <RiskFilter 

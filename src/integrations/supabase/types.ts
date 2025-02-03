@@ -72,6 +72,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_trading_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          max_daily_trades: number
+          max_position_size: number
+          risk_level: Database["public"]["Enums"]["trading_risk_level"]
+          stop_loss_percentage: number
+          take_profit_percentage: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          max_daily_trades?: number
+          max_position_size?: number
+          risk_level?: Database["public"]["Enums"]["trading_risk_level"]
+          stop_loss_percentage?: number
+          take_profit_percentage?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          max_daily_trades?: number
+          max_position_size?: number
+          risk_level?: Database["public"]["Enums"]["trading_risk_level"]
+          stop_loss_percentage?: number
+          take_profit_percentage?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -81,6 +117,7 @@ export type Database = {
     }
     Enums: {
       asset_type: "stock" | "etf" | "crypto"
+      trading_risk_level: "conservative" | "moderate" | "aggressive"
     }
     CompositeTypes: {
       [_ in never]: never
