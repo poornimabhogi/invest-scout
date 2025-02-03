@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -28,12 +28,23 @@ export const TradingPreferencesComponent = () => {
         .from('user_trading_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
     },
   });
+
+  // Update form when preferences are loaded
+  useEffect(() => {
+    if (preferences) {
+      setMaxPosition(preferences.max_position_size.toString());
+      setRiskLevel(preferences.risk_level);
+      setMaxTrades(preferences.max_daily_trades.toString());
+      setStopLoss(preferences.stop_loss_percentage.toString());
+      setTakeProfit(preferences.take_profit_percentage.toString());
+    }
+  }, [preferences]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
