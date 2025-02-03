@@ -4,7 +4,7 @@ import { StockCard } from '../components/StockCard';
 import { RiskFilter } from '../components/RiskFilter';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { LogOutIcon } from 'lucide-react';
+import { LogOutIcon, ToggleRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from "sonner";
 import { TradingPreferences } from '@/components/TradingPreferences';
@@ -64,19 +64,23 @@ const Index = () => {
   const [selectedRisk, setSelectedRisk] = useState<RiskLevel | 'all'>('all');
   const [selectedMarket, setSelectedMarket] = useState<MarketType | 'all'>('all');
   const [selectedRecommendation, setSelectedRecommendation] = useState<AIRecommendation | 'all'>('all');
+  const [showPreferences, setShowPreferences] = useState(false);
 
   const { data: stocks = [], isLoading, error } = useQuery({
     queryKey: ['marketData'],
     queryFn: fetchMarketData,
-    refetchInterval: 60000, // Refetch every minute to keep data fresh
+    refetchInterval: 60000,
   });
-
-  console.log('Current stocks:', stocks);
-  console.log('Loading state:', isLoading);
-  console.log('Error state:', error);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+  };
+
+  const toggleAutoTrade = () => {
+    setShowPreferences(!showPreferences);
+    if (!showPreferences) {
+      toast.info("Configure your trading preferences");
+    }
   };
 
   const filteredStocks = stocks.filter(stock => {
@@ -85,8 +89,6 @@ const Index = () => {
     const matchesRecommendation = selectedRecommendation === 'all' || stock.aiRecommendation === selectedRecommendation;
     return matchesRisk && matchesMarket && matchesRecommendation;
   });
-
-  console.log('Filtered stocks:', filteredStocks);
 
   if (isLoading) {
     return (
@@ -112,28 +114,42 @@ const Index = () => {
             <h1 className="text-4xl font-bold text-trading-primary mb-2">Stock Trading Assistant</h1>
             <p className="text-trading-secondary">Make informed trading decisions with risk management</p>
           </div>
-          <Button
-            variant="outline"
-            onClick={handleLogout}
-            className="gap-2"
-          >
-            <LogOutIcon size={16} />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={toggleAutoTrade}
+              className="gap-2"
+            >
+              <ToggleRightIcon size={20} />
+              AutoTrade
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="gap-2"
+            >
+              <LogOutIcon size={16} />
+              Sign Out
+            </Button>
+          </div>
         </div>
+
+        {showPreferences && (
+          <div className="mb-8 animate-slide-up">
+            <TradingPreferences />
+          </div>
+        )}
 
         <div className="mb-8">
-          <TradingPreferences />
+          <RiskFilter 
+            selectedRisk={selectedRisk} 
+            selectedMarket={selectedMarket}
+            selectedRecommendation={selectedRecommendation}
+            onRiskChange={setSelectedRisk}
+            onMarketChange={setSelectedMarket}
+            onRecommendationChange={setSelectedRecommendation}
+          />
         </div>
-
-        <RiskFilter 
-          selectedRisk={selectedRisk} 
-          selectedMarket={selectedMarket}
-          selectedRecommendation={selectedRecommendation}
-          onRiskChange={setSelectedRisk}
-          onMarketChange={setSelectedMarket}
-          onRecommendationChange={setSelectedRecommendation}
-        />
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredStocks.length === 0 ? (
