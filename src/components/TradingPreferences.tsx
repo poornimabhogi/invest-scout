@@ -62,6 +62,8 @@ export const TradingPreferencesComponent = () => {
         max_daily_trades: parseInt(maxTrades),
         stop_loss_percentage: parseFloat(stopLoss),
         take_profit_percentage: parseFloat(takeProfit),
+      }, {
+        onConflict: 'user_id'
       });
 
       if (error) throw error;
