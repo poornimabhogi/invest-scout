@@ -1,33 +1,49 @@
-import { RiskLevel, MarketType, AIRecommendation } from '../types/stock';
+import { RiskLevel, MarketType, AIRecommendation, MomentumTier } from '../types/stock';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 interface RiskFilterProps {
   selectedRisk: RiskLevel | 'all';
   selectedMarket: MarketType | 'all';
   selectedRecommendation: AIRecommendation | 'all';
+  selectedMomentum: MomentumTier | 'all';
+  searchQuery: string;
   onRiskChange: (risk: RiskLevel | 'all') => void;
   onMarketChange: (market: MarketType | 'all') => void;
   onRecommendationChange: (rec: AIRecommendation | 'all') => void;
+  onMomentumChange: (tier: MomentumTier | 'all') => void;
+  onSearchChange: (query: string) => void;
 }
 
-export const RiskFilter = ({ 
-  selectedRisk, 
+export const RiskFilter = ({
+  selectedRisk,
   selectedMarket,
   selectedRecommendation,
+  selectedMomentum,
+  searchQuery,
   onRiskChange,
   onMarketChange,
-  onRecommendationChange
+  onRecommendationChange,
+  onMomentumChange,
+  onSearchChange,
 }: RiskFilterProps) => {
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <Input
+        placeholder="Search by symbol or company name..."
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        className="max-w-md"
+      />
+
+      <div className="flex flex-wrap gap-2">
         <Button
           variant={selectedRisk === 'all' ? 'default' : 'outline'}
           onClick={() => onRiskChange('all')}
@@ -57,7 +73,7 @@ export const RiskFilter = ({
         </Button>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Select value={selectedMarket} onValueChange={(value: MarketType | 'all') => onMarketChange(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select Market" />
@@ -70,8 +86,8 @@ export const RiskFilter = ({
           </SelectContent>
         </Select>
 
-        <Select 
-          value={selectedRecommendation} 
+        <Select
+          value={selectedRecommendation}
           onValueChange={(value: AIRecommendation | 'all') => onRecommendationChange(value)}
         >
           <SelectTrigger className="w-[180px]">
@@ -82,6 +98,22 @@ export const RiskFilter = ({
             <SelectItem value="buy">Buy</SelectItem>
             <SelectItem value="sell">Sell</SelectItem>
             <SelectItem value="hold">Hold</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={selectedMomentum}
+          onValueChange={(value: MomentumTier | 'all') => onMomentumChange(value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Momentum" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Momentum</SelectItem>
+            <SelectItem value="strong">Strong</SelectItem>
+            <SelectItem value="building">Building</SelectItem>
+            <SelectItem value="neutral">Neutral</SelectItem>
+            <SelectItem value="weak">Weak</SelectItem>
           </SelectContent>
         </Select>
       </div>

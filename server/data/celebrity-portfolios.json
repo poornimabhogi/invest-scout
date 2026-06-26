@@ -1,0 +1,60 @@
+{
+  "investors": [
+    {
+      "id": "buffett",
+      "name": "Warren Buffett",
+      "firm": "Berkshire Hathaway",
+      "description": "Value investing legend — latest 13F holdings",
+      "holdings": ["AAPL", "BAC", "AXP", "KO", "CVX", "OXY", "KHC", "MCO", "CB", "DVA", "V", "MA", "AMZN", "LPX", "SNOW", "NU", "STZ", "KR", "VRSN", "SIRI"]
+    },
+    {
+      "id": "wood",
+      "name": "Cathie Wood",
+      "firm": "ARK Invest",
+      "description": "Disruptive innovation — high-growth tech & biotech",
+      "holdings": ["TSLA", "COIN", "ROKU", "PLTR", "SQ", "HOOD", "CRSP", "TDOC", "PATH", "BEAM", "TWLO", "DKNG", "U", "SHOP", "META", "NVDA", "AMD", "IONQ", "RBLX", "EXAS"]
+    },
+    {
+      "id": "ackman",
+      "name": "Bill Ackman",
+      "firm": "Pershing Square",
+      "description": "Concentrated activist — quality compounders",
+      "holdings": ["GOOGL", "GOOG", "CMG", "QSR", "HLT", "LOW", "CP", "NKE", "BN", "HHH"]
+    },
+    {
+      "id": "burry",
+      "name": "Michael Burry",
+      "firm": "Scion Asset Management",
+      "description": "Contrarian deep value — macro-aware bets",
+      "holdings": ["BABA", "JD", "LMT", "GEO", "BIDU", "REAL", "EL", "STLA", "CVS", "MCD"]
+    },
+    {
+      "id": "pelosi",
+      "name": "Nancy Pelosi",
+      "firm": "Congressional Disclosures",
+      "description": "Public congressional trading disclosures",
+      "holdings": ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "CRM", "RBLX", "DIS", "V", "PANW"]
+    },
+    {
+      "id": "dalio",
+      "name": "Ray Dalio",
+      "firm": "Bridgewater Associates",
+      "description": "Macro diversification — global blue chips",
+      "holdings": ["PG", "KO", "PEP", "JNJ", "WMT", "COST", "MCD", "UNH", "LLY", "ABBV", "MRK", "PFE", "TMO", "ABT", "DHR", "V", "MA", "HD", "LOW", "NKE"]
+    },
+    {
+      "id": "icahn",
+      "name": "Carl Icahn",
+      "firm": "Icahn Enterprises",
+      "description": "Activist investor — undervalued targets",
+      "holdings": ["IEP", "CVI", "SWX", "XRX", "HPQ", "OXY", "CVR", "LNTH", "NGL", "SIRI"]
+    },
+    {
+      "id": "druckenmiller",
+      "name": "Stanley Druckenmiller",
+      "firm": "Duquesne Family Office",
+      "description": "Macro trader — momentum & growth tilt",
+      "holdings": ["NVDA", "MSFT", "GOOGL", "AMZN", "META", "NFLX", "UBER", "SE", "CPNG", "COUR", "DOCU", "SNOW", "TEAM", "CRM", "PANW"]
+    }
+  ]
+}

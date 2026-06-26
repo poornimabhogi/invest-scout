@@ -1,13 +1,10 @@
-import { Database } from '@/integrations/supabase/types';
-
-export type TradingRiskLevel = Database['public']['Enums']['trading_risk_level'];
+export type TradingRiskLevel = 'conservative' | 'moderate' | 'aggressive';
 
 export interface TradingPreferences {
-  id: string;
-  userId: string;
   maxPositionSize: number;
   riskLevel: TradingRiskLevel;
   maxDailyTrades: number;
   stopLossPercentage: number;
   takeProfitPercentage: number;
+  updatedAt?: string;
 }

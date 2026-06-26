@@ -1,107 +1,167 @@
-import { useState } from 'react';
-import { RiskLevel, MarketType, AIRecommendation, Stock } from '../types/stock';
+import { useState, useEffect, useRef } from 'react';
+import { RiskLevel, MarketType, AIRecommendation, MomentumTier, ScreenerView } from '../types/stock';
 import { StockCard } from '../components/StockCard';
 import { RiskFilter } from '../components/RiskFilter';
+import { CelebrityPanel } from '../components/CelebrityPanel';
+import { StrategyCard } from '@/components/StrategyCard';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { LogOutIcon, ToggleRightIcon } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { toast } from "sonner";
+import { ToggleRightIcon, RefreshCwIcon, StarIcon, ZapIcon, UsersIcon, LayoutGridIcon, BrainCircuitIcon, WalletIcon } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { TradingPreferences } from '@/components/TradingPreferences';
+import { CompoundingSimulator } from '@/components/CompoundingSimulator';
+import { PaperPortfolioPanel } from '@/components/PaperPortfolio';
+import { api } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
-const fetchMarketData = async () => {
-  console.log('Fetching market data...');
-  const { data, error } = await supabase
-    .from('market_data')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching market data:', error);
-    toast.error('Failed to fetch market data');
-    throw error;
-  }
-
-  console.log('Raw market data:', data);
-
-  if (!data || data.length === 0) {
-    console.log('No market data found');
-    return [];
-  }
-
-  // Transform the data to match our Stock type
-  const transformedData = data.map((item): Stock => ({
-    symbol: item.symbol,
-    name: item.name || item.symbol,
-    price: Number(item.price) || 0,
-    change: Number(item.change) || 0,
-    changePercentage: Number(item.change_percentage) || 0,
-    marketCap: Number(item.market_cap) || 0,
-    volume: Number(item.volume) || 0,
-    market: (item.market as MarketType) || 'OTHER',
-    sector: item.sector || 'Technology',
-    riskLevel: calculateRiskLevel(Number(item.change_percentage)),
-    aiRecommendation: calculateRecommendation(Number(item.change_percentage)),
-    aiConfidenceScore: 0.85
-  }));
-
-  console.log('Final transformed data:', transformedData);
-  return transformedData;
-};
-
-const calculateRiskLevel = (changePercentage: number): RiskLevel => {
-  if (Math.abs(changePercentage) < 2) return 'low';
-  if (Math.abs(changePercentage) < 5) return 'medium';
-  return 'high';
-};
-
-const calculateRecommendation = (changePercentage: number): AIRecommendation => {
-  if (changePercentage > 2) return 'buy';
-  if (changePercentage < -2) return 'sell';
-  return 'hold';
-};
+const VIEW_TABS: { id: ScreenerView; label: string; icon: typeof StarIcon; description: string }[] = [
+  {
+    id: 'top-picks',
+    label: 'Top Picks',
+    icon: StarIcon,
+    description: 'Best momentum stocks overlapping celebrity portfolios',
+  },
+  {
+    id: 'momentum',
+    label: 'Momentum Leaders',
+    icon: ZapIcon,
+    description: 'Highest momentum scores across the market',
+  },
+  {
+    id: 'celebrity',
+    label: 'Celebrity Overlap',
+    icon: UsersIcon,
+    description: 'Stocks held by multiple top investors',
+  },
+  {
+    id: 'strategies',
+    label: 'Strategies',
+    icon: BrainCircuitIcon,
+    description: 'News-driven buy opportunities scored by chart algorithms',
+  },
+  {
+    id: 'all',
+    label: 'All Stocks',
+    icon: LayoutGridIcon,
+    description: 'Full screened universe ranked by composite score',
+  },
+];
 
 const Index = () => {
+  const [view, setView] = useState<ScreenerView>('top-picks');
   const [selectedRisk, setSelectedRisk] = useState<RiskLevel | 'all'>('all');
   const [selectedMarket, setSelectedMarket] = useState<MarketType | 'all'>('all');
   const [selectedRecommendation, setSelectedRecommendation] = useState<AIRecommendation | 'all'>('all');
+  const [selectedMomentum, setSelectedMomentum] = useState<MomentumTier | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showPreferences, setShowPreferences] = useState(false);
+  const [showPaper, setShowPaper] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: stocks = [], isLoading, error } = useQuery({
-    queryKey: ['marketData'],
-    queryFn: fetchMarketData,
-    refetchInterval: 60000,
+  const { data: stocks = [], isLoading: stocksLoading, error: stocksError } = useQuery({
+    queryKey: ['marketData', view],
+    queryFn: () => api.getMarketData(view),
+    enabled: view !== 'strategies',
+    refetchInterval: 5 * 60 * 1000,
   });
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const {
+    data: strategies = [],
+    isLoading: strategiesLoading,
+    error: strategiesError,
+  } = useQuery({
+    queryKey: ['strategies'],
+    queryFn: () => api.getStrategies(),
+    enabled: view === 'strategies',
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const isLoading = view === 'strategies' ? strategiesLoading : stocksLoading;
+  const error = view === 'strategies' ? strategiesError : stocksError;
+
+  const { data: celebrities = [] } = useQuery({
+    queryKey: ['celebrities'],
+    queryFn: () => api.getCelebrities(),
+    staleTime: Infinity,
+  });
+
+  const { data: status } = useQuery({
+    queryKey: ['screenerStatus'],
+    queryFn: () => api.getScreenerStatus(),
+    refetchInterval: (query) => (query.state.data?.isRefreshing ? 3000 : 10000),
+  });
+
+  const wasRefreshing = useRef(false);
+  useEffect(() => {
+    if (status?.isRefreshing) {
+      wasRefreshing.current = true;
+    } else if (wasRefreshing.current && status && !status.isRefreshing) {
+      wasRefreshing.current = false;
+      queryClient.invalidateQueries({ queryKey: ['marketData'] });
+      toast.success('Live market data updated');
+    }
+  }, [status?.isRefreshing, status, queryClient]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await api.refreshScreener();
+      await queryClient.invalidateQueries({ queryKey: ['marketData'] });
+      await queryClient.invalidateQueries({ queryKey: ['screenerStatus'] });
+      toast.success('Market data refreshed');
+    } catch {
+      toast.error('Failed to refresh market data');
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const toggleAutoTrade = () => {
     setShowPreferences(!showPreferences);
     if (!showPreferences) {
-      toast.info("Configure your trading preferences");
+      toast.info('Configure your trading preferences');
     }
   };
 
-  const filteredStocks = stocks.filter(stock => {
+  const filteredStocks = stocks.filter((stock) => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      !q || stock.symbol.toLowerCase().includes(q) || stock.name.toLowerCase().includes(q);
     const matchesRisk = selectedRisk === 'all' || stock.riskLevel === selectedRisk;
     const matchesMarket = selectedMarket === 'all' || stock.market === selectedMarket;
-    const matchesRecommendation = selectedRecommendation === 'all' || stock.aiRecommendation === selectedRecommendation;
-    return matchesRisk && matchesMarket && matchesRecommendation;
+    const matchesRecommendation =
+      selectedRecommendation === 'all' || stock.aiRecommendation === selectedRecommendation;
+    const matchesMomentum =
+      selectedMomentum === 'all' || stock.momentumTier === selectedMomentum;
+    return matchesSearch && matchesRisk && matchesMarket && matchesRecommendation && matchesMomentum;
   });
+
+  const activeTab = VIEW_TABS.find((t) => t.id === view)!;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-trading-background flex items-center justify-center">
-        <div className="text-trading-primary">Loading market data...</div>
+      <div className="min-h-screen bg-trading-background flex flex-col items-center justify-center gap-3">
+        <RefreshCwIcon className="animate-spin text-trading-primary" size={32} />
+        <div className="text-trading-primary font-medium">
+          {view === 'strategies'
+            ? 'Analyzing news & chart patterns...'
+            : 'Analyzing 300+ stocks...'}
+        </div>
+        <p className="text-sm text-trading-secondary">
+          {view === 'strategies'
+            ? 'Scanning web news and running strategy algorithms'
+            : 'Fetching live quotes & scoring momentum + celebrity overlap'}
+        </p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-trading-background flex items-center justify-center">
-        <div className="text-trading-danger">Error loading market data. Please try again later.</div>
+      <div className="min-h-screen bg-trading-background flex flex-col items-center justify-center gap-4">
+        <div className="text-trading-danger">Error loading market data. Please try again.</div>
+        <Button onClick={handleRefresh}>Retry</Button>
       </div>
     );
   }
@@ -109,57 +169,111 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-trading-background">
       <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
           <div>
-            <h1 className="text-4xl font-bold text-trading-primary mb-2">Stock Trading Assistant</h1>
-            <p className="text-trading-secondary">Make informed trading decisions with risk management</p>
+            <h1 className="text-4xl font-bold text-trading-primary mb-2">Invest Scout</h1>
+            <p className="text-trading-secondary">
+              Momentum screener with picks aligned to top celebrity portfolios
+            </p>
+            {status?.lastUpdated && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {status.stockCount} stocks analyzed ·{' '}
+                {status.isRefreshing
+                  ? 'Fetching live quotes in background...'
+                  : status.dataSource === 'finnhub'
+                    ? 'Live data'
+                    : 'Seed data — add FINNHUB_API_KEY to .env for live quotes'}{' '}
+                · Updated {new Date(status.lastUpdated).toLocaleString()}
+              </p>
+            )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              onClick={toggleAutoTrade}
+              onClick={handleRefresh}
+              disabled={isRefreshing || status?.isRefreshing}
               className="gap-2"
             >
+              <RefreshCwIcon size={16} className={cn(isRefreshing && 'animate-spin')} />
+              Refresh
+            </Button>
+            <Button variant="outline" onClick={() => setShowPaper(!showPaper)} className="gap-2">
+              <WalletIcon size={18} />
+              Paper Portfolio
+            </Button>
+            <Button variant="outline" onClick={toggleAutoTrade} className="gap-2">
               <ToggleRightIcon size={20} />
               AutoTrade
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleLogout}
-              className="gap-2"
-            >
-              <LogOutIcon size={16} />
-              Sign Out
-            </Button>
           </div>
         </div>
 
-        {showPreferences && (
+        {showPaper && (
           <div className="mb-8 animate-slide-up">
-            <TradingPreferences />
+            <PaperPortfolioPanel />
           </div>
         )}
 
-        <div className="mb-8">
-          <RiskFilter 
-            selectedRisk={selectedRisk} 
+        {showPreferences && (
+          <div className="mb-8 animate-slide-up space-y-6">
+            <TradingPreferences />
+            <CompoundingSimulator />
+          </div>
+        )}
+
+        <CelebrityPanel celebrities={celebrities} />
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {VIEW_TABS.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Button
+                key={tab.id}
+                variant={view === tab.id ? 'default' : 'outline'}
+                onClick={() => setView(tab.id)}
+                className="gap-2"
+              >
+                <Icon size={16} />
+                {tab.label}
+              </Button>
+            );
+          })}
+        </div>
+
+        <p className="text-sm text-trading-secondary mb-6">{activeTab.description}</p>
+
+        {view !== 'strategies' && (
+          <div className="mb-8">
+            <RiskFilter
+            selectedRisk={selectedRisk}
             selectedMarket={selectedMarket}
             selectedRecommendation={selectedRecommendation}
+            selectedMomentum={selectedMomentum}
+            searchQuery={searchQuery}
             onRiskChange={setSelectedRisk}
             onMarketChange={setSelectedMarket}
             onRecommendationChange={setSelectedRecommendation}
+            onMomentumChange={setSelectedMomentum}
+            onSearchChange={setSearchQuery}
           />
-        </div>
+          </div>
+        )}
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredStocks.length === 0 ? (
+          {view === 'strategies' ? (
+            strategies.length === 0 ? (
+              <div className="col-span-full text-center text-trading-secondary py-8">
+                No strategy opportunities found. Try refreshing.
+              </div>
+            ) : (
+              strategies.map((s) => <StrategyCard key={s.symbol} strategy={s} />)
+            )
+          ) : filteredStocks.length === 0 ? (
             <div className="col-span-full text-center text-trading-secondary py-8">
               No stocks found matching the selected filters
             </div>
           ) : (
-            filteredStocks.map((stock) => (
-              <StockCard key={stock.symbol} stock={stock} />
-            ))
+            filteredStocks.map((stock) => <StockCard key={stock.symbol} stock={stock} />)
           )}
         </div>
       </div>

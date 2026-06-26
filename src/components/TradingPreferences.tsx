@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-
-type TradingRiskLevel = Database['public']['Enums']['trading_risk_level'];
+import { api } from '@/lib/api';
+import type { TradingRiskLevel } from '@/types/trading';
 
 export const TradingPreferencesComponent = () => {
   const [maxPosition, setMaxPosition] = useState('1000');
@@ -17,56 +15,34 @@ export const TradingPreferencesComponent = () => {
   const [maxTrades, setMaxTrades] = useState('3');
   const [stopLoss, setStopLoss] = useState('2');
   const [takeProfit, setTakeProfit] = useState('5');
+  const queryClient = useQueryClient();
 
   const { data: preferences, isLoading } = useQuery({
     queryKey: ['tradingPreferences'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { data, error } = await supabase
-        .from('user_trading_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.getTradingPreferences(),
   });
 
-  // Update form when preferences are loaded
   useEffect(() => {
     if (preferences) {
-      setMaxPosition(preferences.max_position_size.toString());
-      setRiskLevel(preferences.risk_level);
-      setMaxTrades(preferences.max_daily_trades.toString());
-      setStopLoss(preferences.stop_loss_percentage.toString());
-      setTakeProfit(preferences.take_profit_percentage.toString());
+      setMaxPosition(preferences.maxPositionSize.toString());
+      setRiskLevel(preferences.riskLevel);
+      setMaxTrades(preferences.maxDailyTrades.toString());
+      setStopLoss(preferences.stopLossPercentage.toString());
+      setTakeProfit(preferences.takeProfitPercentage.toString());
     }
   }, [preferences]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('No user found');
-        return;
-      }
-
-      const { error } = await supabase.from('user_trading_preferences').upsert({
-        user_id: user.id,
-        max_position_size: parseFloat(maxPosition),
-        risk_level: riskLevel,
-        max_daily_trades: parseInt(maxTrades),
-        stop_loss_percentage: parseFloat(stopLoss),
-        take_profit_percentage: parseFloat(takeProfit),
-      }, {
-        onConflict: 'user_id'
+      await api.saveTradingPreferences({
+        maxPositionSize: parseFloat(maxPosition),
+        riskLevel,
+        maxDailyTrades: parseInt(maxTrades),
+        stopLossPercentage: parseFloat(stopLoss),
+        takeProfitPercentage: parseFloat(takeProfit),
       });
-
-      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['tradingPreferences'] });
       toast.success('Trading preferences updated successfully');
     } catch (error) {
       console.error('Error updating preferences:', error);
@@ -83,8 +59,8 @@ export const TradingPreferencesComponent = () => {
       <CardHeader>
         <CardTitle>Risk Management Settings</CardTitle>
         <CardDescription>
-          Configure your trading preferences and risk management parameters.
-          Please note that these settings are crucial for responsible trading.
+          Configure your trading preferences and risk management parameters. Please note that these
+          settings are crucial for responsible trading.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -175,8 +151,9 @@ export const TradingPreferencesComponent = () => {
           <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
             <h4 className="text-sm font-medium text-yellow-800">Important Risk Disclaimer</h4>
             <p className="text-sm text-yellow-700 mt-1">
-              Trading involves substantial risk of loss. Past performance is not indicative of future results.
-              Set your risk parameters carefully and never invest more than you can afford to lose.
+              Trading involves substantial risk of loss. Past performance is not indicative of future
+              results. Set your risk parameters carefully and never invest more than you can afford to
+              lose.
             </p>
           </div>
         </form>
@@ -185,5 +162,4 @@ export const TradingPreferencesComponent = () => {
   );
 };
 
-// Export with a different name to avoid conflicts
 export { TradingPreferencesComponent as TradingPreferences };
