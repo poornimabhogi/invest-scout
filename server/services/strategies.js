@@ -1,6 +1,7 @@
 import { getApiKey } from './marketProvider.js';
 import { getCandles, computePerformance } from './candles.js';
 import { analyzeChart, buildStrategyScore } from './chartAnalysis.js';
+import { analyzeSmartMoneyConcepts } from './smartMoneyConcepts.js';
 
 const FINNHUB_BASE = 'https://finnhub.io/api/v1';
 const NEWS_CACHE_TTL = 30 * 60 * 1000;
@@ -82,8 +83,9 @@ async function fetchNews(symbol) {
 async function buildStrategyForStock(stock) {
   const { candles } = await getCandles(stock.symbol, '1Y');
   const chartAnalysis = analyzeChart(candles);
+  const smc = analyzeSmartMoneyConcepts(candles);
   const news = await fetchNews(stock.symbol);
-  const { score, recommendation, newsScore } = buildStrategyScore(stock, chartAnalysis, news);
+  const { score, recommendation, newsScore } = buildStrategyScore(stock, chartAnalysis, news, smc);
 
   return {
     symbol: stock.symbol,
@@ -94,17 +96,21 @@ async function buildStrategyForStock(stock) {
     recommendation,
     momentumScore: stock.momentumScore,
     celebrityScore: stock.celebrityScore,
-    chartSignals: chartAnalysis.signals,
+    chartSignals: [...chartAnalysis.signals, ...smc.signals.slice(0, 2)],
     chartPattern: chartAnalysis.pattern,
     rsi: chartAnalysis.rsi,
     lifetimeReturn: chartAnalysis.lifetimeReturn,
     newsScore,
     recentNews: news,
-    rationale: buildRationale(recommendation, chartAnalysis, news, stock),
+    rationale: buildRationale(recommendation, chartAnalysis, news, stock, smc),
+    smcScore: smc.smcScore,
+    smcRecommendation: smc.recommendation,
+    smcTrend: smc.trend,
+    smcZone: smc.zone,
   };
 }
 
-function buildRationale(recommendation, chart, news, stock) {
+function buildRationale(recommendation, chart, news, stock, smc = null) {
   const parts = [];
   if (recommendation === 'buy') {
     parts.push('Multiple bullish signals align for a potential entry.');
@@ -114,6 +120,7 @@ function buildRationale(recommendation, chart, news, stock) {
     parts.push('Risk outweighs reward based on current chart and news flow.');
   }
   if (chart.signals[0]) parts.push(chart.signals[0]);
+  if (smc?.signals?.[0]) parts.push(`SMC: ${smc.signals[0]}`);
   if (stock.celebrityScore >= 2) parts.push(`Held by ${stock.celebrityScore} celebrity portfolios.`);
   if (news[0]) parts.push(`Latest: "${news[0].headline.slice(0, 80)}..."`);
   return parts.join(' ');
@@ -173,7 +180,9 @@ export async function getStockDetail(symbol, stockFromCache) {
     getCandles(symbol, 'MAX'),
   ]);
 
-  const analysis = analyzeChart(candlesMax.length > candles1Y.length ? candlesMax : candles1Y);
+  const chartCandles = candlesMax.length > candles1Y.length ? candlesMax : candles1Y;
+  const analysis = analyzeChart(chartCandles);
+  const smc = analyzeSmartMoneyConcepts(chartCandles);
   const news = await fetchNews(symbol);
 
   const stock = stockFromCache ?? {
@@ -198,7 +207,7 @@ export async function getStockDetail(symbol, stockFromCache) {
     change: 0,
   };
 
-  const { score, recommendation } = buildStrategyScore(stock, analysis, news);
+  const { score, recommendation } = buildStrategyScore(stock, analysis, news, smc);
 
   const perf1Y = computePerformance(candles1Y);
   const perfMax = computePerformance(candlesMax.length > 0 ? candlesMax : candles1Y);
@@ -232,8 +241,9 @@ export async function getStockDetail(symbol, stockFromCache) {
     strategy: {
       score,
       recommendation,
-      rationale: buildRationale(recommendation, analysis, news, stock),
+      rationale: buildRationale(recommendation, analysis, news, stock, smc),
     },
+    smc,
     dataSource: source,
   };
 }

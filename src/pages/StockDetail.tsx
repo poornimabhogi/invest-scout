@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CandlestickChart } from '@/components/charts/CandlestickChart';
 import { MacdChart } from '@/components/charts/MacdChart';
+import { SmcPanel } from '@/components/SmcPanel';
 import { api } from '@/lib/api';
 import { ChartRange } from '@/types/chart';
 import { ForecastPanel } from '@/components/ForecastPanel';
@@ -56,8 +57,9 @@ const StockDetail = () => {
     );
   }
 
-  const { stock, performance, analysis, news, strategy } = detail;
+  const { stock, performance, analysis, news, strategy, smc: detailSmc } = detail;
   const candles = candleData?.candles ?? detail.candles;
+  const smc = candleData?.smc ?? detailSmc;
   const perf = candleData?.performance ?? performance;
   const chartSource = candleData?.source ?? detail.dataSource;
   const macdLive = candles.length >= 35 ? computeMACD(candles) : null;
@@ -148,9 +150,30 @@ const StockDetail = () => {
             </div>
           ) : (
             <>
-              <CandlestickChart candles={candles} height={420} />
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Smart Money Concepts — BOS/CHoCH, order blocks, FVG (LuxAlgo-inspired)
+                </p>
+                {smc && (
+                  <Badge
+                    className={cn(
+                      smc.recommendation === 'buy' && 'bg-green-100 text-green-800',
+                      smc.recommendation === 'watch' && 'bg-yellow-100 text-yellow-800',
+                      smc.recommendation === 'avoid' && 'bg-red-100 text-red-800'
+                    )}
+                  >
+                    SMC {smc.recommendation.toUpperCase()} · {smc.smcScore}
+                  </Badge>
+                )}
+              </div>
+              <CandlestickChart candles={candles} height={420} smc={smc} />
               <div className="mt-3">
-                <p className="text-xs font-medium text-muted-foreground mb-2">MACD (12, 26, 9)</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  MACD — Fast 12 · Slow 26 · Signal 9
+                </p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Line = EMA12 − EMA26 · Orange = 9-day EMA of MACD · Bars = MACD − Signal
+                </p>
                 <MacdChart candles={candles} height={140} />
               </div>
               <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
@@ -209,6 +232,8 @@ const StockDetail = () => {
                 ))}
               </ul>
             </div>
+
+            {smc && <SmcPanel smc={smc} />}
 
             <div className="bg-white rounded-lg border p-5">
               <h2 className="font-semibold mb-3">Latest News</h2>

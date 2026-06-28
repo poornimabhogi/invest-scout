@@ -4,6 +4,7 @@ import cors from 'cors';
 import { getPreferences, savePreferences } from './store.js';
 import { getScreenerData, getCacheStatus } from './services/screener.js';
 import { getCandles, computePerformance } from './services/candles.js';
+import { analyzeSmartMoneyConcepts } from './services/smartMoneyConcepts.js';
 import { getStrategies, getStockDetail } from './services/strategies.js';
 import { mergeSignalsIntoScreener } from './services/signalMerge.js';
 import { getStockForecast, getPortfolioBacktest, runCompoundSimulation } from './services/compound.js';
@@ -21,6 +22,13 @@ import {
   subscribeMediaRadar,
 } from './services/mediaRadar.js';
 import { runSelfAnalysis, getLatestReport } from './services/selfAnalyze.js';
+import {
+  buildWatchlist,
+  updateWatchlistSettings,
+  pinSymbol,
+  unpinSymbol,
+  excludeSymbol,
+} from './services/watchlist.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -31,8 +39,8 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
-    version: '6',
-    routes: ['stocks', 'candles', 'strategies', 'paper', 'media-radar', 'signal-merge', 'self-analyze'],
+    version: '7',
+    routes: ['stocks', 'candles', 'strategies', 'paper', 'media-radar', 'signal-merge', 'self-analyze', 'watchlist'],
   });
 });
 
@@ -125,6 +133,56 @@ app.post('/api/self-analyze/run', async (req, res) => {
   }
 });
 
+app.get('/api/watchlist', async (_req, res) => {
+  try {
+    const data = await buildWatchlist();
+    res.json(data);
+  } catch (err) {
+    console.error('Watchlist error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/watchlist/settings', async (req, res) => {
+  try {
+    updateWatchlistSettings(req.body);
+    const data = await buildWatchlist();
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/watchlist/pin/:symbol', async (req, res) => {
+  try {
+    pinSymbol(req.params.symbol);
+    const data = await buildWatchlist();
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/watchlist/pin/:symbol', async (req, res) => {
+  try {
+    unpinSymbol(req.params.symbol);
+    const data = await buildWatchlist();
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/watchlist/exclude/:symbol', async (req, res) => {
+  try {
+    excludeSymbol(req.params.symbol);
+    const data = await buildWatchlist();
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 app.post('/api/compound/simulate', (req, res) => {
   try {
     const result = runCompoundSimulation(req.body);
@@ -140,7 +198,20 @@ app.get('/api/stocks/:symbol/candles', async (req, res) => {
     const range = req.query.range || '1Y';
     const { candles, source } = await getCandles(symbol.toUpperCase(), range);
     const performance = computePerformance(candles);
-    res.json({ symbol: symbol.toUpperCase(), range, candles, performance, source });
+    const smc = analyzeSmartMoneyConcepts(candles);
+    res.json({ symbol: symbol.toUpperCase(), range, candles, performance, source, smc });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/stocks/:symbol/smc', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const range = req.query.range || '1Y';
+    const { candles, source } = await getCandles(symbol, range);
+    const smc = analyzeSmartMoneyConcepts(candles);
+    res.json({ symbol, range, source, smc });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

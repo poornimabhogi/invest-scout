@@ -27,22 +27,39 @@ export function computeSMA(closes, period) {
   return slice.reduce((a, b) => a + b, 0) / period;
 }
 
-function emaSeries(values, period) {
+/**
+ * MACD (Moving Average Convergence Divergence)
+ * Standard params (TradingView): Fast=12, Slow=26, Signal=9  — written MACD(12, 26, 9)
+ * NOT (12, 9, 26): 9 is the signal smoothing period, not the slow EMA.
+ *
+ * MACD line  = EMA(fast) − EMA(slow)
+ * Signal     = EMA(MACD line, signalPeriod)
+ * Histogram  = MACD line − Signal
+ */
+function emaPine(values, period) {
   const result = [];
   const k = 2 / (period + 1);
   let ema = null;
 
   for (let i = 0; i < values.length; i++) {
-    if (i < period - 1) {
+    const val = values[i];
+    if (val == null || Number.isNaN(val)) {
       result.push(null);
       continue;
     }
     if (ema === null) {
-      ema = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+      if (i < period - 1) {
+        result.push(null);
+        continue;
+      }
+      let sum = 0;
+      for (let j = i - period + 1; j <= i; j++) sum += values[j];
+      ema = sum / period;
+      result.push(ema);
     } else {
-      ema = values[i] * k + ema * (1 - k);
+      ema = k * val + (1 - k) * ema;
+      result.push(ema);
     }
-    result.push(ema);
   }
   return result;
 }
@@ -59,26 +76,13 @@ export function computeMACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeri
     };
   }
 
-  const fast = emaSeries(closes, fastPeriod);
-  const slow = emaSeries(closes, slowPeriod);
+  const fast = emaPine(closes, fastPeriod);
+  const slow = emaPine(closes, slowPeriod);
   const macdLine = closes.map((_, i) =>
     fast[i] != null && slow[i] != null ? fast[i] - slow[i] : null
   );
 
-  const macdValues = [];
-  const macdIndices = [];
-  for (let i = 0; i < macdLine.length; i++) {
-    if (macdLine[i] != null) {
-      macdValues.push(macdLine[i]);
-      macdIndices.push(i);
-    }
-  }
-
-  const signalEma = emaSeries(macdValues, signalPeriod);
-  const signalLine = new Array(closes.length).fill(null);
-  for (let j = 0; j < signalEma.length; j++) {
-    if (signalEma[j] != null) signalLine[macdIndices[j]] = signalEma[j];
-  }
+  const signalLine = emaPine(macdLine, signalPeriod);
 
   const histogram = closes.map((_, i) =>
     macdLine[i] != null && signalLine[i] != null ? macdLine[i] - signalLine[i] : null
@@ -133,6 +137,7 @@ export function computeMACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeri
     trend,
     series,
     signals,
+    params: { fast: fastPeriod, slow: slowPeriod, signal: signalPeriod },
   };
 }
 
@@ -200,7 +205,7 @@ export function scoreNewsSentiment(headline) {
   return score;
 }
 
-export function buildStrategyScore(stock, chartAnalysis, newsItems) {
+export function buildStrategyScore(stock, chartAnalysis, newsItems, smc = null) {
   let score = stock.compositeScore ?? 0;
 
   if (chartAnalysis.rsi < 40) score += 5;
@@ -217,6 +222,12 @@ export function buildStrategyScore(stock, chartAnalysis, newsItems) {
   if (stock.celebrityScore >= 2) score += 4;
   if (chartAnalysis.macd?.trend === 'bullish') score += 3;
   if (chartAnalysis.macd?.trend === 'bearish') score -= 2;
+
+  if (smc?.recommendation === 'buy') score += 4;
+  else if (smc?.recommendation === 'avoid') score -= 3;
+  if (smc?.zone === 'discount') score += 2;
+  if (smc?.trend === 'bullish') score += 2;
+  if (smc?.trend === 'bearish') score -= 2;
 
   let recommendation = 'watch';
   if (score >= 15 && stock.aiRecommendation !== 'sell') recommendation = 'buy';

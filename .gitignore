@@ -30,3 +30,4 @@ server/data/screener-cache.json
 server/data/candle-cache/
 server/data/prediction-journal.json
 server/data/strategy-learnings.json
+server/data/watchlist-settings.json

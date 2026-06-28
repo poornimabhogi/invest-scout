@@ -5,7 +5,7 @@ import { RiskFilter } from '../components/RiskFilter';
 import { CelebrityPanel } from '../components/CelebrityPanel';
 import { StrategyCard } from '@/components/StrategyCard';
 import { Button } from '@/components/ui/button';
-import { ToggleRightIcon, RefreshCwIcon, StarIcon, ZapIcon, UsersIcon, LayoutGridIcon, BrainCircuitIcon, WalletIcon, RadioIcon, SparklesIcon } from 'lucide-react';
+import { ToggleRightIcon, RefreshCwIcon, StarIcon, ZapIcon, UsersIcon, LayoutGridIcon, BrainCircuitIcon, WalletIcon, RadioIcon, SparklesIcon, EyeIcon } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { TradingPreferences } from '@/components/TradingPreferences';
@@ -13,6 +13,7 @@ import { CompoundingSimulator } from '@/components/CompoundingSimulator';
 import { SelfAnalyzePanel } from '@/components/SelfAnalyzePanel';
 import { PaperPortfolioPanel } from '@/components/PaperPortfolio';
 import { MediaRadarPanel } from '@/components/MediaRadarPanel';
+import { WatchlistPanel } from '@/components/WatchlistPanel';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,12 @@ const VIEW_TABS: { id: ScreenerView; label: string; icon: typeof StarIcon; descr
     description: 'Live TV & social mention scanner — catch stocks before momentum builds',
   },
   {
+    id: 'watchlist',
+    label: 'Watchlist',
+    icon: EyeIcon,
+    description: 'Recommended watchlist filtered by % change, volume, MACD, RSI & more',
+  },
+  {
     id: 'all',
     label: 'All Stocks',
     icon: LayoutGridIcon,
@@ -69,7 +76,7 @@ const Index = () => {
   const [isRadarRefreshing, setIsRadarRefreshing] = useState(false);
   const queryClient = useQueryClient();
 
-  const isSpecialView = view === 'strategies' || view === 'media-radar';
+  const isSpecialView = view === 'strategies' || view === 'media-radar' || view === 'watchlist';
 
   const { data: stocks = [], isLoading: stocksLoading, error: stocksError } = useQuery({
     queryKey: ['marketData', view],
@@ -102,9 +109,21 @@ const Index = () => {
   });
 
   const isLoading =
-    view === 'strategies' ? strategiesLoading : view === 'media-radar' ? radarLoading : stocksLoading;
+    view === 'strategies'
+      ? strategiesLoading
+      : view === 'media-radar'
+        ? radarLoading
+        : view === 'watchlist'
+          ? false
+          : stocksLoading;
   const error =
-    view === 'strategies' ? strategiesError : view === 'media-radar' ? radarError : stocksError;
+    view === 'strategies'
+      ? strategiesError
+      : view === 'media-radar'
+        ? radarError
+        : view === 'watchlist'
+          ? null
+          : stocksError;
 
   const { data: celebrities = [] } = useQuery({
     queryKey: ['celebrities'],
@@ -187,7 +206,9 @@ const Index = () => {
             ? 'Analyzing news & chart patterns...'
             : view === 'media-radar'
               ? 'Connecting to TV & social feeds...'
-              : 'Analyzing 300+ stocks...'}
+              : view === 'watchlist'
+                ? 'Loading watchlist filters...'
+                : 'Analyzing 300+ stocks...'}
         </div>
         <p className="text-sm text-trading-secondary">
           {view === 'strategies'
@@ -295,7 +316,7 @@ const Index = () => {
 
         <p className="text-sm text-trading-secondary mb-6">{activeTab.description}</p>
 
-        {view !== 'strategies' && view !== 'media-radar' && (
+        {view !== 'strategies' && view !== 'media-radar' && view !== 'watchlist' && (
           <div className="mb-8">
             <RiskFilter
             selectedRisk={selectedRisk}
@@ -313,7 +334,11 @@ const Index = () => {
         )}
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {view === 'media-radar' && mediaRadar ? (
+          {view === 'watchlist' ? (
+            <div className="col-span-full">
+              <WatchlistPanel />
+            </div>
+          ) : view === 'media-radar' && mediaRadar ? (
             <div className="col-span-full">
               <MediaRadarPanel
                 data={mediaRadar}

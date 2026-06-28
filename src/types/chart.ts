@@ -1,3 +1,5 @@
+import { SmartMoneyAnalysis } from '@/types/smc';
+
 export type ChartRange = '1D' | '1W' | '1M' | '3M' | '1Y' | '5Y' | 'MAX';
 
 export interface Candle {
@@ -48,6 +50,10 @@ export interface StrategyOpportunity {
   newsScore: number;
   recentNews: NewsItem[];
   rationale: string;
+  smcScore?: number;
+  smcRecommendation?: 'buy' | 'watch' | 'avoid';
+  smcTrend?: string;
+  smcZone?: string;
 }
 
 export interface StockDetail {
@@ -70,5 +76,6 @@ export interface StockDetail {
     recommendation: string;
     rationale: string;
   };
+  smc?: SmartMoneyAnalysis;
   dataSource: string;
 }

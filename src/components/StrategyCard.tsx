@@ -31,6 +31,11 @@ export function StrategyCard({ strategy }: StrategyCardProps) {
               <RecIcon size={12} className="mr-1" />
               {rec.label}
             </Badge>
+            {strategy.smcRecommendation === 'buy' && (
+              <Badge className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
+                SMC Buy · {strategy.smcScore}
+              </Badge>
+            )}
           </div>
           <p className="text-sm text-muted-foreground">{strategy.name}</p>
         </div>

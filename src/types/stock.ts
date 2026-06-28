@@ -2,7 +2,7 @@ export type RiskLevel = 'low' | 'medium' | 'high';
 export type MarketType = 'NASDAQ' | 'NYSE' | 'OTHER';
 export type AIRecommendation = 'buy' | 'sell' | 'hold';
 export type MomentumTier = 'strong' | 'building' | 'neutral' | 'weak';
-export type ScreenerView = 'top-picks' | 'momentum' | 'celebrity' | 'strategies' | 'media-radar' | 'all';
+export type ScreenerView = 'top-picks' | 'momentum' | 'celebrity' | 'strategies' | 'media-radar' | 'watchlist' | 'all';
 
 export interface CelebrityHolder {
   id: string;

@@ -5,11 +5,11 @@ import { LineChartIcon } from 'lucide-react';
 const INDICATORS = [
   {
     name: 'MACD',
-    tradingView: 'Moving Average Convergence Divergence',
+    tradingView: 'Fast 12 · Slow 26 · Signal 9 (not 12, 9, 26)',
     usedHere: true,
-    signal: 'Blue line crosses orange signal line → momentum shift',
-    read: 'Histogram above zero = bullish pressure. Bearish crossover often precedes pullbacks.',
-    tvTip: 'TradingView: Indicators → MACD (12, 26, close, 9). Watch zero-line crosses on daily charts.',
+    signal: 'Blue MACD line crosses orange signal line → momentum shift',
+    read: 'MACD line = EMA(12) − EMA(26). Signal = EMA(9) of that line. Histogram = MACD − Signal. The middle number 9 is signal smoothing — the slow EMA is 26.',
+    tvTip: 'TradingView: MACD indicator → Fast Length 12, Slow Length 26, Signal Smoothing 9. Source = close.',
   },
   {
     name: 'RSI',

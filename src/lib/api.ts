@@ -12,9 +12,11 @@ import {
   StrategyOpportunity,
 } from '@/types/chart';
 import { TradingPreferences, TradingRiskLevel } from '@/types/trading';
+import { SmartMoneyAnalysis } from '@/types/smc';
 import { PriceForecast, BacktestSummary, CompoundSimulation, SelfAnalyzeReport, SelfAnalyzeState } from '@/types/forecast';
 import { PaperPortfolio } from '@/types/paper';
 import { MediaRadarResponse } from '@/types/media';
+import { WatchlistResponse, WatchlistSettingsUpdate } from '@/types/watchlist';
 
 const API_BASE = '/api';
 
@@ -56,7 +58,7 @@ export const api = {
   getCandles(
     symbol: string,
     range: ChartRange = '1Y'
-  ): Promise<{ candles: Candle[]; performance: PerformanceStats; source: string }> {
+  ): Promise<{ candles: Candle[]; performance: PerformanceStats; source: string; smc?: SmartMoneyAnalysis }> {
     return request(`/stocks/${symbol}/candles?range=${range}`);
   },
 
@@ -154,5 +156,28 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ includeSimulation }),
     });
+  },
+
+  getWatchlist(): Promise<WatchlistResponse> {
+    return request<WatchlistResponse>('/watchlist');
+  },
+
+  updateWatchlistSettings(settings: WatchlistSettingsUpdate): Promise<WatchlistResponse> {
+    return request<WatchlistResponse>('/watchlist/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
+  },
+
+  pinWatchlistSymbol(symbol: string): Promise<WatchlistResponse> {
+    return request<WatchlistResponse>(`/watchlist/pin/${symbol}`, { method: 'POST' });
+  },
+
+  unpinWatchlistSymbol(symbol: string): Promise<WatchlistResponse> {
+    return request<WatchlistResponse>(`/watchlist/pin/${symbol}`, { method: 'DELETE' });
+  },
+
+  excludeWatchlistSymbol(symbol: string): Promise<WatchlistResponse> {
+    return request<WatchlistResponse>(`/watchlist/exclude/${symbol}`, { method: 'POST' });
   },
 };

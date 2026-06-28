@@ -5,16 +5,27 @@ import {
   CandlestickSeries,
   HistogramSeries,
   CrosshairMode,
+  UTCTimestamp,
+  SeriesMarker,
+  IPriceLine,
+  createSeriesMarkers,
 } from 'lightweight-charts';
 import { Candle } from '@/types/chart';
+import { SmartMoneyAnalysis } from '@/types/smc';
 
 interface CandlestickChartProps {
   candles: Candle[];
   height?: number;
   showVolume?: boolean;
+  smc?: SmartMoneyAnalysis | null;
 }
 
-export function CandlestickChart({ candles, height = 400, showVolume = true }: CandlestickChartProps) {
+export function CandlestickChart({
+  candles,
+  height = 400,
+  showVolume = true,
+  smc,
+}: CandlestickChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,13 +57,44 @@ export function CandlestickChart({ candles, height = 400, showVolume = true }: C
 
     candleSeries.setData(
       candles.map((c) => ({
-        time: c.time as unknown as import('lightweight-charts').UTCTimestamp,
+        time: c.time as UTCTimestamp,
         open: c.open,
         high: c.high,
         low: c.low,
         close: c.close,
       }))
     );
+
+    const priceLines: IPriceLine[] = [];
+    let markersPlugin: ReturnType<typeof createSeriesMarkers> | null = null;
+    if (smc?.overlay) {
+      const candleTimes = new Set(candles.map((c) => c.time));
+      const markers: SeriesMarker<UTCTimestamp>[] = smc.overlay.markers
+        .filter((m) => candleTimes.has(m.time))
+        .map((m) => ({
+          time: m.time as UTCTimestamp,
+          position: m.position,
+          color: m.color,
+          shape: m.shape,
+          text: m.text,
+        }));
+      if (markers.length) {
+        markersPlugin = createSeriesMarkers(candleSeries, markers);
+      }
+
+      for (const line of smc.overlay.priceLines) {
+        priceLines.push(
+          candleSeries.createPriceLine({
+            price: line.price,
+            color: line.color,
+            lineWidth: 1,
+            lineStyle: 2,
+            axisLabelVisible: !!line.title,
+            title: line.title,
+          })
+        );
+      }
+    }
 
     if (showVolume) {
       const volumeSeries = chart.addSeries(HistogramSeries, {
@@ -63,7 +105,7 @@ export function CandlestickChart({ candles, height = 400, showVolume = true }: C
       chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 } });
       volumeSeries.setData(
         candles.map((c) => ({
-          time: c.time as unknown as import('lightweight-charts').UTCTimestamp,
+          time: c.time as UTCTimestamp,
           value: c.volume,
           color: c.close >= c.open ? '#86efac88' : '#fca5a588',
         }))
@@ -80,10 +122,14 @@ export function CandlestickChart({ candles, height = 400, showVolume = true }: C
     observer.observe(containerRef.current);
 
     return () => {
+      markersPlugin?.detach?.();
+      for (const pl of priceLines) {
+        candleSeries.removePriceLine(pl);
+      }
       observer.disconnect();
       chart.remove();
     };
-  }, [candles, height, showVolume]);
+  }, [candles, height, showVolume, smc]);
 
   if (!candles.length) {
     return (
