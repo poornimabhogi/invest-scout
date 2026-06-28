@@ -16,6 +16,14 @@ export interface PerformanceStats {
   fiveYear: number;
 }
 
+export interface MacdAnalysis {
+  macd: number | null;
+  signal: number | null;
+  histogram: number | null;
+  trend: string;
+  signals: string[];
+}
+
 export interface NewsItem {
   headline: string;
   summary: string;
@@ -54,6 +62,7 @@ export interface StockDetail {
     sma20: number | null;
     sma50: number | null;
     sma200: number | null;
+    macd: MacdAnalysis;
   };
   news: NewsItem[];
   strategy: {

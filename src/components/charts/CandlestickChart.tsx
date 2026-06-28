@@ -44,14 +44,15 @@ export function CandlestickChart({ candles, height = 400, showVolume = true }: C
       wickDownColor: '#dc2626',
     });
 
-    const chartData = candles.map((c) => ({
-      time: c.time as unknown as import('lightweight-charts').UTCTimestamp,
-      open: c.open,
-      high: c.high,
-      low: c.low,
-      close: c.close,
-    }));
-    candleSeries.setData(chartData);
+    candleSeries.setData(
+      candles.map((c) => ({
+        time: c.time as unknown as import('lightweight-charts').UTCTimestamp,
+        open: c.open,
+        high: c.high,
+        low: c.low,
+        close: c.close,
+      }))
+    );
 
     if (showVolume) {
       const volumeSeries = chart.addSeries(HistogramSeries, {

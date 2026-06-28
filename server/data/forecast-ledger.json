@@ -1,0 +1,741 @@
+{
+  "entries": [
+    {
+      "id": "4f499163-30b1-4d24-8879-219838f0cf55",
+      "recordedAt": "2026-06-28T00:22:14.592Z",
+      "targetDate": "2026-06-30",
+      "minConfidence": 70,
+      "predictions": [
+        {
+          "symbol": "HUT",
+          "currentPrice": 123.02,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 122.67,
+          "lowEstimate": 113.95,
+          "highEstimate": 131.39,
+          "expectedChangePct": -0.29,
+          "direction": "down",
+          "confidence": 95,
+          "atr": 10.9,
+          "rsi": 58.9,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 22,
+            "winRate": 59.1,
+            "avgWinPct": 7,
+            "avgLossPct": -4.68,
+            "expectancyPct": 2.22,
+            "trades": [
+              {
+                "entry": 98.45999908447266,
+                "exit": 102.19000244140625,
+                "returnPct": 3.788343887484174,
+                "win": true
+              },
+              {
+                "entry": 105.9000015258789,
+                "exit": 112.54000091552734,
+                "returnPct": 6.270065433403996,
+                "win": true
+              },
+              {
+                "entry": 117.63999938964844,
+                "exit": 124.23999786376953,
+                "returnPct": 5.610335352230417,
+                "win": true
+              },
+              {
+                "entry": 127.76000213623047,
+                "exit": 112.23999786376953,
+                "returnPct": -12.147780223040353,
+                "win": false
+              },
+              {
+                "entry": 118.86000061035156,
+                "exit": 120.18000030517578,
+                "returnPct": 1.110549964702978,
+                "win": true
+              },
+              {
+                "entry": 120.18000030517578,
+                "exit": 121.4800033569336,
+                "returnPct": 1.0817133037582671,
+                "win": true
+              },
+              {
+                "entry": 121.4800033569336,
+                "exit": 118.87999725341797,
+                "returnPct": -2.1402749684458473,
+                "win": false
+              },
+              {
+                "entry": 118.87999725341797,
+                "exit": 124.44000244140625,
+                "returnPct": 4.676989667265847,
+                "win": true
+              },
+              {
+                "entry": 124.44000244140625,
+                "exit": 121.04000091552734,
+                "returnPct": -2.7322416097507145,
+                "win": false
+              },
+              {
+                "entry": 121.04000091552734,
+                "exit": 120.51000213623047,
+                "returnPct": -0.4378707661005027,
+                "win": false
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.455Z"
+        },
+        {
+          "symbol": "INTC",
+          "currentPrice": 128.32,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 127.44,
+          "lowEstimate": 118.68,
+          "highEstimate": 136.2,
+          "expectedChangePct": -0.69,
+          "direction": "down",
+          "confidence": 95,
+          "atr": 10.95,
+          "rsi": 67.2,
+          "macdTrend": "bullish",
+          "backtest": {
+            "sampleSize": 26,
+            "winRate": 50,
+            "avgWinPct": 4.42,
+            "avgLossPct": -3.62,
+            "expectancyPct": 0.4,
+            "trades": [
+              {
+                "entry": 116.95999908447266,
+                "exit": 124.56999969482422,
+                "returnPct": 6.50649852079372,
+                "win": true
+              },
+              {
+                "entry": 124.56999969482422,
+                "exit": 127.86000061035156,
+                "returnPct": 2.641086074967728,
+                "win": true
+              },
+              {
+                "entry": 127.86000061035156,
+                "exit": 117.05000305175781,
+                "returnPct": -8.454557724848447,
+                "win": false
+              },
+              {
+                "entry": 117.05000305175781,
+                "exit": 121.0999984741211,
+                "returnPct": 3.460055802452591,
+                "win": true
+              },
+              {
+                "entry": 121.0999984741211,
+                "exit": 133.99000549316406,
+                "returnPct": 10.644101718793618,
+                "win": true
+              },
+              {
+                "entry": 133.99000549316406,
+                "exit": 140.94000244140625,
+                "returnPct": 5.186951760067481,
+                "win": true
+              },
+              {
+                "entry": 140.94000244140625,
+                "exit": 132.27999877929688,
+                "returnPct": -6.1444611267902065,
+                "win": false
+              },
+              {
+                "entry": 132.27999877929688,
+                "exit": 131.64999389648438,
+                "returnPct": -0.4762661692064529,
+                "win": false
+              },
+              {
+                "entry": 131.64999389648438,
+                "exit": 132.8699951171875,
+                "returnPct": 0.9267005524226647,
+                "win": true
+              },
+              {
+                "entry": 132.8699951171875,
+                "exit": 128.32000732421875,
+                "returnPct": -3.4243907279109873,
+                "win": false
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.457Z"
+        },
+        {
+          "symbol": "BITF",
+          "currentPrice": 366.71,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 361.12,
+          "lowEstimate": 356.86,
+          "highEstimate": 365.38,
+          "expectedChangePct": -1.52,
+          "direction": "down",
+          "confidence": 95,
+          "atr": 5.32,
+          "rsi": 0,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 0,
+            "winRate": 0,
+            "avgWinPct": 0,
+            "avgLossPct": 0,
+            "expectancyPct": 0,
+            "trades": []
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "MACD bearish — downtrend pressure",
+          "recordedAt": "2026-06-28T00:22:14.574Z"
+        },
+        {
+          "symbol": "GOOGL",
+          "currentPrice": 337.39,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 332.3,
+          "lowEstimate": 322.15,
+          "highEstimate": 342.46,
+          "expectedChangePct": -1.51,
+          "direction": "down",
+          "confidence": 80,
+          "atr": 12.69,
+          "rsi": 29.3,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 5,
+            "winRate": 80,
+            "avgWinPct": 2.29,
+            "avgLossPct": -0.39,
+            "expectancyPct": 1.75,
+            "trades": [
+              {
+                "entry": 305.4599914550781,
+                "exit": 317.32000732421875,
+                "returnPct": 3.882674065642667,
+                "win": true
+              },
+              {
+                "entry": 317.32000732421875,
+                "exit": 318.489990234375,
+                "returnPct": 0.3687075769416679,
+                "win": true
+              },
+              {
+                "entry": 318.489990234375,
+                "exit": 317.239990234375,
+                "returnPct": -0.3924770128819847,
+                "win": false
+              },
+              {
+                "entry": 317.239990234375,
+                "exit": 321.30999755859375,
+                "returnPct": 1.2829427088343601,
+                "win": true
+              },
+              {
+                "entry": 321.30999755859375,
+                "exit": 332.9100036621094,
+                "returnPct": 3.61022258618027,
+                "win": true
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "MACD bearish — downtrend pressure",
+          "recordedAt": "2026-06-28T00:22:14.574Z"
+        },
+        {
+          "symbol": "BRK-B",
+          "currentPrice": 498.66,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 501.05,
+          "lowEstimate": 495.34,
+          "highEstimate": 506.77,
+          "expectedChangePct": 0.48,
+          "direction": "up",
+          "confidence": 95,
+          "atr": 7.14,
+          "rsi": 60.8,
+          "macdTrend": "bullish",
+          "backtest": {
+            "sampleSize": 34,
+            "winRate": 41.2,
+            "avgWinPct": 0.73,
+            "avgLossPct": -0.73,
+            "expectancyPct": -0.13,
+            "trades": [
+              {
+                "entry": 487,
+                "exit": 487.7699890136719,
+                "returnPct": 0.158108627037346,
+                "win": true
+              },
+              {
+                "entry": 487.7699890136719,
+                "exit": 483.67999267578125,
+                "returnPct": -0.8385092215618015,
+                "win": false
+              },
+              {
+                "entry": 483.67999267578125,
+                "exit": 485.7900085449219,
+                "returnPct": 0.43624212311692695,
+                "win": true
+              },
+              {
+                "entry": 485.7900085449219,
+                "exit": 489.25,
+                "returnPct": 0.7122401437283109,
+                "win": true
+              },
+              {
+                "entry": 489.25,
+                "exit": 495.5199890136719,
+                "returnPct": 1.2815511525134133,
+                "win": true
+              },
+              {
+                "entry": 495.5199890136719,
+                "exit": 494.95001220703125,
+                "returnPct": -0.11502599678676108,
+                "win": false
+              },
+              {
+                "entry": 494.95001220703125,
+                "exit": 491.2799987792969,
+                "returnPct": -0.7414917339570153,
+                "win": false
+              },
+              {
+                "entry": 491.2799987792969,
+                "exit": 489.4599914550781,
+                "returnPct": -0.37046232876180496,
+                "win": false
+              },
+              {
+                "entry": 489.4599914550781,
+                "exit": 488.69000244140625,
+                "returnPct": -0.15731398420999307,
+                "win": false
+              },
+              {
+                "entry": 487.80999755859375,
+                "exit": 498.6600036621094,
+                "returnPct": 2.224227907959669,
+                "win": true
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "MACD bullish — uptrend momentum",
+          "recordedAt": "2026-06-28T00:22:14.577Z"
+        },
+        {
+          "symbol": "AMD",
+          "currentPrice": 521.58,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 518.22,
+          "lowEstimate": 489.35,
+          "highEstimate": 547.08,
+          "expectedChangePct": -0.64,
+          "direction": "down",
+          "confidence": 95,
+          "atr": 36.08,
+          "rsi": 59.3,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 18,
+            "winRate": 66.7,
+            "avgWinPct": 3.23,
+            "avgLossPct": -5.77,
+            "expectancyPct": 0.23,
+            "trades": [
+              {
+                "entry": 510.1300048828125,
+                "exit": 521.5399780273438,
+                "returnPct": 2.236679480783013,
+                "win": true
+              },
+              {
+                "entry": 523.2000122070312,
+                "exit": 466.3800048828125,
+                "returnPct": -10.860092889626111,
+                "win": false
+              },
+              {
+                "entry": 511.57000732421875,
+                "exit": 547.260009765625,
+                "returnPct": 6.976562724637398,
+                "win": true
+              },
+              {
+                "entry": 547.260009765625,
+                "exit": 507.2900085449219,
+                "returnPct": -7.30365831733641,
+                "win": false
+              },
+              {
+                "entry": 507.2900085449219,
+                "exit": 512.47998046875,
+                "returnPct": 1.0230778916215415,
+                "win": true
+              },
+              {
+                "entry": 512.47998046875,
+                "exit": 537.3699951171875,
+                "returnPct": 4.856777941973724,
+                "win": true
+              },
+              {
+                "entry": 537.3699951171875,
+                "exit": 551.6300048828125,
+                "returnPct": 2.6536669138951896,
+                "win": true
+              },
+              {
+                "entry": 551.6300048828125,
+                "exit": 519.8499755859375,
+                "returnPct": -5.761113249020293,
+                "win": false
+              },
+              {
+                "entry": 519.739990234375,
+                "exit": 532.5700073242188,
+                "returnPct": 2.4685452978244173,
+                "win": true
+              },
+              {
+                "entry": 532.5700073242188,
+                "exit": 521.5800170898438,
+                "returnPct": -2.0635766346647637,
+                "win": false
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.578Z"
+        },
+        {
+          "symbol": "SNOW",
+          "currentPrice": 248.96,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 252.41,
+          "lowEstimate": 241.07,
+          "highEstimate": 263.75,
+          "expectedChangePct": 1.39,
+          "direction": "up",
+          "confidence": 75,
+          "atr": 14.17,
+          "rsi": 58.3,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 3,
+            "winRate": 33.3,
+            "avgWinPct": 4.3,
+            "avgLossPct": -0.94,
+            "expectancyPct": 0.81,
+            "trades": [
+              {
+                "entry": 153.72000122070312,
+                "exit": 152.4499969482422,
+                "returnPct": -0.8261802383396627,
+                "win": false
+              },
+              {
+                "entry": 152.3699951171875,
+                "exit": 150.75999450683594,
+                "returnPct": -1.0566388803210984,
+                "win": false
+              },
+              {
+                "entry": 157.47000122070312,
+                "exit": 164.24000549316406,
+                "returnPct": 4.299234279532641,
+                "win": true
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "MACD bearish — downtrend pressure",
+          "recordedAt": "2026-06-28T00:22:14.580Z"
+        },
+        {
+          "symbol": "PANW",
+          "currentPrice": 304.2,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 306.44,
+          "lowEstimate": 297.12,
+          "highEstimate": 315.77,
+          "expectedChangePct": 0.74,
+          "direction": "up",
+          "confidence": 76,
+          "atr": 11.66,
+          "rsi": 70.5,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 26,
+            "winRate": 57.7,
+            "avgWinPct": 1.94,
+            "avgLossPct": -2.3,
+            "expectancyPct": 0.15,
+            "trades": [
+              {
+                "entry": 279.5299987792969,
+                "exit": 279.6199951171875,
+                "returnPct": 0.03219559198785018,
+                "win": true
+              },
+              {
+                "entry": 279.6199951171875,
+                "exit": 284.5400085449219,
+                "returnPct": 1.7595356246510268,
+                "win": true
+              },
+              {
+                "entry": 284.5400085449219,
+                "exit": 279.8999938964844,
+                "returnPct": -1.6307072851250568,
+                "win": false
+              },
+              {
+                "entry": 279.8999938964844,
+                "exit": 282.1300048828125,
+                "returnPct": 0.7967170542893443,
+                "win": true
+              },
+              {
+                "entry": 282.1300048828125,
+                "exit": 287.7799987792969,
+                "returnPct": 2.002620706305661,
+                "win": true
+              },
+              {
+                "entry": 287.7799987792969,
+                "exit": 286.3999938964844,
+                "returnPct": -0.4795346753305284,
+                "win": false
+              },
+              {
+                "entry": 286.3999938964844,
+                "exit": 290.9200134277344,
+                "returnPct": 1.5782191437070012,
+                "win": true
+              },
+              {
+                "entry": 290.9200134277344,
+                "exit": 285.260009765625,
+                "returnPct": -1.945553210802165,
+                "win": false
+              },
+              {
+                "entry": 285.260009765625,
+                "exit": 293.0899963378906,
+                "returnPct": 2.744859533132208,
+                "win": true
+              },
+              {
+                "entry": 293.0899963378906,
+                "exit": 304.20001220703125,
+                "returnPct": 3.7906499737140034,
+                "win": true
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.583Z"
+        },
+        {
+          "symbol": "MRNA",
+          "currentPrice": 67.27,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 67.96,
+          "lowEstimate": 64.07,
+          "highEstimate": 71.84,
+          "expectedChangePct": 1.02,
+          "direction": "up",
+          "confidence": 94,
+          "atr": 4.86,
+          "rsi": 78.3,
+          "macdTrend": "bullish",
+          "backtest": {
+            "sampleSize": 24,
+            "winRate": 62.5,
+            "avgWinPct": 3.13,
+            "avgLossPct": -3.6,
+            "expectancyPct": 0.6,
+            "trades": [
+              {
+                "entry": 54.22999954223633,
+                "exit": 55.599998474121094,
+                "returnPct": 2.5262750201901807,
+                "win": true
+              },
+              {
+                "entry": 54.349998474121094,
+                "exit": 52.880001068115234,
+                "returnPct": -2.7046871155034213,
+                "win": false
+              },
+              {
+                "entry": 52.880001068115234,
+                "exit": 53.27000045776367,
+                "returnPct": 0.7375177416242401,
+                "win": true
+              },
+              {
+                "entry": 53.27000045776367,
+                "exit": 50.41999816894531,
+                "returnPct": -5.350107498268277,
+                "win": false
+              },
+              {
+                "entry": 49.060001373291016,
+                "exit": 51.59000015258789,
+                "returnPct": 5.156948040107972,
+                "win": true
+              },
+              {
+                "entry": 51.59000015258789,
+                "exit": 47.439998626708984,
+                "returnPct": -8.044197545269306,
+                "win": false
+              },
+              {
+                "entry": 49.90999984741211,
+                "exit": 52.130001068115234,
+                "returnPct": 4.448008870948202,
+                "win": true
+              },
+              {
+                "entry": 52.130001068115234,
+                "exit": 55.400001525878906,
+                "returnPct": 6.27278033908143,
+                "win": true
+              },
+              {
+                "entry": 55.400001525878906,
+                "exit": 61.79999923706055,
+                "returnPct": 11.552342120770557,
+                "win": true
+              },
+              {
+                "entry": 60.41999816894531,
+                "exit": 59.75,
+                "returnPct": -1.108901339374218,
+                "win": false
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.586Z"
+        },
+        {
+          "symbol": "ARM",
+          "currentPrice": 334.27,
+          "forecastDate": "Mon, Jun 29",
+          "pointEstimate": 316.3,
+          "lowEstimate": 285.44,
+          "highEstimate": 347.15,
+          "expectedChangePct": -5.38,
+          "direction": "down",
+          "confidence": 95,
+          "atr": 38.56,
+          "rsi": 48.6,
+          "macdTrend": "bearish",
+          "backtest": {
+            "sampleSize": 36,
+            "winRate": 66.7,
+            "avgWinPct": 5.99,
+            "avgLossPct": -3.56,
+            "expectancyPct": 2.81,
+            "trades": [
+              {
+                "entry": 215.1199951171875,
+                "exit": 223.14999389648438,
+                "returnPct": 3.732799814783605,
+                "win": true
+              },
+              {
+                "entry": 223.14999389648438,
+                "exit": 256.7300109863281,
+                "returnPct": 15.048181944123632,
+                "win": true
+              },
+              {
+                "entry": 256.7300109863281,
+                "exit": 298.2300109863281,
+                "returnPct": 16.164841749728293,
+                "win": true
+              },
+              {
+                "entry": 302.7099914550781,
+                "exit": 335.2699890136719,
+                "returnPct": 10.756168768028795,
+                "win": true
+              },
+              {
+                "entry": 380.80999755859375,
+                "exit": 412.54998779296875,
+                "returnPct": 8.334862644852514,
+                "win": true
+              },
+              {
+                "entry": 412.54998779296875,
+                "exit": 396.3399963378906,
+                "returnPct": -3.929218745538501,
+                "win": false
+              },
+              {
+                "entry": 396.3399963378906,
+                "exit": 418.8800048828125,
+                "returnPct": 5.687038591408248,
+                "win": true
+              },
+              {
+                "entry": 418.8800048828125,
+                "exit": 439.4599914550781,
+                "returnPct": 4.913098341378974,
+                "win": true
+              },
+              {
+                "entry": 439.4599914550781,
+                "exit": 407.7200012207031,
+                "returnPct": -7.222498259575804,
+                "win": false
+              },
+              {
+                "entry": 407.7200012207031,
+                "exit": 366.3900146484375,
+                "returnPct": -10.136855304749513,
+                "win": false
+              }
+            ]
+          },
+          "disclaimer": "Statistical estimate only — not financial advice. Past win rates do not guarantee future results.",
+          "chartPattern": "Long-term uptrend",
+          "recordedAt": "2026-06-28T00:22:14.586Z"
+        }
+      ],
+      "resolved": false,
+      "results": null
+    }
+  ]
+}

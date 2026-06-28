@@ -48,3 +48,45 @@ export interface CompoundSimulation {
   };
   disclaimer: string;
 }
+
+export interface SelfAnalyzeWrongItem {
+  symbol: string;
+  targetDate: string;
+  confidence: number;
+  predicted: number;
+  actual: number;
+  outcome: string;
+  diagnosis: string[];
+  simulated?: boolean;
+}
+
+export interface SelfAnalyzeReport {
+  generatedAt: string;
+  summary: string;
+  stats: {
+    graded: number;
+    correct: number;
+    directionAccuracy: number;
+    rangeAccuracy: number;
+    resolvedLive: number;
+    simulatedHistorical: number;
+  };
+  whatWentWrong: SelfAnalyzeWrongItem[];
+  strategyAdjustments: string[];
+  updatedWeights: Record<string, number>;
+  cumulativeStats: Record<string, number>;
+  newPredictionsRecorded: number;
+  nextTargetDate: string;
+}
+
+export interface SelfAnalyzeState {
+  report: SelfAnalyzeReport | null;
+  pendingCount: number;
+  learnings: {
+    weights: Record<string, number>;
+    lessons: { date: string; text: string; applied: boolean }[];
+    stats: Record<string, number>;
+    lastUpdated: string | null;
+  };
+  recentPredictions: unknown[];
+}

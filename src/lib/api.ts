@@ -12,8 +12,9 @@ import {
   StrategyOpportunity,
 } from '@/types/chart';
 import { TradingPreferences, TradingRiskLevel } from '@/types/trading';
-import { PriceForecast, BacktestSummary, CompoundSimulation } from '@/types/forecast';
+import { PriceForecast, BacktestSummary, CompoundSimulation, SelfAnalyzeReport, SelfAnalyzeState } from '@/types/forecast';
 import { PaperPortfolio } from '@/types/paper';
+import { MediaRadarResponse } from '@/types/media';
 
 const API_BASE = '/api';
 
@@ -133,6 +134,25 @@ export const api = {
     return request<PaperPortfolio>('/paper/reset', {
       method: 'POST',
       body: JSON.stringify({ startingCash }),
+    });
+  },
+
+  getMediaRadar(): Promise<MediaRadarResponse> {
+    return request<MediaRadarResponse>('/media-radar');
+  },
+
+  pollMediaRadar(): Promise<MediaRadarResponse> {
+    return request<MediaRadarResponse>('/media-radar/poll', { method: 'POST' });
+  },
+
+  getSelfAnalyzeState(): Promise<SelfAnalyzeState> {
+    return request<SelfAnalyzeState>('/self-analyze');
+  },
+
+  runSelfAnalyze(includeSimulation = true): Promise<SelfAnalyzeReport> {
+    return request<SelfAnalyzeReport>('/self-analyze/run', {
+      method: 'POST',
+      body: JSON.stringify({ includeSimulation }),
     });
   },
 };

@@ -1,0 +1,4626 @@
+{
+  "version": 1,
+  "totalRuns": 2,
+  "overallDirectionAccuracy": 50.4,
+  "overallRangeAccuracy": 71.9,
+  "adjustments": {
+    "rsiOverboughtPenalty": 0.003,
+    "rsiOversoldBoost": 0.003,
+    "momentumDriftScale": 1,
+    "macdBullishBoost": 0.001,
+    "macdBearishPenalty": 0.001,
+    "confidenceCalibration": 0,
+    "highConfidenceThreshold": 70
+  },
+  "lessons": [],
+  "reports": [
+    {
+      "mode": "walk_forward",
+      "periodDays": 30,
+      "sampleSize": 135,
+      "directionAccuracy": 50.4,
+      "rangeAccuracy": 71.9,
+      "results": [
+        {
+          "symbol": "AMD",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 450.18,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.7,
+          "actualChangePct": 0.94,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 458.03,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 424.1,
+          "actualChangePct": -5.69,
+          "priceErrorPct": -7.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.69%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $424.10 outside range $436.16–$479.9"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 418.7,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 420.99,
+          "actualChangePct": -0.73,
+          "priceErrorPct": 0.5,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 414.34,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 414.05,
+          "actualChangePct": -1.65,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 407.21,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 447.58,
+          "actualChangePct": 8.1,
+          "priceErrorPct": 9.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 8.10%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $447.58 outside range $384–$430.43"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 448,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.59,
+          "actualChangePct": 0.45,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 449.57,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 467.51,
+          "actualChangePct": 3.99,
+          "priceErrorPct": 4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved 3.99%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 475.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 503.89,
+          "actualChangePct": 7.78,
+          "priceErrorPct": 6.1,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $503.89 outside range $450.34–$499.93"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 521.69,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 495.54,
+          "actualChangePct": -1.66,
+          "priceErrorPct": -5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.66%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $495.54 outside range $495.67–$547.71"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 514.53,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 518.09,
+          "actualChangePct": 4.55,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 532.71,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 516.1,
+          "actualChangePct": -0.38,
+          "priceErrorPct": -3.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -0.38%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 531.35,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 510.13,
+          "actualChangePct": -1.16,
+          "priceErrorPct": -4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.16%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 519.96,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 521.54,
+          "actualChangePct": 2.24,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 525.81,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 542.52,
+          "actualChangePct": 4.02,
+          "priceErrorPct": 3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 551.49,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 523.2,
+          "actualChangePct": -3.56,
+          "priceErrorPct": -5.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.56%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $523.20 outside range $529.42–$573.57"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 524.93,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 466.38,
+          "actualChangePct": -10.86,
+          "priceErrorPct": -11.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -10.86%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $466.38 outside range $501.43–$548.44"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 457.22,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 490.33,
+          "actualChangePct": 5.14,
+          "priceErrorPct": 7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 5.14%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $490.33 outside range $431.84–$482.61"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 486.87,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 475.51,
+          "actualChangePct": -3.02,
+          "priceErrorPct": -2.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 467.15,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 452.4,
+          "actualChangePct": -4.86,
+          "priceErrorPct": -3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 436.41,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 488.45,
+          "actualChangePct": 7.97,
+          "priceErrorPct": 11.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 7.97%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $488.45 outside range $409.5–$463.32"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 482.45,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 511.57,
+          "actualChangePct": 4.73,
+          "priceErrorPct": 6,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 4.73%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $511.57 outside range $454.49–$510.42"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 521.24,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 547.26,
+          "actualChangePct": 6.98,
+          "priceErrorPct": 5,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 559.62,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 507.29,
+          "actualChangePct": -7.3,
+          "priceErrorPct": -9.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -7.30%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $507.29 outside range $531.16–$588.09"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 514.41,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 512.48,
+          "actualChangePct": 1.02,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 525.7,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 537.37,
+          "actualChangePct": 4.86,
+          "priceErrorPct": 2.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 547.89,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 551.63,
+          "actualChangePct": 2.65,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 560.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 519.85,
+          "actualChangePct": -5.76,
+          "priceErrorPct": -7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.76%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $519.85 outside range $530.81–$589.45"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 514.62,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 519.74,
+          "actualChangePct": -0.02,
+          "priceErrorPct": 1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved -0.02%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 522.08,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 532.57,
+          "actualChangePct": 2.47,
+          "priceErrorPct": 2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 536.51,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 521.58,
+          "actualChangePct": -2.06,
+          "priceErrorPct": -2.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.06%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 402.84,
+          "predictedDirection": "flat",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 401.07,
+          "actualChangePct": -0.38,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 400.99,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.78,
+          "actualChangePct": -1.07,
+          "priceErrorPct": -1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.07%"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 395.29,
+          "predictedDirection": "down",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.94,
+          "actualChangePct": 0.04,
+          "priceErrorPct": 0.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.04%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 397.1,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 387.66,
+          "actualChangePct": -2.34,
+          "priceErrorPct": -2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -2.34%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $387.66 outside range $387.79–$406.4"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 387.42,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 388.91,
+          "actualChangePct": 0.32,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 385.85,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 387.66,
+          "actualChangePct": -0.32,
+          "priceErrorPct": 0.5,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 384.66,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 382.97,
+          "actualChangePct": -1.21,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 379.9,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 388.88,
+          "actualChangePct": 1.54,
+          "priceErrorPct": 2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 1.54%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $388.88 outside range $371.99–$387.81"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 386.93,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 388.83,
+          "actualChangePct": -0.01,
+          "priceErrorPct": 0.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved -0.01%"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 388.69,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 390.13,
+          "actualChangePct": 0.33,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 390,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 380.34,
+          "actualChangePct": -2.51,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -2.51%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $380.34 outside range $382.49–$397.51"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 378.55,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 376.37,
+          "actualChangePct": -1.04,
+          "priceErrorPct": -0.6,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 374.72,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 361.85,
+          "actualChangePct": -3.86,
+          "priceErrorPct": -3.4,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $361.85 outside range $367.18–$382.26"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 357.44,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 358.99,
+          "actualChangePct": -0.79,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 354.06,
+          "predictedDirection": "down",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 372.19,
+          "actualChangePct": 3.68,
+          "priceErrorPct": 5.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 3.68%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $372.19 outside range $346.42–$361.7"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 369.57,
+          "predictedDirection": "down",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 368.53,
+          "actualChangePct": -0.98,
+          "priceErrorPct": -0.3,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 367.06,
+          "predictedDirection": "down",
+          "confidence": 71,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 363.31,
+          "actualChangePct": -1.42,
+          "priceErrorPct": -1,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 361.59,
+          "predictedDirection": "down",
+          "confidence": 71,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 364.26,
+          "actualChangePct": 0.26,
+          "priceErrorPct": 0.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.26%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 365.53,
+          "predictedDirection": "up",
+          "confidence": 75,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 356.38,
+          "actualChangePct": -2.16,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.16%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $356.38 outside range $357.57–$373.5"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 356.65,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 357.77,
+          "actualChangePct": 0.39,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 355.69,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 359.68,
+          "actualChangePct": 0.53,
+          "priceErrorPct": 1.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.53%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 358.68,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 369.35,
+          "actualChangePct": 2.69,
+          "priceErrorPct": 3,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 2.69%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $369.35 outside range $350.14–$367.22"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 370.24,
+          "predictedDirection": "up",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 373.25,
+          "actualChangePct": 1.06,
+          "priceErrorPct": 0.8,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 374.75,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 363.79,
+          "actualChangePct": -2.53,
+          "priceErrorPct": -2.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.53%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $363.79 outside range $365.77–$383.72"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 364.98,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 368.03,
+          "actualChangePct": 1.17,
+          "priceErrorPct": 0.8,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 369.8,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 349.68,
+          "actualChangePct": -4.99,
+          "priceErrorPct": -5.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -4.99%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $349.68 outside range $360.62–$378.99"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 347.5,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 346.13,
+          "actualChangePct": -1.02,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 341.41,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 345.29,
+          "actualChangePct": -0.24,
+          "priceErrorPct": 1.1,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 339.69,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 343.71,
+          "actualChangePct": -0.46,
+          "priceErrorPct": 1.2,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 340.59,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 337.39,
+          "actualChangePct": -1.84,
+          "priceErrorPct": -0.9,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 166.63,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 169.55,
+          "actualChangePct": 3.23,
+          "priceErrorPct": 1.8,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 173,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 166.97,
+          "actualChangePct": -1.52,
+          "priceErrorPct": -3.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.52%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 169.78,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 165.54,
+          "actualChangePct": -0.86,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -0.86%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 168.39,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 172.2,
+          "actualChangePct": 4.02,
+          "priceErrorPct": 2.3,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 175.02,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 177.6,
+          "actualChangePct": 3.14,
+          "priceErrorPct": 1.5,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 180.09,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 175.26,
+          "actualChangePct": -1.32,
+          "priceErrorPct": -2.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.32%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 176.12,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 239.2,
+          "actualChangePct": 36.48,
+          "priceErrorPct": 35.8,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $239.20 outside range $169.2–$183.04"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 258.56,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 255.55,
+          "actualChangePct": 6.84,
+          "priceErrorPct": -1.2,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 280.16,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 280.16,
+          "actualChangePct": 9.63,
+          "priceErrorPct": 0,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 310.29,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 261.14,
+          "actualChangePct": -6.79,
+          "priceErrorPct": -15.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -6.79%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $261.14 outside range $298.63–$321.95"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 284.04,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 241.28,
+          "actualChangePct": -7.61,
+          "priceErrorPct": -15.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -7.61%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $241.28 outside range $271.19–$296.89"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 259.4,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 244.18,
+          "actualChangePct": 1.2,
+          "priceErrorPct": -5.9,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $244.18 outside range $245.77–$273.03"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 245.29,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 238.26,
+          "actualChangePct": -2.42,
+          "priceErrorPct": -2.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.42%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 234.93,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.45,
+          "actualChangePct": 0.92,
+          "priceErrorPct": 2.3,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.92%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 232.9,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 239.66,
+          "actualChangePct": -0.33,
+          "priceErrorPct": 2.9,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 235.23,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 239.9,
+          "actualChangePct": 0.1,
+          "priceErrorPct": 2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.10%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            },
+            {
+              "code": "overconfident_drift",
+              "message": "Momentum drift overshot — move was flat"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 239.17,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.39,
+          "actualChangePct": 0.2,
+          "priceErrorPct": 0.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.20%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 239.17,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 232.78,
+          "actualChangePct": -3.17,
+          "priceErrorPct": -2.7,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 231.49,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.78,
+          "actualChangePct": 3.44,
+          "priceErrorPct": 4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 3.44%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 240.66,
+          "predictedDirection": "flat",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 238.32,
+          "actualChangePct": -1.02,
+          "priceErrorPct": -1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.02%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 237.87,
+          "predictedDirection": "flat",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 234.52,
+          "actualChangePct": -1.59,
+          "priceErrorPct": -1.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.59%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 233.28,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 232.29,
+          "actualChangePct": -0.95,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 230.53,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 226.59,
+          "actualChangePct": -2.45,
+          "priceErrorPct": -1.7,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 225.87,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 230.41,
+          "actualChangePct": 1.69,
+          "priceErrorPct": 2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 1.69%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 228.87,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 225.95,
+          "actualChangePct": -1.94,
+          "priceErrorPct": -1.3,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 224.03,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 227.06,
+          "actualChangePct": 0.49,
+          "priceErrorPct": 1.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.49%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 226.08,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 248.96,
+          "actualChangePct": 9.65,
+          "priceErrorPct": 10.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 9.65%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $248.96 outside range $215.6–$236.56"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 237.41,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 238.21,
+          "actualChangePct": 4.57,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 247.12,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 242.83,
+          "actualChangePct": 1.94,
+          "priceErrorPct": -1.7,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 250.05,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 247.55,
+          "actualChangePct": 1.94,
+          "priceErrorPct": -1,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 254.49,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 240.13,
+          "actualChangePct": -3,
+          "priceErrorPct": -5.6,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.00%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $240.13 outside range $246.44–$262.54"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 244.99,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 246.66,
+          "actualChangePct": 2.72,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 250.2,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 252.92,
+          "actualChangePct": 2.54,
+          "priceErrorPct": 1.1,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 255.52,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 260.58,
+          "actualChangePct": 3.03,
+          "priceErrorPct": 2,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 263.83,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 256.75,
+          "actualChangePct": -1.47,
+          "priceErrorPct": -2.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.47%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 258.2,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 248.47,
+          "actualChangePct": -3.22,
+          "priceErrorPct": -3.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.22%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $248.47 outside range $248.61–$267.79"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 249.76,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 257.77,
+          "actualChangePct": 3.74,
+          "priceErrorPct": 3.2,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 259.63,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 281.69,
+          "actualChangePct": 9.28,
+          "priceErrorPct": 8.5,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $281.69 outside range $249.87–$269.4"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 287.52,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 300.48,
+          "actualChangePct": 6.67,
+          "priceErrorPct": 4.5,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $300.48 outside range $277.01–$298.04"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 308.89,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 297.18,
+          "actualChangePct": -1.1,
+          "priceErrorPct": -3.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.10%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $297.18 outside range $297.66–$320.12"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        }
+      ],
+      "whatWentWrong": [
+        {
+          "code": "direction_miss",
+          "count": 67,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Predicted up but price moved -5.69%"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Predicted down but price moved 8.10%"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Predicted flat but price moved 3.99%"
+            }
+          ]
+        },
+        {
+          "code": "range_miss",
+          "count": 38,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Actual $424.10 outside range $436.16–$479.9"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Actual $447.58 outside range $384–$430.43"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Actual $503.89 outside range $450.34–$499.93"
+            }
+          ]
+        },
+        {
+          "code": "macd_conflict",
+          "count": 18,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "code": "rsi_overbought",
+          "count": 15,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "code": "rsi_oversold",
+          "count": 7,
+          "examples": [
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            },
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            },
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "code": "overconfident_drift",
+          "count": 1,
+          "examples": [
+            {
+              "symbol": "SNOW",
+              "message": "Momentum drift overshot — move was flat"
+            }
+          ]
+        }
+      ],
+      "misses": [
+        {
+          "symbol": "AMD",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 458.03,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 424.1,
+          "actualChangePct": -5.69,
+          "priceErrorPct": -7.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.69%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $424.10 outside range $436.16–$479.9"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 407.21,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 447.58,
+          "actualChangePct": 8.1,
+          "priceErrorPct": 9.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 8.10%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $447.58 outside range $384–$430.43"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 449.57,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 467.51,
+          "actualChangePct": 3.99,
+          "priceErrorPct": 4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved 3.99%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 475.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 503.89,
+          "actualChangePct": 7.78,
+          "priceErrorPct": 6.1,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $503.89 outside range $450.34–$499.93"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 521.69,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 495.54,
+          "actualChangePct": -1.66,
+          "priceErrorPct": -5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.66%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $495.54 outside range $495.67–$547.71"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 532.71,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 516.1,
+          "actualChangePct": -0.38,
+          "priceErrorPct": -3.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -0.38%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 531.35,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 510.13,
+          "actualChangePct": -1.16,
+          "priceErrorPct": -4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.16%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 551.49,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 523.2,
+          "actualChangePct": -3.56,
+          "priceErrorPct": -5.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.56%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $523.20 outside range $529.42–$573.57"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 524.93,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 466.38,
+          "actualChangePct": -10.86,
+          "priceErrorPct": -11.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -10.86%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $466.38 outside range $501.43–$548.44"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 457.22,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 490.33,
+          "actualChangePct": 5.14,
+          "priceErrorPct": 7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 5.14%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $490.33 outside range $431.84–$482.61"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 436.41,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 488.45,
+          "actualChangePct": 7.97,
+          "priceErrorPct": 11.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 7.97%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $488.45 outside range $409.5–$463.32"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 482.45,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 511.57,
+          "actualChangePct": 4.73,
+          "priceErrorPct": 6,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 4.73%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $511.57 outside range $454.49–$510.42"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 559.62,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 507.29,
+          "actualChangePct": -7.3,
+          "priceErrorPct": -9.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -7.30%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $507.29 outside range $531.16–$588.09"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 560.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 519.85,
+          "actualChangePct": -5.76,
+          "priceErrorPct": -7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.76%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $519.85 outside range $530.81–$589.45"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 514.62,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 519.74,
+          "actualChangePct": -0.02,
+          "priceErrorPct": 1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved -0.02%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 536.51,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 521.58,
+          "actualChangePct": -2.06,
+          "priceErrorPct": -2.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.06%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 400.99,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.78,
+          "actualChangePct": -1.07,
+          "priceErrorPct": -1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.07%"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 395.29,
+          "predictedDirection": "down",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.94,
+          "actualChangePct": 0.04,
+          "priceErrorPct": 0.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.04%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 397.1,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 387.66,
+          "actualChangePct": -2.34,
+          "priceErrorPct": -2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -2.34%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $387.66 outside range $387.79–$406.4"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 379.9,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 388.88,
+          "actualChangePct": 1.54,
+          "priceErrorPct": 2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 1.54%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $388.88 outside range $371.99–$387.81"
+            }
+          ]
+        }
+      ],
+      "hits": [
+        {
+          "symbol": "AMD",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 450.18,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.7,
+          "actualChangePct": 0.94,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 418.7,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 420.99,
+          "actualChangePct": -0.73,
+          "priceErrorPct": 0.5,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 414.34,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 414.05,
+          "actualChangePct": -1.65,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 448,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.59,
+          "actualChangePct": 0.45,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 514.53,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 518.09,
+          "actualChangePct": 4.55,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 519.96,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 521.54,
+          "actualChangePct": 2.24,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 525.81,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 542.52,
+          "actualChangePct": 4.02,
+          "priceErrorPct": 3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 486.87,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 475.51,
+          "actualChangePct": -3.02,
+          "priceErrorPct": -2.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 467.15,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 452.4,
+          "actualChangePct": -4.86,
+          "priceErrorPct": -3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 521.24,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 547.26,
+          "actualChangePct": 6.98,
+          "priceErrorPct": 5,
+          "errors": []
+        }
+      ],
+      "runAt": "2026-06-28T00:22:14.453Z",
+      "note": "No prior nightly forecasts to grade yet — ran 30-day walk-forward backtest on high-confidence picks instead."
+    },
+    {
+      "mode": "walk_forward",
+      "periodDays": 30,
+      "sampleSize": 135,
+      "directionAccuracy": 50.4,
+      "rangeAccuracy": 71.9,
+      "results": [
+        {
+          "symbol": "AMD",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 450.18,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.7,
+          "actualChangePct": 0.94,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 458.03,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 424.1,
+          "actualChangePct": -5.69,
+          "priceErrorPct": -7.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.69%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $424.10 outside range $436.16–$479.9"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 418.7,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 420.99,
+          "actualChangePct": -0.73,
+          "priceErrorPct": 0.5,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 414.34,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 414.05,
+          "actualChangePct": -1.65,
+          "priceErrorPct": -0.1,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 407.21,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 447.58,
+          "actualChangePct": 8.1,
+          "priceErrorPct": 9.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 8.10%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $447.58 outside range $384–$430.43"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 448,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 449.59,
+          "actualChangePct": 0.45,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 449.57,
+          "predictedDirection": "flat",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 467.51,
+          "actualChangePct": 3.99,
+          "priceErrorPct": 4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved 3.99%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 475.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 503.89,
+          "actualChangePct": 7.78,
+          "priceErrorPct": 6.1,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $503.89 outside range $450.34–$499.93"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 521.69,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 495.54,
+          "actualChangePct": -1.66,
+          "priceErrorPct": -5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.66%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $495.54 outside range $495.67–$547.71"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 514.53,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 518.09,
+          "actualChangePct": 4.55,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 532.71,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 516.1,
+          "actualChangePct": -0.38,
+          "priceErrorPct": -3.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -0.38%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 531.35,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 510.13,
+          "actualChangePct": -1.16,
+          "priceErrorPct": -4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.16%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 519.96,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 521.54,
+          "actualChangePct": 2.24,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 525.81,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 542.52,
+          "actualChangePct": 4.02,
+          "priceErrorPct": 3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 551.49,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 523.2,
+          "actualChangePct": -3.56,
+          "priceErrorPct": -5.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.56%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $523.20 outside range $529.42–$573.57"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 524.93,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 466.38,
+          "actualChangePct": -10.86,
+          "priceErrorPct": -11.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -10.86%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $466.38 outside range $501.43–$548.44"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 457.22,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 490.33,
+          "actualChangePct": 5.14,
+          "priceErrorPct": 7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 5.14%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $490.33 outside range $431.84–$482.61"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 486.87,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 475.51,
+          "actualChangePct": -3.02,
+          "priceErrorPct": -2.3,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 467.15,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 452.4,
+          "actualChangePct": -4.86,
+          "priceErrorPct": -3.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 436.41,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 488.45,
+          "actualChangePct": 7.97,
+          "priceErrorPct": 11.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 7.97%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $488.45 outside range $409.5–$463.32"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 482.45,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 511.57,
+          "actualChangePct": 4.73,
+          "priceErrorPct": 6,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 4.73%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $511.57 outside range $454.49–$510.42"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 521.24,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 547.26,
+          "actualChangePct": 6.98,
+          "priceErrorPct": 5,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 559.62,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 507.29,
+          "actualChangePct": -7.3,
+          "priceErrorPct": -9.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -7.30%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $507.29 outside range $531.16–$588.09"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 514.41,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 512.48,
+          "actualChangePct": 1.02,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 525.7,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 537.37,
+          "actualChangePct": 4.86,
+          "priceErrorPct": 2.2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 547.89,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 551.63,
+          "actualChangePct": 2.65,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 560.13,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 519.85,
+          "actualChangePct": -5.76,
+          "priceErrorPct": -7.2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -5.76%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $519.85 outside range $530.81–$589.45"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 514.62,
+          "predictedDirection": "down",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 519.74,
+          "actualChangePct": -0.02,
+          "priceErrorPct": 1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved -0.02%"
+            }
+          ]
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 522.08,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 532.57,
+          "actualChangePct": 2.47,
+          "priceErrorPct": 2,
+          "errors": []
+        },
+        {
+          "symbol": "AMD",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 536.51,
+          "predictedDirection": "up",
+          "confidence": 95,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 521.58,
+          "actualChangePct": -2.06,
+          "priceErrorPct": -2.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.06%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 402.84,
+          "predictedDirection": "flat",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 401.07,
+          "actualChangePct": -0.38,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 400.99,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.78,
+          "actualChangePct": -1.07,
+          "priceErrorPct": -1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.07%"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 395.29,
+          "predictedDirection": "down",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 396.94,
+          "actualChangePct": 0.04,
+          "priceErrorPct": 0.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.04%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 397.1,
+          "predictedDirection": "flat",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 387.66,
+          "actualChangePct": -2.34,
+          "priceErrorPct": -2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -2.34%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $387.66 outside range $387.79–$406.4"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 387.42,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 388.91,
+          "actualChangePct": 0.32,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 385.85,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 387.66,
+          "actualChangePct": -0.32,
+          "priceErrorPct": 0.5,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 384.66,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 382.97,
+          "actualChangePct": -1.21,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 379.9,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 388.88,
+          "actualChangePct": 1.54,
+          "priceErrorPct": 2.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 1.54%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $388.88 outside range $371.99–$387.81"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 386.93,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 388.83,
+          "actualChangePct": -0.01,
+          "priceErrorPct": 0.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved -0.01%"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 388.69,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 390.13,
+          "actualChangePct": 0.33,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 390,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 380.34,
+          "actualChangePct": -2.51,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -2.51%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $380.34 outside range $382.49–$397.51"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 378.55,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 376.37,
+          "actualChangePct": -1.04,
+          "priceErrorPct": -0.6,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 374.72,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 361.85,
+          "actualChangePct": -3.86,
+          "priceErrorPct": -3.4,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $361.85 outside range $367.18–$382.26"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 357.44,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 358.99,
+          "actualChangePct": -0.79,
+          "priceErrorPct": 0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 354.06,
+          "predictedDirection": "down",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 372.19,
+          "actualChangePct": 3.68,
+          "priceErrorPct": 5.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 3.68%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $372.19 outside range $346.42–$361.7"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 369.57,
+          "predictedDirection": "down",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 368.53,
+          "actualChangePct": -0.98,
+          "priceErrorPct": -0.3,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 367.06,
+          "predictedDirection": "down",
+          "confidence": 71,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 363.31,
+          "actualChangePct": -1.42,
+          "priceErrorPct": -1,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 361.59,
+          "predictedDirection": "down",
+          "confidence": 71,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 364.26,
+          "actualChangePct": 0.26,
+          "priceErrorPct": 0.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.26%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 365.53,
+          "predictedDirection": "up",
+          "confidence": 75,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 356.38,
+          "actualChangePct": -2.16,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.16%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $356.38 outside range $357.57–$373.5"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 356.65,
+          "predictedDirection": "flat",
+          "confidence": 72,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 357.77,
+          "actualChangePct": 0.39,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 355.69,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 359.68,
+          "actualChangePct": 0.53,
+          "priceErrorPct": 1.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.53%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 358.68,
+          "predictedDirection": "down",
+          "confidence": 72,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 369.35,
+          "actualChangePct": 2.69,
+          "priceErrorPct": 3,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 2.69%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $369.35 outside range $350.14–$367.22"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 370.24,
+          "predictedDirection": "up",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 373.25,
+          "actualChangePct": 1.06,
+          "priceErrorPct": 0.8,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 374.75,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 363.79,
+          "actualChangePct": -2.53,
+          "priceErrorPct": -2.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.53%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $363.79 outside range $365.77–$383.72"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 364.98,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 368.03,
+          "actualChangePct": 1.17,
+          "priceErrorPct": 0.8,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 369.8,
+          "predictedDirection": "up",
+          "confidence": 85,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 349.68,
+          "actualChangePct": -4.99,
+          "priceErrorPct": -5.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -4.99%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $349.68 outside range $360.62–$378.99"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 347.5,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 346.13,
+          "actualChangePct": -1.02,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 341.41,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 345.29,
+          "actualChangePct": -0.24,
+          "priceErrorPct": 1.1,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 339.69,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 343.71,
+          "actualChangePct": -0.46,
+          "priceErrorPct": 1.2,
+          "errors": []
+        },
+        {
+          "symbol": "GOOGL",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 340.59,
+          "predictedDirection": "down",
+          "confidence": 80,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 337.39,
+          "actualChangePct": -1.84,
+          "priceErrorPct": -0.9,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 166.63,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 169.55,
+          "actualChangePct": 3.23,
+          "priceErrorPct": 1.8,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 173,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 166.97,
+          "actualChangePct": -1.52,
+          "priceErrorPct": -3.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.52%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 169.78,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 165.54,
+          "actualChangePct": -0.86,
+          "priceErrorPct": -2.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -0.86%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 168.39,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 172.2,
+          "actualChangePct": 4.02,
+          "priceErrorPct": 2.3,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 175.02,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 177.6,
+          "actualChangePct": 3.14,
+          "priceErrorPct": 1.5,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 180.09,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 175.26,
+          "actualChangePct": -1.32,
+          "priceErrorPct": -2.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.32%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 176.12,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 239.2,
+          "actualChangePct": 36.48,
+          "priceErrorPct": 35.8,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $239.20 outside range $169.2–$183.04"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 258.56,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 255.55,
+          "actualChangePct": 6.84,
+          "priceErrorPct": -1.2,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 280.16,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 280.16,
+          "actualChangePct": 9.63,
+          "priceErrorPct": 0,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 310.29,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 261.14,
+          "actualChangePct": -6.79,
+          "priceErrorPct": -15.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -6.79%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $261.14 outside range $298.63–$321.95"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-03",
+          "status": "resolved",
+          "predicted": 284.04,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 241.28,
+          "actualChangePct": -7.61,
+          "priceErrorPct": -15.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -7.61%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $241.28 outside range $271.19–$296.89"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-04",
+          "status": "resolved",
+          "predicted": 259.4,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 244.18,
+          "actualChangePct": 1.2,
+          "priceErrorPct": -5.9,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $244.18 outside range $245.77–$273.03"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-05",
+          "status": "resolved",
+          "predicted": 245.29,
+          "predictedDirection": "up",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 238.26,
+          "actualChangePct": -2.42,
+          "priceErrorPct": -2.9,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -2.42%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-08",
+          "status": "resolved",
+          "predicted": 234.93,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.45,
+          "actualChangePct": 0.92,
+          "priceErrorPct": 2.3,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.92%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-09",
+          "status": "resolved",
+          "predicted": 232.9,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 239.66,
+          "actualChangePct": -0.33,
+          "priceErrorPct": 2.9,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-10",
+          "status": "resolved",
+          "predicted": 235.23,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 239.9,
+          "actualChangePct": 0.1,
+          "priceErrorPct": 2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.10%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            },
+            {
+              "code": "overconfident_drift",
+              "message": "Momentum drift overshot — move was flat"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-11",
+          "status": "resolved",
+          "predicted": 239.17,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.39,
+          "actualChangePct": 0.2,
+          "priceErrorPct": 0.5,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.20%"
+            },
+            {
+              "code": "macd_conflict",
+              "message": "Ignored bullish MACD while forecasting down"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-12",
+          "status": "resolved",
+          "predicted": 239.17,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 232.78,
+          "actualChangePct": -3.17,
+          "priceErrorPct": -2.7,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-15",
+          "status": "resolved",
+          "predicted": 231.49,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 240.78,
+          "actualChangePct": 3.44,
+          "priceErrorPct": 4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 3.44%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-16",
+          "status": "resolved",
+          "predicted": 240.66,
+          "predictedDirection": "flat",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 238.32,
+          "actualChangePct": -1.02,
+          "priceErrorPct": -1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.02%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-17",
+          "status": "resolved",
+          "predicted": 237.87,
+          "predictedDirection": "flat",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 234.52,
+          "actualChangePct": -1.59,
+          "priceErrorPct": -1.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted flat but price moved -1.59%"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-18",
+          "status": "resolved",
+          "predicted": 233.28,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 232.29,
+          "actualChangePct": -0.95,
+          "priceErrorPct": -0.4,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-22",
+          "status": "resolved",
+          "predicted": 230.53,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 226.59,
+          "actualChangePct": -2.45,
+          "priceErrorPct": -1.7,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-23",
+          "status": "resolved",
+          "predicted": 225.87,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 230.41,
+          "actualChangePct": 1.69,
+          "priceErrorPct": 2,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 1.69%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-24",
+          "status": "resolved",
+          "predicted": 228.87,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 225.95,
+          "actualChangePct": -1.94,
+          "priceErrorPct": -1.3,
+          "errors": []
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-25",
+          "status": "resolved",
+          "predicted": 224.03,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 227.06,
+          "actualChangePct": 0.49,
+          "priceErrorPct": 1.4,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 0.49%"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "SNOW",
+          "date": "2026-06-26",
+          "status": "resolved",
+          "predicted": 226.08,
+          "predictedDirection": "down",
+          "confidence": 70,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 248.96,
+          "actualChangePct": 9.65,
+          "priceErrorPct": 10.1,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted down but price moved 9.65%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $248.96 outside range $215.6–$236.56"
+            },
+            {
+              "code": "rsi_oversold",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-14",
+          "status": "resolved",
+          "predicted": 237.41,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 238.21,
+          "actualChangePct": 4.57,
+          "priceErrorPct": 0.3,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-15",
+          "status": "resolved",
+          "predicted": 247.12,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 242.83,
+          "actualChangePct": 1.94,
+          "priceErrorPct": -1.7,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-18",
+          "status": "resolved",
+          "predicted": 250.05,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 247.55,
+          "actualChangePct": 1.94,
+          "priceErrorPct": -1,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-19",
+          "status": "resolved",
+          "predicted": 254.49,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 240.13,
+          "actualChangePct": -3,
+          "priceErrorPct": -5.6,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.00%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $240.13 outside range $246.44–$262.54"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-20",
+          "status": "resolved",
+          "predicted": 244.99,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 246.66,
+          "actualChangePct": 2.72,
+          "priceErrorPct": 0.7,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-21",
+          "status": "resolved",
+          "predicted": 250.2,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 252.92,
+          "actualChangePct": 2.54,
+          "priceErrorPct": 1.1,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-22",
+          "status": "resolved",
+          "predicted": 255.52,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 260.58,
+          "actualChangePct": 3.03,
+          "priceErrorPct": 2,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-26",
+          "status": "resolved",
+          "predicted": 263.83,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": true,
+          "actualPrice": 256.75,
+          "actualChangePct": -1.47,
+          "priceErrorPct": -2.7,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.47%"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-27",
+          "status": "resolved",
+          "predicted": 258.2,
+          "predictedDirection": "up",
+          "confidence": 73,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 248.47,
+          "actualChangePct": -3.22,
+          "priceErrorPct": -3.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -3.22%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $248.47 outside range $248.61–$267.79"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-28",
+          "status": "resolved",
+          "predicted": 249.76,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": true,
+          "actualPrice": 257.77,
+          "actualChangePct": 3.74,
+          "priceErrorPct": 3.2,
+          "errors": []
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-05-29",
+          "status": "resolved",
+          "predicted": 259.63,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 281.69,
+          "actualChangePct": 9.28,
+          "priceErrorPct": 8.5,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $281.69 outside range $249.87–$269.4"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-06-01",
+          "status": "resolved",
+          "predicted": 287.52,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": true,
+          "inRange": false,
+          "actualPrice": 300.48,
+          "actualChangePct": 6.67,
+          "priceErrorPct": 4.5,
+          "errors": [
+            {
+              "code": "range_miss",
+              "message": "Actual $300.48 outside range $277.01–$298.04"
+            }
+          ]
+        },
+        {
+          "symbol": "PANW",
+          "date": "2026-06-02",
+          "status": "resolved",
+          "predicted": 308.89,
+          "predictedDirection": "up",
+          "confidence": 74,
+          "directionHit": false,
+          "inRange": false,
+          "actualPrice": 297.18,
+          "actualChangePct": -1.1,
+          "priceErrorPct": -3.8,
+          "errors": [
+            {
+              "code": "direction_miss",
+              "message": "Predicted up but price moved -1.10%"
+            },
+            {
+              "code": "range_miss",
+              "message": "Actual $297.18 outside range $297.66–$320.12"
+            },
+            {
+              "code": "rsi_overbought",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        }
+      ],
+      "whatWentWrong": [
+        {
+          "code": "direction_miss",
+          "count": 67,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Predicted up but price moved -5.69%"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Predicted down but price moved 8.10%"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Predicted flat but price moved 3.99%"
+            }
+          ]
+        },
+        {
+          "code": "range_miss",
+          "count": 38,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Actual $424.10 outside range $436.16–$479.9"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Actual $447.58 outside range $384–$430.43"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Actual $503.89 outside range $450.34–$499.93"
+            }
+          ]
+        },
+        {
+          "code": "macd_conflict",
+          "count": 18,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Ignored bearish MACD while forecasting up"
+            }
+          ]
+        },
+        {
+          "code": "rsi_overbought",
+          "count": 15,
+          "examples": [
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            },
+            {
+              "symbol": "AMD",
+              "message": "Called up move with RSI > 70 — mean reversion hit"
+            }
+          ]
+        },
+        {
+          "code": "rsi_oversold",
+          "count": 7,
+          "examples": [
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            },
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            },
+            {
+              "symbol": "GOOGL",
+              "message": "Called down move with RSI < 35 — bounce occurred"
+            }
+          ]
+        },
+        {
+          "code": "overconfident_drift",
+          "count": 1,
+          "examples": [
+            {
+              "symbol": "SNOW",
+              "message": "Momentum drift overshot — move was flat"
+            }
+          ]
+        }
+      ],
+      "runAt": "2026-06-28T00:19:55.295Z",
+      "note": "No prior nightly forecasts to grade yet — ran 30-day walk-forward backtest on high-confidence picks instead."
+    }
+  ]
+}

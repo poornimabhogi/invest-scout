@@ -28,3 +28,5 @@ server/data/preferences.json
 server/data/paper-portfolio.json
 server/data/screener-cache.json
 server/data/candle-cache/
+server/data/prediction-journal.json
+server/data/strategy-learnings.json

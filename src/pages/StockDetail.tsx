@@ -5,10 +5,12 @@ import { ArrowLeftIcon, RefreshCwIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CandlestickChart } from '@/components/charts/CandlestickChart';
+import { MacdChart } from '@/components/charts/MacdChart';
 import { api } from '@/lib/api';
 import { ChartRange } from '@/types/chart';
 import { ForecastPanel } from '@/components/ForecastPanel';
 import { PaperTradePanel } from '@/components/PaperPortfolio';
+import { computeMACD } from '@/lib/chartIndicators';
 import { cn } from '@/lib/utils';
 
 const RANGES: ChartRange[] = ['1D', '1W', '1M', '3M', '1Y', '5Y', 'MAX'];
@@ -18,10 +20,11 @@ const StockDetail = () => {
   const navigate = useNavigate();
   const [range, setRange] = useState<ChartRange>('1Y');
 
-  const { data: detail, isLoading, error } = useQuery({
+  const { data: detail, isLoading, error, isError } = useQuery({
     queryKey: ['stockDetail', symbol],
     queryFn: () => api.getStockDetail(symbol!),
     enabled: !!symbol,
+    retry: 1,
   });
 
   const { data: candleData, isLoading: candlesLoading } = useQuery({
@@ -39,12 +42,13 @@ const StockDetail = () => {
     );
   }
 
-  if (error || !detail) {
+  if (isError || error || !detail) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 text-center">
         <p className="text-red-600 font-medium">Failed to load {symbol}</p>
         <p className="text-sm text-muted-foreground max-w-md">
-          The API server may be out of date or not running. Stop the dev server (Ctrl+C) and run{' '}
+          {error instanceof Error ? error.message : 'The API server may be out of date or not running.'}
+          {' '}Stop the dev server (Ctrl+C) and run{' '}
           <code className="bg-slate-100 px-1 rounded">npm run dev</code> again.
         </p>
         <Button onClick={() => navigate('/')}>Back to Screener</Button>
@@ -56,6 +60,13 @@ const StockDetail = () => {
   const candles = candleData?.candles ?? detail.candles;
   const perf = candleData?.performance ?? performance;
   const chartSource = candleData?.source ?? detail.dataSource;
+  const macdLive = candles.length >= 35 ? computeMACD(candles) : null;
+  const macd = macdLive ?? analysis.macd ?? {
+    macd: null,
+    signal: null,
+    histogram: null,
+    trend: 'insufficient',
+  };
 
   return (
     <div className="min-h-screen bg-trading-background">
@@ -138,6 +149,41 @@ const StockDetail = () => {
           ) : (
             <>
               <CandlestickChart candles={candles} height={420} />
+              <div className="mt-3">
+                <p className="text-xs font-medium text-muted-foreground mb-2">MACD (12, 26, 9)</p>
+                <MacdChart candles={candles} height={140} />
+              </div>
+              <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-0.5 bg-blue-600 rounded" />
+                  MACD
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-0.5 bg-orange-500 rounded" />
+                  Signal
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 bg-green-500/50 rounded-sm" />
+                  Histogram
+                </span>
+                {macd.macd != null && (
+                  <span>
+                    MACD <strong>{macd.macd}</strong> · Signal <strong>{macd.signal}</strong> · Hist{' '}
+                    <strong className={macd.histogram != null && macd.histogram >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      {macd.histogram}
+                    </strong>
+                    {' · '}
+                    <strong
+                      className={cn(
+                        macd.trend === 'bullish' && 'text-green-600',
+                        macd.trend === 'bearish' && 'text-red-600'
+                      )}
+                    >
+                      {macd.trend}
+                    </strong>
+                  </span>
+                )}
+              </div>
               {chartSource === 'seed' && (
                 <p className="text-xs text-amber-600 mt-2">
                   Chart uses estimated data — live history unavailable for this symbol.
@@ -225,6 +271,29 @@ const StockDetail = () => {
                     <span className="text-muted-foreground">200-day MA</span>
                     <strong>${analysis.sma200.toFixed(2)}</strong>
                   </div>
+                )}
+                {macd.macd != null && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">MACD</span>
+                      <strong>{macd.macd}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">MACD Signal</span>
+                      <strong>{macd.signal}</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">MACD Trend</span>
+                      <strong
+                        className={cn(
+                          macd.trend === 'bullish' && 'text-green-600',
+                          macd.trend === 'bearish' && 'text-red-600'
+                        )}
+                      >
+                        {macd.trend}
+                      </strong>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

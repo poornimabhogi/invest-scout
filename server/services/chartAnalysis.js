@@ -27,9 +27,124 @@ export function computeSMA(closes, period) {
   return slice.reduce((a, b) => a + b, 0) / period;
 }
 
+function emaSeries(values, period) {
+  const result = [];
+  const k = 2 / (period + 1);
+  let ema = null;
+
+  for (let i = 0; i < values.length; i++) {
+    if (i < period - 1) {
+      result.push(null);
+      continue;
+    }
+    if (ema === null) {
+      ema = values.slice(0, period).reduce((a, b) => a + b, 0) / period;
+    } else {
+      ema = values[i] * k + ema * (1 - k);
+    }
+    result.push(ema);
+  }
+  return result;
+}
+
+export function computeMACD(closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) {
+  if (closes.length < slowPeriod + signalPeriod) {
+    return {
+      macd: null,
+      signal: null,
+      histogram: null,
+      trend: 'insufficient',
+      series: [],
+      signals: [],
+    };
+  }
+
+  const fast = emaSeries(closes, fastPeriod);
+  const slow = emaSeries(closes, slowPeriod);
+  const macdLine = closes.map((_, i) =>
+    fast[i] != null && slow[i] != null ? fast[i] - slow[i] : null
+  );
+
+  const macdValues = [];
+  const macdIndices = [];
+  for (let i = 0; i < macdLine.length; i++) {
+    if (macdLine[i] != null) {
+      macdValues.push(macdLine[i]);
+      macdIndices.push(i);
+    }
+  }
+
+  const signalEma = emaSeries(macdValues, signalPeriod);
+  const signalLine = new Array(closes.length).fill(null);
+  for (let j = 0; j < signalEma.length; j++) {
+    if (signalEma[j] != null) signalLine[macdIndices[j]] = signalEma[j];
+  }
+
+  const histogram = closes.map((_, i) =>
+    macdLine[i] != null && signalLine[i] != null ? macdLine[i] - signalLine[i] : null
+  );
+
+  const series = closes.map((_, i) => ({
+    macd: macdLine[i],
+    signal: signalLine[i],
+    histogram: histogram[i],
+  }));
+
+  const last = closes.length - 1;
+  const prev = closes.length - 2;
+  const macd = macdLine[last];
+  const signal = signalLine[last];
+  const hist = histogram[last];
+
+  const signals = [];
+  let trend = 'neutral';
+
+  if (macd != null && signal != null && hist != null) {
+    if (hist > 0 && macd > signal) trend = 'bullish';
+    else if (hist < 0 && macd < signal) trend = 'bearish';
+
+    if (
+      prev >= 0 &&
+      macdLine[prev] != null &&
+      signalLine[prev] != null &&
+      macdLine[prev] <= signalLine[prev] &&
+      macd > signal
+    ) {
+      signals.push('MACD bullish crossover — momentum turning up');
+    } else if (
+      prev >= 0 &&
+      macdLine[prev] != null &&
+      signalLine[prev] != null &&
+      macdLine[prev] >= signalLine[prev] &&
+      macd < signal
+    ) {
+      signals.push('MACD bearish crossover — momentum fading');
+    } else if (hist > 0 && histogram[prev] != null && hist > histogram[prev]) {
+      signals.push('MACD histogram expanding — bullish momentum building');
+    } else if (hist < 0 && histogram[prev] != null && hist < histogram[prev]) {
+      signals.push('MACD histogram deepening — bearish pressure');
+    }
+  }
+
+  return {
+    macd: macd != null ? Math.round(macd * 1000) / 1000 : null,
+    signal: signal != null ? Math.round(signal * 1000) / 1000 : null,
+    histogram: hist != null ? Math.round(hist * 1000) / 1000 : null,
+    trend,
+    series,
+    signals,
+  };
+}
+
 export function analyzeChart(candles) {
   if (!candles?.length) {
-    return { rsi: 50, signals: [], lifetimeReturn: 0, pattern: 'Insufficient data' };
+    return {
+      rsi: 50,
+      signals: [],
+      lifetimeReturn: 0,
+      pattern: 'Insufficient data',
+      macd: { macd: null, signal: null, histogram: null, trend: 'insufficient', series: [], signals: [] },
+    };
   }
 
   const closes = candles.map((c) => c.close);
@@ -64,12 +179,17 @@ export function analyzeChart(candles) {
   const recentVol = volRecent.reduce((a, b) => a + b, 0) / volRecent.length;
   if (recentVol > avgVol * 1.5) signals.push('Volume spike — institutional interest');
 
+  const macd = computeMACD(closes);
+  signals.push(...macd.signals);
+
   let pattern = 'Consolidation';
   if (lifetimeReturn > 50 && last > (sma50 ?? last)) pattern = 'Long-term uptrend';
   else if (lifetimeReturn < -20) pattern = 'Long-term downtrend';
   else if (rsi < 40 && last > closes[closes.length - 5]) pattern = 'Oversold reversal setup';
+  else if (macd.trend === 'bullish') pattern = 'MACD bullish — uptrend momentum';
+  else if (macd.trend === 'bearish') pattern = 'MACD bearish — downtrend pressure';
 
-  return { rsi, sma20, sma50, sma200, signals, lifetimeReturn, pattern };
+  return { rsi, sma20, sma50, sma200, signals, lifetimeReturn, pattern, macd };
 }
 
 export function scoreNewsSentiment(headline) {
@@ -95,6 +215,8 @@ export function buildStrategyScore(stock, chartAnalysis, newsItems) {
 
   if (stock.momentumTier === 'strong') score += 5;
   if (stock.celebrityScore >= 2) score += 4;
+  if (chartAnalysis.macd?.trend === 'bullish') score += 3;
+  if (chartAnalysis.macd?.trend === 'bearish') score -= 2;
 
   let recommendation = 'watch';
   if (score >= 15 && stock.aiRecommendation !== 'sell') recommendation = 'buy';

@@ -16,6 +16,7 @@ async function fetchGoogleNews(symbol) {
   const url = `https://news.google.com/rss/search?q=${query}+when:7d&hl=en-US&gl=US&ceid=US:en`;
   const res = await fetch(url, {
     headers: { 'User-Agent': 'Mozilla/5.0 (compatible; InvestScout/1.0)' },
+    signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) return [];
   const xml = await res.text();
@@ -47,7 +48,7 @@ async function fetchFinnhubNews(symbol, apiKey) {
   const to = new Date().toISOString().slice(0, 10);
   const from = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
   const url = `${FINNHUB_BASE}/company-news?symbol=${symbol}&from=${from}&to=${to}&token=${apiKey}`;
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
   if (!res.ok) return [];
   const data = await res.json();
   return (data ?? []).slice(0, 5).map((n) => ({
@@ -219,6 +220,13 @@ export async function getStockDetail(symbol, stockFromCache) {
       sma20: analysis.sma20,
       sma50: analysis.sma50,
       sma200: analysis.sma200,
+      macd: {
+        macd: analysis.macd.macd,
+        signal: analysis.macd.signal,
+        histogram: analysis.macd.histogram,
+        trend: analysis.macd.trend,
+        signals: analysis.macd.signals ?? [],
+      },
     },
     news,
     strategy: {

@@ -1,4 +1,5 @@
-import { computeRSI, computeSMA } from './chartAnalysis.js';
+import { computeRSI, computeSMA, computeMACD } from './chartAnalysis.js';
+import { getLearningWeights } from './learningWeights.js';
 
 function computeATR(candles, period = 14) {
   if (candles.length < period + 1) return candles.at(-1)?.close * 0.02 ?? 1;
@@ -91,6 +92,7 @@ export function backtestSymbol(candles, lookbackDays = 90) {
  * Next-session estimate — NOT a guarantee. Uses momentum drift + ATR range.
  */
 export function forecastNextDay(candles, stock = {}) {
+  const weights = getLearningWeights();
   const closes = candles.map((c) => c.close);
   const lastClose = closes.at(-1) ?? stock.price ?? 0;
   const atr = computeATR(candles);
@@ -102,16 +104,19 @@ export function forecastNextDay(candles, stock = {}) {
       : 0;
 
   const rsi = computeRSI(closes);
+  const macd = computeMACD(closes);
   const backtest = backtestSymbol(candles);
 
-  // Blend momentum with mean-reversion when overbought/oversold
-  let drift = momentum;
-  if (rsi > 70) drift -= 0.003;
-  if (rsi < 35) drift += 0.003;
+  let drift = momentum * weights.momentumMultiplier;
+  if (rsi > 70) drift -= weights.rsiOverboughtPenalty;
+  if (rsi < 35) drift += weights.rsiOversoldBoost;
+  if (macd.trend === 'bullish') drift += weights.macdBullishBoost;
+  if (macd.trend === 'bearish') drift -= weights.macdBearishPenalty;
 
   const pointEstimate = lastClose * (1 + drift);
-  const lowEstimate = pointEstimate - atr * 0.8;
-  const highEstimate = pointEstimate + atr * 0.8;
+  const atrMult = weights.atrMultiplier;
+  const lowEstimate = pointEstimate - atr * atrMult;
+  const highEstimate = pointEstimate + atr * atrMult;
 
   const direction =
     drift > 0.002 ? 'up' : drift < -0.002 ? 'down' : 'flat';
@@ -120,12 +125,13 @@ export function forecastNextDay(candles, stock = {}) {
   const confidence = Math.min(
     95,
     Math.max(
-      35,
+      weights.confidenceFloor,
       Math.round(
         40 +
           historicalWinRate * 0.35 +
           (stock.momentumScore ?? 0) * 1.5 +
-          (direction === 'up' && rsi < 65 ? 5 : 0)
+          (direction === 'up' && rsi < 65 ? 5 : 0) -
+          (rsi > 72 && direction === 'up' ? 8 : 0)
       )
     )
   );

@@ -2,7 +2,7 @@ export type RiskLevel = 'low' | 'medium' | 'high';
 export type MarketType = 'NASDAQ' | 'NYSE' | 'OTHER';
 export type AIRecommendation = 'buy' | 'sell' | 'hold';
 export type MomentumTier = 'strong' | 'building' | 'neutral' | 'weak';
-export type ScreenerView = 'top-picks' | 'momentum' | 'celebrity' | 'strategies' | 'all';
+export type ScreenerView = 'top-picks' | 'momentum' | 'celebrity' | 'strategies' | 'media-radar' | 'all';
 
 export interface CelebrityHolder {
   id: string;
@@ -17,6 +17,8 @@ export interface MomentumSignals {
   above200DayMA: number;
   volumeRatio: number;
 }
+
+export type SignalSource = 'celebrity' | 'strategy' | 'media-radar' | 'momentum';
 
 export interface Stock {
   symbol: string;
@@ -38,6 +40,10 @@ export interface Stock {
   celebrityHolders: CelebrityHolder[];
   compositeScore: number;
   isTopPick: boolean;
+  signalSources?: SignalSource[];
+  strategyScore?: number | null;
+  strategyRecommendation?: 'buy' | 'watch' | 'avoid' | null;
+  mediaMentionCount?: number;
 }
 
 export interface CelebrityInvestor {

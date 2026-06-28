@@ -11,6 +11,8 @@ import {
   StarIcon,
   UsersIcon,
   ZapIcon,
+  RadioIcon,
+  BrainCircuitIcon,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -68,7 +70,32 @@ export const StockCard = ({ stock }: StockCardProps) => {
       {stock.isTopPick && (
         <div className="flex items-center gap-1 text-amber-600 text-xs font-semibold mb-3">
           <StarIcon size={14} className="fill-amber-400 text-amber-400" />
-          Top Pick — Momentum + Celebrity Overlap
+          Top Pick — momentum + signals
+        </div>
+      )}
+
+      {stock.signalSources && stock.signalSources.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {stock.signalSources.includes('media-radar') && (
+            <Badge variant="outline" className="text-xs gap-1 text-emerald-700 border-emerald-300">
+              <RadioIcon size={10} />
+              Media Radar
+              {(stock.mediaMentionCount ?? 0) > 0 && ` (${stock.mediaMentionCount})`}
+            </Badge>
+          )}
+          {stock.signalSources.includes('strategy') && (
+            <Badge variant="outline" className="text-xs gap-1 text-violet-700 border-violet-300">
+              <BrainCircuitIcon size={10} />
+              Strategy Buy
+              {stock.strategyScore != null && ` · ${stock.strategyScore}`}
+            </Badge>
+          )}
+          {stock.signalSources.includes('momentum') && (
+            <Badge variant="outline" className="text-xs gap-1">
+              <ZapIcon size={10} />
+              Momentum
+            </Badge>
+          )}
         </div>
       )}
 
