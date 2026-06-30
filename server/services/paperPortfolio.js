@@ -41,11 +41,12 @@ function recordTrade(portfolio, trade) {
   portfolio.trades.unshift({
     id: crypto.randomUUID(),
     timestamp: new Date().toISOString(),
+    auto: false,
     ...trade,
   });
 }
 
-export function buyShares(symbol, shares, price, note = '') {
+export function buyShares(symbol, shares, price, note = '', meta = {}) {
   const sym = symbol.toUpperCase();
   const qty = Number(shares);
   const px = Number(price);
@@ -69,13 +70,16 @@ export function buyShares(symbol, shares, price, note = '') {
     price: px,
     total: cost,
     note,
+    strategy: meta.strategy ?? 'manual',
+    auto: meta.auto ?? false,
+    signalReason: meta.signalReason ?? note,
   });
 
   savePortfolio(portfolio);
   return portfolio;
 }
 
-export function sellShares(symbol, shares, price, note = '') {
+export function sellShares(symbol, shares, price, note = '', meta = {}) {
   const sym = symbol.toUpperCase();
   const qty = Number(shares);
   const px = Number(price);
@@ -99,6 +103,9 @@ export function sellShares(symbol, shares, price, note = '') {
     price: px,
     total: proceeds,
     note,
+    strategy: meta.strategy ?? 'manual',
+    auto: meta.auto ?? false,
+    signalReason: meta.signalReason ?? note,
   });
 
   savePortfolio(portfolio);
@@ -115,7 +122,9 @@ export function resetPortfolio(startingCash = DEFAULT_CASH) {
 
 export function enrichPortfolio(portfolio, priceMap) {
   const positions = Object.entries(portfolio.positions).map(([symbol, pos]) => {
-    const currentPrice = priceMap[symbol] ?? pos.avgCost;
+    const livePrice = priceMap[symbol];
+    const currentPrice = livePrice ?? pos.avgCost;
+    const priceIsLive = livePrice != null && livePrice > 0;
     const marketValue = pos.shares * currentPrice;
     const costBasis = pos.shares * pos.avgCost;
     const unrealizedPnL = marketValue - costBasis;
@@ -125,6 +134,7 @@ export function enrichPortfolio(portfolio, priceMap) {
       shares: pos.shares,
       avgCost: Math.round(pos.avgCost * 100) / 100,
       currentPrice: Math.round(currentPrice * 100) / 100,
+      priceIsLive,
       marketValue: Math.round(marketValue * 100) / 100,
       costBasis: Math.round(costBasis * 100) / 100,
       unrealizedPnL: Math.round(unrealizedPnL * 100) / 100,
@@ -150,6 +160,7 @@ export function enrichPortfolio(portfolio, priceMap) {
     totalReturnPct: Math.round(totalReturnPct * 100) / 100,
     trades: portfolio.trades.slice(0, 50),
     stats: closedStats,
+    pricesRefreshedAt: new Date().toISOString(),
   };
 }
 
@@ -204,6 +215,11 @@ export async function getEnrichedPortfolio(getPrices) {
   const portfolio = loadPortfolio();
   const priceMap = await getPrices(Object.keys(portfolio.positions));
   return enrichPortfolio(portfolio, priceMap);
+}
+
+export function getPaperClosedStats() {
+  const portfolio = loadPortfolio();
+  return computeClosedTradeStats(portfolio.trades ?? []);
 }
 
 export function getPriceFromStocks(stocks, symbol) {

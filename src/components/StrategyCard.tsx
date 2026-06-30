@@ -36,6 +36,16 @@ export function StrategyCard({ strategy }: StrategyCardProps) {
                 SMC Buy · {strategy.smcScore}
               </Badge>
             )}
+            {strategy.confluence?.tripleConfluence && (
+              <Badge className="text-xs bg-amber-50 text-amber-800 border border-amber-200">
+                Triple ✓
+              </Badge>
+            )}
+            {strategy.confluence?.dualStructure && !strategy.confluence?.tripleConfluence && (
+              <Badge className="text-xs bg-sky-50 text-sky-800 border border-sky-200">
+                Dual ✓
+              </Badge>
+            )}
           </div>
           <p className="text-sm text-muted-foreground">{strategy.name}</p>
         </div>

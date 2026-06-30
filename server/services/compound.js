@@ -1,5 +1,6 @@
 import { getCandles } from './candles.js';
 import { getScreenerData } from './screener.js';
+import { buildMergedScreener } from './mediaSignalProcessor.js';
 import { forecastNextDay, backtestSymbol, simulateCompounding } from './forecast.js';
 
 export async function getStockForecast(symbol) {
@@ -11,8 +12,9 @@ export async function getStockForecast(symbol) {
 }
 
 export async function getPortfolioBacktest() {
-  const screener = await getScreenerData();
-  const picks = (screener.topPicks ?? screener.stocks ?? []).slice(0, 15);
+  const base = await getScreenerData();
+  const merged = await buildMergedScreener(base, { processMedia: false });
+  const picks = (merged.topPicks ?? merged.stocks ?? []).slice(0, 15);
 
   let totalTrades = 0;
   let totalWins = 0;

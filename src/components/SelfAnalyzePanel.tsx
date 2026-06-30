@@ -44,7 +44,7 @@ export function SelfAnalyzePanel() {
         recentPredictions: data?.recentPredictions ?? [],
       });
       toast.success(
-        `Self-analyze complete — ${result.stats.graded} forecasts graded, ${result.newPredictionsRecorded} new high-confidence picks logged for ${result.nextTargetDate}`
+        `Self-analyze complete — ${result.stats.graded} forecasts graded, ${result.indicatorAuditSummary?.confirmsMedia ?? 0}/${result.indicatorAuditSummary?.symbolsAnalyzed ?? 0} chart-audited picks confirmed${result.autoTradeRun?.actions?.length ? `, ${result.autoTradeRun.actions.length} auto-trade action(s)` : ''}`
       );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Self-analyze failed');
@@ -62,8 +62,9 @@ export function SelfAnalyzePanel() {
             Self Analyze
           </CardTitle>
           <CardDescription>
-            Grades yesterday&apos;s high-confidence tomorrow forecasts vs actual prices, explains
-            misses, adjusts strategy weights, and logs new predictions for the next session.
+            Grades yesterday&apos;s high-confidence tomorrow forecasts vs actual prices, runs the full
+            7-indicator chart audit on Top Picks (RSI, MACD, Squeeze, SMC, MSB, UT Bot, OTE), adjusts
+            strategy weights, and can trigger paper auto-trade when gates pass.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -115,6 +116,50 @@ export function SelfAnalyzePanel() {
                   </p>
                 )}
               </div>
+
+              {report.indicatorAuditSummary && report.indicatorAuditSummary.symbolsAnalyzed > 0 && (
+                <div className="p-4 rounded-lg bg-violet-50 border border-violet-100 text-sm">
+                  <h4 className="font-semibold mb-2">7-indicator chart audit (Top Picks)</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mb-3">
+                    <div>
+                      <p className="text-muted-foreground">Analyzed</p>
+                      <p className="font-bold text-lg">{report.indicatorAuditSummary.symbolsAnalyzed}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Chart confirmed</p>
+                      <p className="font-bold text-lg text-green-600">
+                        {report.indicatorAuditSummary.confirmsMedia}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Avg bullish</p>
+                      <p className="font-bold text-lg">{report.indicatorAuditSummary.avgBullish}/7</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Auto-trade ready</p>
+                      <p className="font-bold text-lg">{report.autoTradeCandidates?.length ?? 0}</p>
+                    </div>
+                  </div>
+                  {report.autoTradeCandidates && report.autoTradeCandidates.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {report.autoTradeCandidates.slice(0, 8).map((c) => (
+                        <Badge key={c.symbol} variant="outline" className="text-xs">
+                          {c.symbol} · {c.bullishIndicators}/7 · {c.primaryReason.slice(0, 28)}
+                          {c.primaryReason.length > 28 ? '…' : ''}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  {report.autoTradeRun && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Auto-trade:{' '}
+                      {report.autoTradeRun.skipped
+                        ? report.autoTradeRun.reason ?? 'skipped'
+                        : `${report.autoTradeRun.actions?.length ?? 0} action(s) executed`}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {report.strategyAdjustments.length > 0 && (
                 <div>

@@ -10,6 +10,7 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCwIcon, RotateCcwIcon } from 'lucide-react';
+import { PaperAutoTradePanel } from '@/components/PaperAutoTradePanel';
 
 interface PaperTradePanelProps {
   symbol: string;
@@ -25,6 +26,7 @@ export function PaperTradePanel({ symbol, price, recommendation }: PaperTradePan
     queryKey: ['paperPortfolio'],
     queryFn: () => api.getPaperPortfolio(),
     retry: 1,
+    refetchInterval: 60_000,
   });
 
   const position = portfolio?.positions.find((p) => p.symbol === symbol);
@@ -110,7 +112,11 @@ export function PaperTradePanel({ symbol, price, recommendation }: PaperTradePan
 
         {position && (
           <div className="text-sm bg-slate-50 rounded p-2">
-            Holding {position.shares} @ avg ${position.avgCost.toFixed(2)} ·{' '}
+            Holding {position.shares} @ avg ${position.avgCost.toFixed(2)}
+            {position.priceIsLive !== false && position.currentPrice != null && (
+              <> · now ${position.currentPrice.toFixed(2)}</>
+            )}
+            {' · '}
             <span className={cn(position.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600')}>
               {position.unrealizedPnLPct >= 0 ? '+' : ''}
               {position.unrealizedPnLPct.toFixed(2)}%
@@ -174,6 +180,8 @@ export function PaperPortfolioPanel() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        <PaperAutoTradePanel />
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-slate-50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Total equity</p>
@@ -213,6 +221,13 @@ export function PaperPortfolioPanel() {
           </div>
         ) : null}
 
+        {portfolio?.pricesRefreshedAt && (
+          <p className="text-xs text-muted-foreground">
+            Prices refreshed {new Date(portfolio.pricesRefreshedAt).toLocaleTimeString()} · live
+            Finnhub/Yahoo quotes (updates every ~60s)
+          </p>
+        )}
+
         <div>
           <h3 className="font-semibold mb-2 text-sm">Open positions</h3>
           {!portfolio?.positions.length ? (
@@ -247,6 +262,9 @@ export function PaperPortfolioPanel() {
                       >
                         {p.unrealizedPnLPct >= 0 ? '+' : ''}
                         {p.unrealizedPnLPct.toFixed(2)}%
+                        {p.priceIsLive === false && (
+                          <span className="text-muted-foreground font-normal text-xs ml-1">(est.)</span>
+                        )}
                       </td>
                       <td>
                         <Button size="sm" variant="ghost" onClick={() => navigate(`/stock/${p.symbol}`)}>
@@ -269,8 +287,18 @@ export function PaperPortfolioPanel() {
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {portfolio.trades.slice(0, 15).map((t) => (
                 <div key={t.id} className="flex items-center justify-between text-sm border rounded p-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant={t.side === 'buy' ? 'default' : 'secondary'}>{t.side}</Badge>
+                    {t.auto && (
+                      <Badge variant="outline" className="text-[10px] text-violet-700">
+                        auto
+                      </Badge>
+                    )}
+                    {t.strategy && t.strategy !== 'manual' && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {t.strategy}
+                      </Badge>
+                    )}
                     <span className="font-medium">{t.symbol}</span>
                     <span className="text-muted-foreground">
                       {t.shares} @ ${t.price.toFixed(2)}

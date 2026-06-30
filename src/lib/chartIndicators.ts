@@ -233,7 +233,6 @@ export function computeSqueezeMomentum(
 
   const series: SqueezePoint[] = [];
   let prevVal: number | null = null;
-  let prevSqzOn = false;
 
   for (let i = 0; i < candles.length; i++) {
     const basis = smaAt(closes, i, bbLength);
@@ -281,7 +280,6 @@ export function computeSqueezeMomentum(
     });
 
     prevVal = val;
-    prevSqzOn = sqzOn;
   }
 
   const last = series.at(-1)!;

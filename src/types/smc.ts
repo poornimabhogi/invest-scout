@@ -27,7 +27,7 @@ export interface SmcOverlayMarker {
   time: number;
   position: 'belowBar' | 'aboveBar';
   color: string;
-  shape: 'arrowUp' | 'arrowDown';
+  shape: 'arrowUp' | 'arrowDown' | 'circle';
   text: string;
 }
 

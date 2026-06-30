@@ -2,6 +2,10 @@ import { getApiKey } from './marketProvider.js';
 import { getCandles, computePerformance } from './candles.js';
 import { analyzeChart, buildStrategyScore } from './chartAnalysis.js';
 import { analyzeSmartMoneyConcepts } from './smartMoneyConcepts.js';
+import { analyzeMarketStructureBreak } from './marketStructureBreak.js';
+import { analyzeUtBot, buildStructureConfluence } from './utBot.js';
+import { analyzeOptimalTradeEntry } from './optimalTradeEntry.js';
+import { buildIndicatorAudit } from './chartIndicatorAudit.js';
 
 const FINNHUB_BASE = 'https://finnhub.io/api/v1';
 const NEWS_CACHE_TTL = 30 * 60 * 1000;
@@ -80,12 +84,16 @@ async function fetchNews(symbol) {
   return merged.slice(0, 5);
 }
 
-async function buildStrategyForStock(stock) {
+export async function buildStrategyForStock(stock) {
   const { candles } = await getCandles(stock.symbol, '1Y');
   const chartAnalysis = analyzeChart(candles);
   const smc = analyzeSmartMoneyConcepts(candles);
+  const msb = analyzeMarketStructureBreak(candles);
+  const utBot = analyzeUtBot(candles);
+  const ote = analyzeOptimalTradeEntry(candles);
   const news = await fetchNews(stock.symbol);
-  const { score, recommendation, newsScore } = buildStrategyScore(stock, chartAnalysis, news, smc);
+  const { score, recommendation, newsScore } = buildStrategyScore(stock, chartAnalysis, news, smc, msb, utBot, ote);
+  const indicatorAudit = buildIndicatorAudit(chartAnalysis, smc, msb, utBot, ote, recommendation);
 
   return {
     symbol: stock.symbol,
@@ -96,9 +104,19 @@ async function buildStrategyForStock(stock) {
     recommendation,
     momentumScore: stock.momentumScore,
     celebrityScore: stock.celebrityScore,
-    chartSignals: [...chartAnalysis.signals, ...smc.signals.slice(0, 2)],
+    chartSignals: [
+      ...chartAnalysis.signals,
+      ...smc.signals.slice(0, 2),
+      ...msb.signals.slice(0, 2),
+      ...utBot.signals.slice(0, 1),
+      ...ote.signals.slice(0, 1),
+    ],
     chartPattern: chartAnalysis.pattern,
     rsi: chartAnalysis.rsi,
+    macdTrend: chartAnalysis.macd?.trend ?? 'insufficient',
+    squeezeMomentum: chartAnalysis.squeeze?.momentum ?? 'insufficient',
+    squeezeOn: chartAnalysis.squeeze?.squeezeOn ?? false,
+    squeezeOff: chartAnalysis.squeeze?.squeezeOff ?? false,
     lifetimeReturn: chartAnalysis.lifetimeReturn,
     newsScore,
     recentNews: news,
@@ -107,6 +125,32 @@ async function buildStrategyForStock(stock) {
     smcRecommendation: smc.recommendation,
     smcTrend: smc.trend,
     smcZone: smc.zone,
+    msbScore: msb.msbScore,
+    msbRecommendation: msb.recommendation,
+    msbMarket: msb.market,
+    utBotScore: utBot.utScore,
+    utBotRecommendation: utBot.recommendation,
+    utBotPosition: utBot.position,
+    utBotSignal: utBot.signal,
+    oteScore: ote.oteScore,
+    oteRecommendation: ote.recommendation,
+    oteInZone: ote.inOteZone,
+    oteBias: ote.bias,
+    confluence: buildStructureConfluence({
+      smcRecommendation: smc.recommendation,
+      smcTrend: smc.trend,
+      smcZone: smc.zone,
+      msbRecommendation: msb.recommendation,
+      msbMarket: msb.market,
+      utBotRecommendation: utBot.recommendation,
+      utBotPosition: utBot.position,
+      utBotSignal: utBot.signal,
+      oteRecommendation: ote.recommendation,
+      oteInZone: ote.inOteZone,
+      oteBias: ote.bias,
+      chartSignals: [...chartAnalysis.signals, ...smc.signals, ...msb.signals, ...utBot.signals, ...ote.signals],
+    }),
+    indicatorAudit,
   };
 }
 
@@ -183,6 +227,9 @@ export async function getStockDetail(symbol, stockFromCache) {
   const chartCandles = candlesMax.length > candles1Y.length ? candlesMax : candles1Y;
   const analysis = analyzeChart(chartCandles);
   const smc = analyzeSmartMoneyConcepts(chartCandles);
+  const msb = analyzeMarketStructureBreak(chartCandles);
+  const utBot = analyzeUtBot(chartCandles);
+  const ote = analyzeOptimalTradeEntry(chartCandles);
   const news = await fetchNews(symbol);
 
   const stock = stockFromCache ?? {
@@ -207,7 +254,7 @@ export async function getStockDetail(symbol, stockFromCache) {
     change: 0,
   };
 
-  const { score, recommendation } = buildStrategyScore(stock, analysis, news, smc);
+  const { score, recommendation } = buildStrategyScore(stock, analysis, news, smc, msb, utBot, ote);
 
   const perf1Y = computePerformance(candles1Y);
   const perfMax = computePerformance(candlesMax.length > 0 ? candlesMax : candles1Y);
@@ -236,6 +283,14 @@ export async function getStockDetail(symbol, stockFromCache) {
         trend: analysis.macd.trend,
         signals: analysis.macd.signals ?? [],
       },
+      squeeze: {
+        value: analysis.squeeze?.value ?? null,
+        squeezeOn: analysis.squeeze?.squeezeOn ?? false,
+        squeezeOff: analysis.squeeze?.squeezeOff ?? false,
+        momentum: analysis.squeeze?.momentum ?? 'insufficient',
+        trend: analysis.squeeze?.trend ?? 'insufficient',
+        signals: analysis.squeeze?.signals ?? [],
+      },
     },
     news,
     strategy: {
@@ -244,6 +299,9 @@ export async function getStockDetail(symbol, stockFromCache) {
       rationale: buildRationale(recommendation, analysis, news, stock, smc),
     },
     smc,
+    msb,
+    utBot,
+    ote,
     dataSource: source,
   };
 }

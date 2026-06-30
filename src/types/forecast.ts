@@ -60,6 +60,26 @@ export interface SelfAnalyzeWrongItem {
   simulated?: boolean;
 }
 
+export interface SelfAnalyzeIndicatorSnapshot {
+  symbol: string;
+  recommendation: string;
+  strategyScore: number;
+  rsi: number;
+  macdTrend: string;
+  squeezeOn: boolean;
+  smcRecommendation: string;
+  msbRecommendation: string;
+  utBotRecommendation: string;
+  oteRecommendation: string;
+  oteInZone: boolean;
+  indicatorAudit: {
+    confirmsMedia: boolean;
+    primaryReason: string;
+    summary: { bullish: number; bearish: number; neutral: number; total: number };
+    confluence?: string;
+  };
+}
+
 export interface SelfAnalyzeReport {
   generatedAt: string;
   summary: string;
@@ -77,6 +97,43 @@ export interface SelfAnalyzeReport {
   cumulativeStats: Record<string, number>;
   newPredictionsRecorded: number;
   nextTargetDate: string;
+  indicatorAnalysis?: SelfAnalyzeIndicatorSnapshot[];
+  indicatorAuditSummary?: {
+    symbolsAnalyzed: number;
+    confirmsMedia: number;
+    avgBullish: number;
+    avgBearish: number;
+  };
+  autoTradeCandidates?: {
+    symbol: string;
+    strategyScore: number;
+    recommendation: string;
+    confirmsMedia: boolean;
+    primaryReason: string;
+    bullishIndicators: number;
+    confluence?: string;
+  }[];
+  riskContext?: {
+    riskLevel: string;
+    positionSizePct: number;
+    maxDailyTrades: number;
+    minStrategyScore: number;
+    compoundHint: {
+      positionPct: number;
+      projectedReturnPct: number;
+      winRatePct: number;
+      avgWinPct: number;
+      avgLossPct: number;
+    };
+  };
+  autoTradeRun?: {
+    ok: boolean;
+    skipped?: boolean;
+    reason?: string;
+    actions?: { side: string; symbol: string; reason: string }[];
+    riskGate?: { allow: boolean; reason: string };
+    error?: string;
+  };
 }
 
 export interface SelfAnalyzeState {

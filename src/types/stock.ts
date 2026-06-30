@@ -18,6 +18,8 @@ export interface MomentumSignals {
   volumeRatio: number;
 }
 
+import { StructureConfluence } from './utBot';
+
 export type SignalSource = 'celebrity' | 'strategy' | 'media-radar' | 'momentum';
 
 export interface Stock {
@@ -44,6 +46,10 @@ export interface Stock {
   strategyScore?: number | null;
   strategyRecommendation?: 'buy' | 'watch' | 'avoid' | null;
   mediaMentionCount?: number;
+  confluence?: StructureConfluence | null;
+  chartVerified?: boolean;
+  chartVerifiedPerfScore?: number | null;
+  chartVerifiedReason?: string | null;
 }
 
 export interface CelebrityInvestor {

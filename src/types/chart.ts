@@ -26,6 +26,16 @@ export interface MacdAnalysis {
   signals: string[];
 }
 
+export interface SqueezeAnalysis {
+  value: number | null;
+  squeezeOn: boolean;
+  squeezeOff: boolean;
+  noSqueeze?: boolean;
+  momentum: string;
+  trend: string;
+  signals: string[];
+}
+
 export interface NewsItem {
   headline: string;
   summary: string;
@@ -54,6 +64,13 @@ export interface StrategyOpportunity {
   smcRecommendation?: 'buy' | 'watch' | 'avoid';
   smcTrend?: string;
   smcZone?: string;
+  msbScore?: number;
+  msbRecommendation?: 'buy' | 'watch' | 'avoid';
+  msbMarket?: string;
+  utBotScore?: number;
+  utBotRecommendation?: 'buy' | 'watch' | 'avoid';
+  utBotPosition?: string;
+  confluence?: import('./utBot').StructureConfluence;
 }
 
 export interface StockDetail {
@@ -69,6 +86,7 @@ export interface StockDetail {
     sma50: number | null;
     sma200: number | null;
     macd: MacdAnalysis;
+    squeeze?: SqueezeAnalysis;
   };
   news: NewsItem[];
   strategy: {
@@ -77,5 +95,8 @@ export interface StockDetail {
     rationale: string;
   };
   smc?: SmartMoneyAnalysis;
+  msb?: import('./msb').MarketStructureAnalysis;
+  utBot?: import('./utBot').UtBotAnalysis;
+  ote?: import('./ote').OptimalTradeEntryAnalysis;
   dataSource: string;
 }

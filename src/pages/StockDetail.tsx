@@ -6,12 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CandlestickChart } from '@/components/charts/CandlestickChart';
 import { MacdChart } from '@/components/charts/MacdChart';
+import { SqueezeChart } from '@/components/charts/SqueezeChart';
 import { SmcPanel } from '@/components/SmcPanel';
+import { MsObPanel } from '@/components/MsObPanel';
+import { UtBotPanel } from '@/components/UtBotPanel';
+import { OtePanel } from '@/components/OtePanel';
 import { api } from '@/lib/api';
 import { ChartRange } from '@/types/chart';
 import { ForecastPanel } from '@/components/ForecastPanel';
 import { PaperTradePanel } from '@/components/PaperPortfolio';
-import { computeMACD } from '@/lib/chartIndicators';
+import { computeMACD, computeSqueezeMomentum } from '@/lib/chartIndicators';
 import { cn } from '@/lib/utils';
 
 const RANGES: ChartRange[] = ['1D', '1W', '1M', '3M', '1Y', '5Y', 'MAX'];
@@ -57,17 +61,29 @@ const StockDetail = () => {
     );
   }
 
-  const { stock, performance, analysis, news, strategy, smc: detailSmc } = detail;
+  const { stock, performance, analysis, news, strategy, smc: detailSmc, msb: detailMsb, utBot: detailUtBot, ote: detailOte } = detail;
   const candles = candleData?.candles ?? detail.candles;
   const smc = candleData?.smc ?? detailSmc;
+  const msb = candleData?.msb ?? detailMsb;
+  const utBot = candleData?.utBot ?? detailUtBot;
+  const ote = candleData?.ote ?? detailOte;
   const perf = candleData?.performance ?? performance;
   const chartSource = candleData?.source ?? detail.dataSource;
   const macdLive = candles.length >= 35 ? computeMACD(candles) : null;
+  const squeezeLive = candles.length >= 30 ? computeSqueezeMomentum(candles) : null;
   const macd = macdLive ?? analysis.macd ?? {
     macd: null,
     signal: null,
     histogram: null,
     trend: 'insufficient',
+  };
+  const squeeze = squeezeLive ?? analysis.squeeze ?? {
+    value: null,
+    squeezeOn: false,
+    squeezeOff: false,
+    momentum: 'insufficient',
+    trend: 'insufficient',
+    signals: [],
   };
 
   return (
@@ -165,8 +181,41 @@ const StockDetail = () => {
                     SMC {smc.recommendation.toUpperCase()} · {smc.smcScore}
                   </Badge>
                 )}
+                {msb && (
+                  <Badge
+                    className={cn(
+                      msb.recommendation === 'buy' && 'bg-green-100 text-green-800',
+                      msb.recommendation === 'watch' && 'bg-yellow-100 text-yellow-800',
+                      msb.recommendation === 'avoid' && 'bg-red-100 text-red-800'
+                    )}
+                  >
+                    MSB {msb.recommendation.toUpperCase()} · {msb.msbScore}
+                  </Badge>
+                )}
+                {utBot && (
+                  <Badge
+                    className={cn(
+                      utBot.recommendation === 'buy' && 'bg-green-100 text-green-800',
+                      utBot.recommendation === 'watch' && 'bg-yellow-100 text-yellow-800',
+                      utBot.recommendation === 'avoid' && 'bg-red-100 text-red-800'
+                    )}
+                  >
+                    UT {utBot.recommendation.toUpperCase()} · {utBot.position}
+                  </Badge>
+                )}
+                {ote && (
+                  <Badge
+                    className={cn(
+                      ote.recommendation === 'buy' && 'bg-violet-100 text-violet-800',
+                      ote.recommendation === 'watch' && 'bg-yellow-100 text-yellow-800',
+                      ote.recommendation === 'avoid' && 'bg-red-100 text-red-800'
+                    )}
+                  >
+                    OTE {ote.inOteZone ? 'IN ZONE' : ote.recommendation.toUpperCase()}
+                  </Badge>
+                )}
               </div>
-              <CandlestickChart candles={candles} height={420} smc={smc} />
+              <CandlestickChart candles={candles} height={420} smc={smc} msb={msb} utBot={utBot} ote={ote} />
               <div className="mt-3">
                 <p className="text-xs font-medium text-muted-foreground mb-2">
                   MACD — Fast 12 · Slow 26 · Signal 9
@@ -175,6 +224,15 @@ const StockDetail = () => {
                   Line = EMA12 − EMA26 · Orange = 9-day EMA of MACD · Bars = MACD − Signal
                 </p>
                 <MacdChart candles={candles} height={140} />
+              </div>
+              <div className="mt-3">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  Squeeze Momentum [LazyBear] — BB 20×2 · KC 20×1.5
+                </p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Histogram = linreg momentum · Black zero line = squeeze ON · Gray = fired · Blue = no squeeze
+                </p>
+                <SqueezeChart candles={candles} height={120} />
               </div>
               <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
@@ -207,6 +265,42 @@ const StockDetail = () => {
                   </span>
                 )}
               </div>
+              <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 bg-lime-500/70 rounded-sm" />
+                  Bull accel
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-3 h-3 bg-red-500/70 rounded-sm" />
+                  Bear accel
+                </span>
+                {squeeze.value != null && (
+                  <span>
+                    Mom <strong className={squeeze.value >= 0 ? 'text-green-600' : 'text-red-600'}>{squeeze.value}</strong>
+                    {' · '}
+                    {squeeze.squeezeOn && (
+                      <strong className="text-foreground">Squeeze ON</strong>
+                    )}
+                    {squeeze.squeezeOff && (
+                      <strong className="text-muted-foreground">Squeeze FIRED</strong>
+                    )}
+                    {!squeeze.squeezeOn && !squeeze.squeezeOff && (
+                      <strong className="text-blue-600">No squeeze</strong>
+                    )}
+                    {' · '}
+                    <strong
+                      className={cn(
+                        squeeze.momentum === 'bullish' && 'text-green-600',
+                        squeeze.momentum === 'bearish' && 'text-red-600'
+                      )}
+                    >
+                      {squeeze.momentum}
+                    </strong>
+                    {squeeze.trend === 'accelerating_up' && ' ↑'}
+                    {squeeze.trend === 'accelerating_down' && ' ↓'}
+                  </span>
+                )}
+              </div>
               {chartSource === 'seed' && (
                 <p className="text-xs text-amber-600 mt-2">
                   Chart uses estimated data — live history unavailable for this symbol.
@@ -234,6 +328,9 @@ const StockDetail = () => {
             </div>
 
             {smc && <SmcPanel smc={smc} />}
+            {msb && <MsObPanel msb={msb} />}
+            {utBot && <UtBotPanel utBot={utBot} />}
+            {ote && <OtePanel ote={ote} />}
 
             <div className="bg-white rounded-lg border p-5">
               <h2 className="font-semibold mb-3">Latest News</h2>

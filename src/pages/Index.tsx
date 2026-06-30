@@ -13,6 +13,7 @@ import { CompoundingSimulator } from '@/components/CompoundingSimulator';
 import { SelfAnalyzePanel } from '@/components/SelfAnalyzePanel';
 import { PaperPortfolioPanel } from '@/components/PaperPortfolio';
 import { MediaRadarPanel } from '@/components/MediaRadarPanel';
+import { MediaSuggestionsPanel } from '@/components/MediaSuggestionsPanel';
 import { WatchlistPanel } from '@/components/WatchlistPanel';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -46,7 +47,7 @@ const VIEW_TABS: { id: ScreenerView; label: string; icon: typeof StarIcon; descr
     id: 'media-radar',
     label: 'Media Radar',
     icon: RadioIcon,
-    description: 'Live TV & social mention scanner — catch stocks before momentum builds',
+    description: 'Live TV & social scanner — chart-verified picks flow into Top Picks',
   },
   {
     id: 'watchlist',
@@ -153,7 +154,12 @@ const Index = () => {
     try {
       const data = await api.pollMediaRadar();
       queryClient.setQueryData(['mediaRadar'], data);
-      toast.success(`Scan complete — ${data.status.earlyCount} pre-momentum hits`);
+      queryClient.invalidateQueries({ queryKey: ['marketData'] });
+      const passed = data.processing?.stats.passed ?? 0;
+      const scanned = data.processing?.stats.scanned ?? 0;
+      toast.success(
+        `Scan complete — ${data.status.earlyCount} pre-momentum · ${passed}/${scanned} chart-verified picks`
+      );
     } catch {
       toast.error('Media scan failed');
     } finally {
@@ -339,7 +345,13 @@ const Index = () => {
               <WatchlistPanel />
             </div>
           ) : view === 'media-radar' && mediaRadar ? (
-            <div className="col-span-full">
+            <div className="col-span-full space-y-8">
+              <MediaSuggestionsPanel
+                suggestions={mediaRadar.processing?.suggestions ?? []}
+                audits={mediaRadar.processing?.audits}
+                stats={mediaRadar.processing?.stats}
+                processedAt={mediaRadar.processing?.processedAt}
+              />
               <MediaRadarPanel
                 data={mediaRadar}
                 onRefresh={handleRadarRefresh}

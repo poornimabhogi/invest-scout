@@ -1,4 +1,5 @@
 import { Stock, MomentumTier } from '../types/stock';
+import { StructureConfluence } from '../types/utBot';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { MiniChart } from '@/components/charts/MiniChart';
@@ -41,6 +42,44 @@ const momentumTierColor: Record<MomentumTier, string> = {
   weak: 'bg-orange-100 text-orange-800',
 };
 
+const confluenceLabel = {
+  smc: 'SMC',
+  msb: 'MSB',
+  squeeze: 'Sqz',
+  utBot: 'UT',
+  ote: 'OTE',
+};
+
+function ConfluenceBadges({ confluence }: { confluence: StructureConfluence }) {
+  const items = (['smc', 'msb', 'squeeze', 'utBot', 'ote'] as const).filter((k) => confluence[k]);
+  if (!items.length && !confluence.dualStructure) return null;
+
+  return (
+    <div className="flex flex-wrap gap-1 mb-3">
+      {confluence.premiumEntry && (
+        <Badge className="text-xs bg-violet-100 text-violet-900 border-violet-300">
+          OTE + Dual ✓
+        </Badge>
+      )}
+      {confluence.tripleConfluence && !confluence.premiumEntry && (
+        <Badge className="text-xs bg-amber-100 text-amber-900 border-amber-300">
+          Triple ✓
+        </Badge>
+      )}
+      {confluence.dualStructure && !confluence.tripleConfluence && (
+        <Badge className="text-xs bg-emerald-100 text-emerald-900 border-emerald-300">
+          Dual Structure ✓
+        </Badge>
+      )}
+      {items.map((k) => (
+        <Badge key={k} variant="outline" className="text-xs text-green-700 border-green-300">
+          {confluenceLabel[k]} ✓
+        </Badge>
+      ))}
+    </div>
+  );
+}
+
 export const StockCard = ({ stock }: StockCardProps) => {
   const navigate = useNavigate();
   const isPositive = stock.change >= 0;
@@ -71,8 +110,16 @@ export const StockCard = ({ stock }: StockCardProps) => {
         <div className="flex items-center gap-1 text-amber-600 text-xs font-semibold mb-3">
           <StarIcon size={14} className="fill-amber-400 text-amber-400" />
           Top Pick — momentum + signals
+          {stock.chartVerified && (
+            <Badge variant="outline" className="text-xs text-sky-700 border-sky-300 ml-1">
+              Chart-verified
+              {stock.chartVerifiedPerfScore != null && ` · perf ${stock.chartVerifiedPerfScore}`}
+            </Badge>
+          )}
         </div>
       )}
+
+      {stock.confluence && <ConfluenceBadges confluence={stock.confluence} />}
 
       {stock.signalSources && stock.signalSources.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">

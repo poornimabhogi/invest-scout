@@ -3,6 +3,7 @@ export interface PaperPosition {
   shares: number;
   avgCost: number;
   currentPrice: number;
+  priceIsLive?: boolean;
   marketValue: number;
   costBasis: number;
   unrealizedPnL: number;
@@ -18,6 +19,9 @@ export interface PaperTrade {
   total: number;
   note?: string;
   timestamp: string;
+  strategy?: string;
+  auto?: boolean;
+  signalReason?: string;
 }
 
 export interface PaperStats {
@@ -37,4 +41,5 @@ export interface PaperPortfolio {
   totalReturnPct: number;
   trades: PaperTrade[];
   stats: PaperStats;
+  pricesRefreshedAt?: string;
 }

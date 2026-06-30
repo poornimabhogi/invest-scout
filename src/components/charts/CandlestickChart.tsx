@@ -12,12 +12,45 @@ import {
 } from 'lightweight-charts';
 import { Candle } from '@/types/chart';
 import { SmartMoneyAnalysis } from '@/types/smc';
+import { MarketStructureAnalysis } from '@/types/msb';
+import { UtBotAnalysis } from '@/types/utBot';
+import { OptimalTradeEntryAnalysis } from '@/types/ote';
+
+interface ChartOverlay {
+  markers: SmartMoneyAnalysis['overlay']['markers'];
+  priceLines: SmartMoneyAnalysis['overlay']['priceLines'];
+}
 
 interface CandlestickChartProps {
   candles: Candle[];
   height?: number;
   showVolume?: boolean;
   smc?: SmartMoneyAnalysis | null;
+  msb?: MarketStructureAnalysis | null;
+  utBot?: UtBotAnalysis | null;
+  ote?: OptimalTradeEntryAnalysis | null;
+}
+
+function mergeOverlays(
+  smc?: SmartMoneyAnalysis | null,
+  msb?: MarketStructureAnalysis | null,
+  utBot?: UtBotAnalysis | null,
+  ote?: OptimalTradeEntryAnalysis | null
+): ChartOverlay | null {
+  const markers = [
+    ...(smc?.overlay.markers ?? []),
+    ...(msb?.overlay.markers ?? []),
+    ...(utBot?.overlay.markers ?? []),
+    ...(ote?.overlay.markers ?? []),
+  ];
+  const priceLines = [
+    ...(smc?.overlay.priceLines ?? []),
+    ...(msb?.overlay.priceLines ?? []),
+    ...(ote?.overlay.priceLines ?? []),
+    ...(utBot?.overlay.priceLines ?? []),
+  ];
+  if (!markers.length && !priceLines.length) return null;
+  return { markers, priceLines };
 }
 
 export function CandlestickChart({
@@ -25,8 +58,12 @@ export function CandlestickChart({
   height = 400,
   showVolume = true,
   smc,
+  msb,
+  utBot,
+  ote,
 }: CandlestickChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const overlay = mergeOverlays(smc, msb, utBot, ote);
 
   useEffect(() => {
     if (!containerRef.current || !candles.length) return;
@@ -67,9 +104,9 @@ export function CandlestickChart({
 
     const priceLines: IPriceLine[] = [];
     let markersPlugin: ReturnType<typeof createSeriesMarkers> | null = null;
-    if (smc?.overlay) {
+    if (overlay) {
       const candleTimes = new Set(candles.map((c) => c.time));
-      const markers: SeriesMarker<UTCTimestamp>[] = smc.overlay.markers
+      const markers: SeriesMarker<UTCTimestamp>[] = overlay.markers
         .filter((m) => candleTimes.has(m.time))
         .map((m) => ({
           time: m.time as UTCTimestamp,
@@ -82,7 +119,7 @@ export function CandlestickChart({
         markersPlugin = createSeriesMarkers(candleSeries, markers);
       }
 
-      for (const line of smc.overlay.priceLines) {
+      for (const line of overlay.priceLines) {
         priceLines.push(
           candleSeries.createPriceLine({
             price: line.price,
@@ -129,7 +166,7 @@ export function CandlestickChart({
       observer.disconnect();
       chart.remove();
     };
-  }, [candles, height, showVolume, smc]);
+  }, [candles, height, showVolume, smc, msb, utBot, ote]);
 
   if (!candles.length) {
     return (

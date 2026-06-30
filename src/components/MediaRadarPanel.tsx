@@ -11,6 +11,8 @@ import {
   ExternalLinkIcon,
   RefreshCwIcon,
   TrendingUpIcon,
+  VideoIcon,
+  MicIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,10 +71,21 @@ function MentionRow({ mention, highlight }: { mention: MediaMention; highlight?:
               Pre-momentum
             </Badge>
           )}
+          {mention.contentType === 'video' && (
+            <Badge variant="outline" className="text-xs gap-1">
+              <VideoIcon size={12} />
+              Video{mention.hasTranscript ? ' · transcript' : ''}
+            </Badge>
+          )}
           <Badge variant="outline" className="text-xs gap-1">
             <SourceIcon size={12} />
             {mention.source}
           </Badge>
+          {mention.figureTags?.map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-xs capitalize">
+              {tag.replace('-', ' ')}
+            </Badge>
+          ))}
           <Badge className={cn('text-xs', tierColors[mention.momentumTier])}>
             {mention.momentumTier} momentum
           </Badge>
@@ -105,7 +118,14 @@ function MentionRow({ mention, highlight }: { mention: MediaMention; highlight?:
         <ExternalLinkIcon size={14} className="shrink-0 mt-0.5 opacity-50" />
       </a>
 
-      {mention.excerpt && mention.excerpt !== mention.headline && (
+      {mention.transcriptPreview && (
+        <p className="text-xs text-violet-700 bg-violet-50 rounded px-2 py-1 mt-2 line-clamp-2">
+          <MicIcon size={12} className="inline mr-1" />
+          Transcript: {mention.transcriptPreview}
+        </p>
+      )}
+
+      {mention.excerpt && mention.excerpt !== mention.headline && !mention.transcriptPreview && (
         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{mention.excerpt}</p>
       )}
 
@@ -119,8 +139,54 @@ function MentionRow({ mention, highlight }: { mention: MediaMention; highlight?:
   );
 }
 
+function MentionSection({
+  title,
+  description,
+  mentions,
+  icon: Icon,
+  iconClass,
+  badge,
+  highlight,
+}: {
+  title: string;
+  description: string;
+  mentions: MediaMention[];
+  icon: typeof NewspaperIcon;
+  iconClass: string;
+  badge?: number;
+  highlight?: boolean;
+}) {
+  if (mentions.length === 0) return null;
+
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <Icon size={20} className={iconClass} />
+        <h2 className="text-xl font-bold">{title}</h2>
+        {badge != null && badge > 0 && (
+          <Badge className="bg-violet-100 text-violet-800">{badge}</Badge>
+        )}
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">{description}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {mentions.map((m) => (
+          <MentionRow key={`${title}-${m.id}`} mention={m} highlight={highlight} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function MediaRadarPanel({ data, onRefresh, isRefreshing }: MediaRadarPanelProps) {
-  const { mentions, earlyHits, status } = data;
+  const {
+    mentions,
+    earlyHits,
+    tipRanksNews = [],
+    vipNews = [],
+    videoMentions = [],
+    xSocialMentions = [],
+    status,
+  } = data;
 
   return (
     <div className="space-y-8">
@@ -133,17 +199,34 @@ export function MediaRadarPanel({ data, onRefresh, isRefreshing }: MediaRadarPan
             )}
           </div>
           <div>
-            <p className="font-semibold text-foreground">Live TV & Social Monitor</p>
+            <p className="font-semibold text-foreground">Live TV, Social & Policy Monitor</p>
             <p className="text-sm text-muted-foreground">
-              CNBC · Bloomberg · Reuters · Reddit · Stocktwits
+              CNBC · Bloomberg · Reuters · X · YouTube · Trump/tech · TipRanks · Reddit
               {status.lastPollAt && ` · Last scan ${timeAgo(status.lastPollAt)}`}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="text-sm text-muted-foreground">
-            {status.feedsActive}/{status.feedsTotal} feeds · {status.mentionCount} mentions ·{' '}
-            <strong className="text-emerald-700">{status.earlyCount} pre-momentum</strong>
+            {status.feedsActive}/{status.feedsTotal} feeds · {status.mentionCount} mentions
+            {(status.vipCount ?? 0) > 0 && (
+              <>
+                {' · '}
+                <strong className="text-amber-700">{status.vipCount} VIP</strong>
+              </>
+            )}
+            {(status.videoCount ?? 0) > 0 && (
+              <>
+                {' · '}
+                <strong className="text-purple-700">{status.videoCount} video</strong>
+              </>
+            )}
+            {(status.transcriptCount ?? 0) > 0 && (
+              <>
+                {' · '}
+                <strong className="text-violet-700">{status.transcriptCount} transcripts</strong>
+              </>
+            )}
           </div>
           <Button variant="outline" size="sm" onClick={onRefresh} disabled={isRefreshing} className="gap-2">
             <RefreshCwIcon size={14} className={cn(isRefreshing && 'animate-spin')} />
@@ -153,22 +236,51 @@ export function MediaRadarPanel({ data, onRefresh, isRefreshing }: MediaRadarPan
       </div>
 
       {earlyHits.length > 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUpIcon size={20} className="text-emerald-600" />
-            <h2 className="text-xl font-bold">Early Hits — before momentum</h2>
-          </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            Mentioned on TV or social but momentum is still neutral/building. These are the names to
-            watch before the crowd piles in.
-          </p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {earlyHits.map((hit) => (
-              <MentionRow key={`early-${hit.symbol}-${hit.id}`} mention={hit} highlight />
-            ))}
-          </div>
-        </section>
+        <MentionSection
+          title="Early Hits — before momentum"
+          description="Mentioned on TV or social but momentum is still neutral/building."
+          mentions={earlyHits}
+          icon={TrendingUpIcon}
+          iconClass="text-emerald-600"
+          highlight
+        />
       )}
+
+      <MentionSection
+        title="Trump, Policy & VIP"
+        description="Trump/market headlines, White House policy, tech CEO moves, and mega-cap investment news — symbols extracted for chart audit."
+        mentions={vipNews}
+        icon={NewspaperIcon}
+        iconClass="text-amber-600"
+        badge={status.vipCount}
+      />
+
+      <MentionSection
+        title="X / Social posts"
+        description="Trump, Musk, and tech CEO posts surfaced via X (Google News proxy) — linked to tickers when mentioned."
+        mentions={xSocialMentions}
+        icon={MessageCircleIcon}
+        iconClass="text-sky-600"
+        badge={status.xSocialCount}
+      />
+
+      <MentionSection
+        title="Video & announcements"
+        description="YouTube speeches, interviews, and investment announcements. Captions fetched automatically when available for symbol extraction."
+        mentions={videoMentions}
+        icon={VideoIcon}
+        iconClass="text-purple-600"
+        badge={status.videoCount}
+      />
+
+      <MentionSection
+        title="TipRanks News"
+        description="Analyst notes, price targets, and stock stories from TipRanks."
+        mentions={tipRanksNews}
+        icon={NewspaperIcon}
+        iconClass="text-violet-600"
+        badge={status.tipRanksCount ?? tipRanksNews.length}
+      />
 
       <section>
         <h2 className="text-xl font-bold mb-4">Live mention feed</h2>

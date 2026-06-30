@@ -1,0 +1,251 @@
+{
+  "enabled": true,
+  "maxPositions": 3,
+  "positionSizePct": 5,
+  "minStrategyScore": 12,
+  "minVerifiedPerfScore": 7,
+  "buyTopPicks": true,
+  "buyChartVerified": true,
+  "buyPremiumEntry": true,
+  "sellOnAvoid": true,
+  "useStopLossTakeProfit": true,
+  "requireChartAudit": true,
+  "applySelfAnalyzeGates": true,
+  "cooldownHours": 24,
+  "lastRunAt": "2026-06-30T04:27:57.183Z",
+  "lastActions": [
+    {
+      "side": "buy",
+      "symbol": "PANW",
+      "shares": 3,
+      "price": 332,
+      "strategy": "top-pick",
+      "reason": "Top pick · score 61.5",
+      "at": "2026-06-30T04:13:07.828Z"
+    },
+    {
+      "side": "buy",
+      "symbol": "AMD",
+      "shares": 1,
+      "price": 539.49,
+      "strategy": "top-pick",
+      "reason": "Top pick · score 61.3",
+      "at": "2026-06-30T04:13:07.912Z"
+    },
+    {
+      "side": "buy",
+      "symbol": "HUT",
+      "shares": 8,
+      "price": 118.27,
+      "strategy": "top-pick",
+      "reason": "Top pick · score 59.9",
+      "at": "2026-06-30T04:13:07.978Z"
+    }
+  ],
+  "strategyStats": {
+    "top-pick": {
+      "buys": 3,
+      "sells": 0,
+      "symbols": [
+        "HUT",
+        "AMD",
+        "PANW"
+      ]
+    }
+  },
+  "lastIndicatorSnapshots": {
+    "MU": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 86.9,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 2,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "INTC": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 71.3,
+      "primaryReason": "Strategy buy — 4/7 indicators bullish",
+      "summary": {
+        "bullish": 4,
+        "bearish": 1,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "HUT": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 68.9,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 1,
+        "neutral": 3,
+        "total": 7
+      }
+    },
+    "BITF": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 48.8,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 3,
+        "neutral": 1,
+        "total": 7
+      }
+    },
+    "AAPL": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 64.7,
+      "primaryReason": "Strategy buy — 4/7 indicators bullish",
+      "summary": {
+        "bullish": 4,
+        "bearish": 2,
+        "neutral": 1,
+        "total": 7
+      }
+    },
+    "AMD": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 67.8,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 1,
+        "neutral": 3,
+        "total": 7
+      }
+    },
+    "CRM": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 55.8,
+      "primaryReason": "Strategy buy — 4/7 indicators bullish",
+      "summary": {
+        "bullish": 4,
+        "bearish": 2,
+        "neutral": 1,
+        "total": 7
+      }
+    },
+    "NVDA": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 42.7,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 4,
+        "neutral": 0,
+        "total": 7
+      }
+    },
+    "AMZN": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 43.6,
+      "primaryReason": "Strategy buy — 2/7 indicators bullish",
+      "summary": {
+        "bullish": 2,
+        "bearish": 3,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "MSFT": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 47.5,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 3,
+        "neutral": 1,
+        "total": 7
+      }
+    },
+    "GOOGL": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 55.3,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 2,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "TSLA": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 49,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 2,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "TER": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 51,
+      "primaryReason": "Strategy buy — 3/7 indicators bullish",
+      "summary": {
+        "bullish": 3,
+        "bearish": 1,
+        "neutral": 3,
+        "total": 7
+      }
+    },
+    "HOOD": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 55.6,
+      "primaryReason": "Strategy buy — 4/7 indicators bullish",
+      "summary": {
+        "bullish": 4,
+        "bearish": 1,
+        "neutral": 2,
+        "total": 7
+      }
+    },
+    "MRVL": {
+      "confirmsMedia": true,
+      "recommendation": "buy",
+      "strategyScore": 47.8,
+      "primaryReason": "Strategy buy — 2/7 indicators bullish",
+      "summary": {
+        "bullish": 2,
+        "bearish": 2,
+        "neutral": 3,
+        "total": 7
+      }
+    }
+  },
+  "lastRiskContext": {
+    "riskLevel": "conservative",
+    "positionSizePct": 5,
+    "maxDailyTrades": 3,
+    "minStrategyScore": 12,
+    "compoundHint": {
+      "positionPct": 5,
+      "projectedReturnPct": 2.96,
+      "winRatePct": 54.9,
+      "avgWinPct": 3.63,
+      "avgLossPct": -2.98
+    }
+  }
+}

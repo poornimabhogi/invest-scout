@@ -58,7 +58,7 @@ export const api = {
   getCandles(
     symbol: string,
     range: ChartRange = '1Y'
-  ): Promise<{ candles: Candle[]; performance: PerformanceStats; source: string; smc?: SmartMoneyAnalysis }> {
+  ): Promise<{ candles: Candle[]; performance: PerformanceStats; source: string; smc?: SmartMoneyAnalysis; msb?: import('@/types/msb').MarketStructureAnalysis; utBot?: import('@/types/utBot').UtBotAnalysis; ote?: import('@/types/ote').OptimalTradeEntryAnalysis }> {
     return request(`/stocks/${symbol}/candles?range=${range}`);
   },
 
@@ -137,6 +137,23 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ startingCash }),
     });
+  },
+
+  getPaperAutoTradeStatus(): Promise<import('@/types/paperAutoTrade').AutoTradeStatus> {
+    return request('/paper/auto-trade');
+  },
+
+  updatePaperAutoTradeSettings(
+    settings: Partial<import('@/types/paperAutoTrade').AutoTradeSettings>
+  ): Promise<import('@/types/paperAutoTrade').AutoTradeStatus> {
+    return request('/paper/auto-trade/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
+  },
+
+  runPaperAutoTrade(): Promise<import('@/types/paperAutoTrade').AutoTradeRunResult> {
+    return request('/paper/auto-trade/run', { method: 'POST' });
   },
 
   getMediaRadar(): Promise<MediaRadarResponse> {

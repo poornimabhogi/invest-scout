@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getApiKey } from './marketProvider.js';
+import { enrichItemWithTranscript, resetTranscriptPollBudget } from './videoTranscripts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FINNHUB_BASE = 'https://finnhub.io/api/v1';
@@ -130,6 +131,108 @@ const FEEDS = [
     type: 'news',
     url: 'https://news.google.com/rss/search?q=stock+market+OR+earnings+OR+NYSE+OR+NASDAQ+when:1h&hl=en-US&gl=US&ceid=US:en',
   },
+  {
+    id: 'tipranks-latest',
+    name: 'TipRanks',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=site:tipranks.com+when:24h&hl=en-US&gl=US&ceid=US:en',
+  },
+  {
+    id: 'tipranks-breaking',
+    name: 'TipRanks (1h)',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=site:tipranks.com+when:1h&hl=en-US&gl=US&ceid=US:en',
+  },
+  {
+    id: 'tipranks-analyst',
+    name: 'TipRanks Analyst',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=site:tipranks.com+analyst+OR+%22price+target%22+when:24h&hl=en-US&gl=US&ceid=US:en',
+  },
+  // Trump / policy & markets
+  {
+    id: 'google-trump-markets',
+    name: 'Trump & Markets',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=Trump+OR+%22President+Trump%22+stock+market+OR+tariff+OR+trade+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['trump'],
+  },
+  {
+    id: 'google-trump-tech',
+    name: 'Trump Tech Policy',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=Trump+technology+OR+AI+OR+chips+OR+semiconductor+OR+Tesla+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['trump', 'tech-policy'],
+  },
+  {
+    id: 'google-white-house-economy',
+    name: 'White House / Economy',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=White+House+OR+%22executive+order%22+economy+OR+market+OR+stocks+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['trump', 'policy'],
+  },
+  // X (Twitter) via Google News — no API key required
+  {
+    id: 'x-trump',
+    name: 'X — Trump',
+    type: 'social',
+    url: 'https://news.google.com/rss/search?q=site:x.com+Trump+stock+OR+market+OR+tariff+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['trump', 'x-social'],
+  },
+  {
+    id: 'x-musk',
+    name: 'X — Musk / Tesla',
+    type: 'social',
+    url: 'https://news.google.com/rss/search?q=site:x.com+(Musk+OR+elonmusk)+Tesla+OR+stock+OR+invest+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['musk', 'x-social'],
+  },
+  {
+    id: 'x-tech-ceos',
+    name: 'X — Tech CEOs',
+    type: 'social',
+    url: 'https://news.google.com/rss/search?q=site:x.com+(Zuckerberg+OR+Bezos+OR+Cook+OR+Nadella+OR+Huang+OR+Pichai)+stock+OR+invest+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['tech-ceo', 'x-social'],
+  },
+  // Video — YouTube announcements (transcripts fetched when possible)
+  {
+    id: 'youtube-trump-market',
+    name: 'YouTube — Trump / Markets',
+    type: 'tv',
+    url: 'https://news.google.com/rss/search?q=site:youtube.com+Trump+stock+market+OR+tariff+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['trump', 'video'],
+    contentType: 'video',
+  },
+  {
+    id: 'youtube-tech-invest',
+    name: 'YouTube — Tech Investment',
+    type: 'tv',
+    url: 'https://news.google.com/rss/search?q=site:youtube.com+(Musk+OR+Buffett+OR+CNBC+OR+Apple+OR+Microsoft+OR+Nvidia)+invest+OR+announcement+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['tech-ceo', 'video'],
+    contentType: 'video',
+  },
+  {
+    id: 'youtube-earnings-calls',
+    name: 'YouTube — Earnings / CEO',
+    type: 'tv',
+    url: 'https://news.google.com/rss/search?q=site:youtube.com+CEO+earnings+OR+%22investment+announcement%22+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['tech-ceo', 'video'],
+    contentType: 'video',
+  },
+  // Top tech company investment / capex
+  {
+    id: 'google-tech-capex',
+    name: 'Tech CapEx / Investment',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=(Microsoft+OR+Amazon+OR+Google+OR+Meta+OR+Apple+OR+Nvidia)+invest+OR+billion+OR+%22data+center%22+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['tech-investment'],
+  },
+  {
+    id: 'google-mega-cap-news',
+    name: 'Mega-cap Tech',
+    type: 'news',
+    url: 'https://news.google.com/rss/search?q=(AAPL+OR+MSFT+OR+GOOGL+OR+AMZN+OR+META+OR+NVDA+OR+TSLA)+stock+OR+earnings+when:24h&hl=en-US&gl=US&ceid=US:en',
+    tags: ['tech-investment'],
+  },
 ];
 
 const COMPANY_ALIASES = {
@@ -153,12 +256,23 @@ const COMPANY_ALIASES = {
   airbnb: 'ABNB',
   roblox: 'RBLX',
   gamestop: 'GME',
+  netflix: 'NFLX',
   disney: 'DIS',
   boeing: 'BA',
   jpmorgan: 'JPM',
   'jp morgan': 'JPM',
   berkshire: 'BRK-B',
-  'berkshire hathaway': 'BRK-B',
+  oracle: 'ORCL',
+  salesforce: 'CRM',
+  broadcom: 'AVGO',
+  qualcomm: 'QCOM',
+  servicenow: 'NOW',
+  'super micro': 'SMCI',
+  supermicro: 'SMCI',
+  micron: 'MU',
+  trump: null,
+  musk: 'TSLA',
+  elon: 'TSLA',
 };
 
 // Tickers that collide with common English words — require $ prefix or cashtag context
@@ -231,12 +345,16 @@ function parseRssItems(xml) {
           ?? ''
       ).replace(/<[^>]+>/g, ' ');
 
+    const rssSource =
+      decodeHtml(block.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]?.trim() ?? '');
+
     if (title) {
       items.push({
         headline: title.replace(/\s+/g, ' ').slice(0, 300),
         excerpt: description.replace(/\s+/g, ' ').slice(0, 400),
         url: link,
         publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+        sourceOverride: rssSource || undefined,
       });
     }
   }
@@ -320,7 +438,7 @@ function extractSymbols(text) {
 
   const lower = text.toLowerCase();
   for (const [alias, symbol] of Object.entries(COMPANY_ALIASES)) {
-    if (lower.includes(alias) && universeSet.has(symbol)) {
+    if (symbol && lower.includes(alias) && universeSet.has(symbol)) {
       found.add(symbol);
     }
   }
@@ -334,6 +452,44 @@ function extractSymbols(text) {
   return [...found];
 }
 
+function extractTickerFromHeadline(headline) {
+  if (!universeSet) loadUniverse();
+  const upper = headline.toUpperCase();
+  const stockMatch = upper.match(/\b([A-Z]{1,5})\s+STOCK\b/);
+  if (stockMatch && universeSet.has(stockMatch[1])) return stockMatch[1];
+
+  const lower = headline.toLowerCase();
+  for (const [alias, symbol] of Object.entries(COMPANY_ALIASES)) {
+    if (symbol && lower.includes(alias) && universeSet.has(symbol)) return symbol;
+  }
+  return null;
+}
+
+function detectFigureTags(text, feedTags = []) {
+  const lower = text.toLowerCase();
+  const tags = new Set(feedTags ?? []);
+  if (/trump|president trump|white house|tariff|executive order/i.test(lower)) tags.add('trump');
+  if (/musk|elon musk|elonmusk/i.test(lower)) tags.add('musk');
+  if (/bezos|zuckerberg|tim cook|satya nadella|jensen huang|sundar pichai|tech ceo/i.test(lower)) {
+    tags.add('tech-ceo');
+  }
+  if (/youtube\.com|youtu\.be|video|speech|interview|press conference/i.test(lower)) tags.add('video');
+  if (/site:x\.com|twitter|x\.com/i.test(lower)) tags.add('x-social');
+  return [...tags];
+}
+
+function isVipMention(mention) {
+  return (mention.figureTags?.length ?? 0) > 0;
+}
+
+function isVideoMention(mention) {
+  return mention.contentType === 'video' || mention.figureTags?.includes('video');
+}
+
+function isXSocialMention(mention) {
+  return mention.figureTags?.includes('x-social') || /x\.com|twitter/i.test(`${mention.source} ${mention.url}`);
+}
+
 function mentionKey(symbol, url, headline) {
   return `${symbol}|${url || headline.slice(0, 80).toLowerCase()}`;
 }
@@ -341,9 +497,14 @@ function mentionKey(symbol, url, headline) {
 function enrichMention(raw, feed, stockMap) {
   const text = `${raw.headline} ${raw.excerpt}`;
   let symbols = raw.forcedSymbol ? [raw.forcedSymbol] : extractSymbols(text);
+  if (symbols.length === 0 && feed.id?.startsWith('tipranks')) {
+    const fromHeadline = extractTickerFromHeadline(raw.headline);
+    if (fromHeadline) symbols = [fromHeadline];
+  }
   symbols = symbols.filter((s) => universeSet.has(s));
   if (symbols.length === 0) return [];
 
+  const figureTags = detectFigureTags(text, feed.tags);
   const detectedAt = new Date().toISOString();
   return symbols.map((symbol) => {
     const stock = stockMap.get(symbol);
@@ -360,6 +521,10 @@ function enrichMention(raw, feed, stockMap) {
       url: raw.url,
       source: raw.sourceOverride ?? feed.name,
       sourceType: raw.sourceType ?? feed.type,
+      contentType: raw.contentType ?? feed.contentType ?? 'article',
+      hasTranscript: raw.hasTranscript ?? false,
+      transcriptPreview: raw.transcriptPreview ?? undefined,
+      figureTags,
       publishedAt: raw.publishedAt,
       detectedAt,
       price: stock?.price ?? 0,
@@ -406,6 +571,11 @@ function buildEarlyHits(mentions) {
   );
 }
 
+function isTipRanksMention(mention) {
+  const hay = `${mention.source} ${mention.headline} ${mention.url}`.toLowerCase();
+  return hay.includes('tipranks') || hay.includes('tipranks.com');
+}
+
 export function getMediaRadarSnapshot(stocks = []) {
   const stockMap = new Map(stocks.map((s) => [s.symbol, s]));
   const earlyHits = buildEarlyHits(state.mentions).map((hit) => {
@@ -425,6 +595,10 @@ export function getMediaRadarSnapshot(stocks = []) {
   return {
     mentions: state.mentions,
     earlyHits,
+    tipRanksNews: state.mentions.filter(isTipRanksMention).slice(0, 40),
+    vipNews: state.mentions.filter(isVipMention).slice(0, 40),
+    videoMentions: state.mentions.filter(isVideoMention).slice(0, 30),
+    xSocialMentions: state.mentions.filter(isXSocialMention).slice(0, 30),
     status: {
       isMonitoring: Boolean(state.pollTimer),
       lastPollAt: state.lastPollAt,
@@ -434,6 +608,11 @@ export function getMediaRadarSnapshot(stocks = []) {
       feedStatus: state.feedStatus,
       mentionCount: state.mentions.length,
       earlyCount: earlyHits.length,
+      tipRanksCount: state.mentions.filter(isTipRanksMention).length,
+      vipCount: state.mentions.filter(isVipMention).length,
+      videoCount: state.mentions.filter(isVideoMention).length,
+      xSocialCount: state.mentions.filter(isXSocialMention).length,
+      transcriptCount: state.mentions.filter((m) => m.hasTranscript).length,
     },
   };
 }
@@ -446,6 +625,7 @@ export function subscribeMediaRadar(callback) {
 async function pollFeeds(getStocks) {
   if (state.isPolling) return;
   state.isPolling = true;
+  resetTranscriptPollBudget();
 
   const newMentions = [];
   let stocks = [];
@@ -461,7 +641,11 @@ async function pollFeeds(getStocks) {
       const items = await fetchFeed(feed);
       state.feedStatus[feed.id] = { ok: true, count: items.length, at: new Date().toISOString() };
       for (const item of items) {
-        const enriched = enrichMention(item, feed, stockMap);
+        const enrichedRaw = await enrichItemWithTranscript({
+          ...item,
+          contentType: feed.contentType ?? item.contentType,
+        });
+        const enriched = enrichMention(enrichedRaw, feed, stockMap);
         for (const m of enriched) {
           const key = mentionKey(m.symbol, m.url, m.headline);
           if (!state.seenKeys.has(key)) {
@@ -527,7 +711,7 @@ async function pollFeeds(getStocks) {
 export function startMediaRadarMonitor(getStocks) {
   if (state.pollTimer) return;
   loadUniverse();
-  console.log(`Media Radar: monitoring ${FEEDS.length + 2} TV/social feeds every ${POLL_INTERVAL_MS / 1000}s`);
+  console.log(`Media Radar: monitoring ${FEEDS.length + 2} TV/social/news feeds every ${POLL_INTERVAL_MS / 1000}s`);
 
   pollFeeds(getStocks).catch((err) => console.warn('Media Radar initial poll failed:', err.message));
 

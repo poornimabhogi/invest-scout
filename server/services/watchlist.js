@@ -4,8 +4,7 @@ import { fileURLToPath } from 'url';
 import { getCandles } from './candles.js';
 import { getScreenerData } from './screener.js';
 import { getStrategies } from './strategies.js';
-import { mergeSignalsIntoScreener } from './signalMerge.js';
-import { getMediaRadarSnapshot } from './mediaRadar.js';
+import { buildMergedScreener } from './mediaSignalProcessor.js';
 import { computeRSI, computeMACD } from './chartAnalysis.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -229,11 +228,7 @@ export async function buildWatchlist(settingsOverride = null) {
 
   const base = await getScreenerData();
   const stocks = base.stocks ?? [];
-  const [strategies, media] = await Promise.all([
-    getStrategies(stocks, false),
-    Promise.resolve(getMediaRadarSnapshot(stocks)),
-  ]);
-  const merged = mergeSignalsIntoScreener(base, strategies, media).stocks ?? stocks;
+  const merged = (await buildMergedScreener(base, { processMedia: true })).stocks ?? stocks;
 
   const candidates = merged
     .filter((s) => passesFastFilters(s, criteria, excluded) || pinned.has(s.symbol))

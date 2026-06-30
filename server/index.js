@@ -5,8 +5,10 @@ import { getPreferences, savePreferences } from './store.js';
 import { getScreenerData, getCacheStatus } from './services/screener.js';
 import { getCandles, computePerformance } from './services/candles.js';
 import { analyzeSmartMoneyConcepts } from './services/smartMoneyConcepts.js';
+import { analyzeMarketStructureBreak } from './services/marketStructureBreak.js';
+import { analyzeUtBot } from './services/utBot.js';
+import { analyzeOptimalTradeEntry } from './services/optimalTradeEntry.js';
 import { getStrategies, getStockDetail } from './services/strategies.js';
-import { mergeSignalsIntoScreener } from './services/signalMerge.js';
 import { getStockForecast, getPortfolioBacktest, runCompoundSimulation } from './services/compound.js';
 import {
   buyShares,
@@ -15,12 +17,14 @@ import {
   getEnrichedPortfolio,
   getPriceFromStocks,
 } from './services/paperPortfolio.js';
+import { fetchLivePrice, fetchLivePrices } from './services/livePrices.js';
 import {
   getMediaRadarSnapshot,
   startMediaRadarMonitor,
   forceMediaRadarPoll,
   subscribeMediaRadar,
 } from './services/mediaRadar.js';
+import { buildMergedScreener, processMediaSnapshot, getMediaProcessingResult } from './services/mediaSignalProcessor.js';
 import { runSelfAnalysis, getLatestReport } from './services/selfAnalyze.js';
 import {
   buildWatchlist,
@@ -29,6 +33,15 @@ import {
   unpinSymbol,
   excludeSymbol,
 } from './services/watchlist.js';
+import {
+  getAutoTradeSettings,
+  updateAutoTradeSettings,
+} from './services/paperAutoTradeSettings.js';
+import {
+  runPaperAutoTrade,
+  getAutoTradeStatus,
+  startPaperAutoTradeMonitor,
+} from './services/paperAutoTrader.js';
 
 const PORT = process.env.PORT || 3001;
 
@@ -39,8 +52,8 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
-    version: '7',
-    routes: ['stocks', 'candles', 'strategies', 'paper', 'media-radar', 'signal-merge', 'self-analyze', 'watchlist'],
+    version: '8',
+    routes: ['stocks', 'candles', 'strategies', 'paper', 'paper-auto-trade', 'media-radar', 'signal-merge', 'self-analyze', 'watchlist'],
   });
 });
 
@@ -61,12 +74,7 @@ app.get('/api/market-data', async (req, res) => {
   try {
     const view = req.query.view || 'all';
     const base = await getScreenerData();
-    const stocks = base.stocks ?? [];
-    const [strategies, mediaSnapshot] = await Promise.all([
-      getStrategies(stocks, false),
-      Promise.resolve(getMediaRadarSnapshot(stocks)),
-    ]);
-    const data = mergeSignalsIntoScreener(base, strategies, mediaSnapshot);
+    const data = await buildMergedScreener(base, { processMedia: true });
 
     switch (view) {
       case 'top-picks':
@@ -125,7 +133,12 @@ app.get('/api/self-analyze', (_req, res) => {
 app.post('/api/self-analyze/run', async (req, res) => {
   try {
     const includeSimulation = req.body?.includeSimulation !== false;
-    const report = await runSelfAnalysis({ includeSimulation });
+    const triggerAutoTrade = req.body?.triggerAutoTrade !== false;
+    const report = await runSelfAnalysis({
+      includeSimulation,
+      resolvePrice: resolveSymbolPrice,
+      triggerAutoTrade,
+    });
     res.json(report);
   } catch (err) {
     console.error('Self-analyze error:', err);
@@ -199,7 +212,10 @@ app.get('/api/stocks/:symbol/candles', async (req, res) => {
     const { candles, source } = await getCandles(symbol.toUpperCase(), range);
     const performance = computePerformance(candles);
     const smc = analyzeSmartMoneyConcepts(candles);
-    res.json({ symbol: symbol.toUpperCase(), range, candles, performance, source, smc });
+    const msb = analyzeMarketStructureBreak(candles);
+    const utBot = analyzeUtBot(candles);
+    const ote = analyzeOptimalTradeEntry(candles);
+    res.json({ symbol: symbol.toUpperCase(), range, candles, performance, source, smc, msb, utBot, ote });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -245,10 +261,16 @@ async function getStocksForRadar() {
   return screener.stocks ?? [];
 }
 
+function attachMediaProcessing(snapshot, processing) {
+  return { ...snapshot, processing };
+}
+
 app.get('/api/media-radar', async (_req, res) => {
   try {
     const stocks = await getStocksForRadar();
-    res.json(getMediaRadarSnapshot(stocks));
+    const snapshot = getMediaRadarSnapshot(stocks);
+    const processing = getMediaProcessingResult();
+    res.json(attachMediaProcessing(snapshot, processing));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -256,8 +278,11 @@ app.get('/api/media-radar', async (_req, res) => {
 
 app.post('/api/media-radar/poll', async (_req, res) => {
   try {
-    const snapshot = await forceMediaRadarPoll(getStocksForRadar);
-    res.json(snapshot);
+    const stocks = await getStocksForRadar();
+    await forceMediaRadarPoll(getStocksForRadar);
+    const snapshot = getMediaRadarSnapshot(stocks);
+    const processing = await processMediaSnapshot(snapshot, stocks, { force: true });
+    res.json(attachMediaProcessing(snapshot, processing));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -285,14 +310,30 @@ app.get('/api/media-radar/stream', async (req, res) => {
 });
 
 async function resolvePrices(symbols) {
-  const map = {};
+  const map = await fetchLivePrices(symbols);
+
+  const missing = symbols.filter((s) => !map[s.toUpperCase()]);
+  if (missing.length) {
+    const screener = await getScreenerData();
+    for (const sym of missing) {
+      const upper = sym.toUpperCase();
+      const fromScreener = getPriceFromStocks(screener.stocks ?? [], upper);
+      if (fromScreener && fromScreener > 0) map[upper] = fromScreener;
+    }
+  }
+
   for (const sym of symbols) {
+    const upper = sym.toUpperCase();
+    if (map[upper] > 0) continue;
     try {
-      map[sym] = await resolveSymbolPrice(sym, null);
+      const { candles, source } = await getCandles(upper, '1D');
+      const last = candles.at(-1)?.close;
+      if (last && last > 0 && source !== 'seed') map[upper] = last;
     } catch {
       /* enrichPortfolio falls back to avgCost */
     }
   }
+
   return map;
 }
 
@@ -301,14 +342,17 @@ async function resolveSymbolPrice(symbol, clientPrice) {
   const parsed = Number(clientPrice);
   if (parsed > 0) return parsed;
 
+  const live = await fetchLivePrice(sym);
+  if (live && live > 0) return live;
+
   const screener = await getScreenerData();
   const fromScreener = getPriceFromStocks(screener.stocks ?? [], sym);
   if (fromScreener && fromScreener > 0) return fromScreener;
 
   try {
-    const { candles } = await getCandles(sym, '1D');
+    const { candles, source } = await getCandles(sym, '1D');
     const last = candles.at(-1)?.close;
-    if (last && last > 0) return last;
+    if (last && last > 0 && source !== 'seed') return last;
   } catch {
     /* fall through */
   }
@@ -360,6 +404,52 @@ app.post('/api/paper/reset', async (req, res) => {
   }
 });
 
+app.get('/api/paper/auto-trade', (_req, res) => {
+  try {
+    res.json(getAutoTradeStatus());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/paper/auto-trade/settings', (req, res) => {
+  try {
+    const allowed = [
+      'enabled',
+      'maxPositions',
+      'positionSizePct',
+      'minStrategyScore',
+      'minVerifiedPerfScore',
+      'buyTopPicks',
+      'buyChartVerified',
+      'buyPremiumEntry',
+      'sellOnAvoid',
+      'useStopLossTakeProfit',
+      'requireChartAudit',
+      'applySelfAnalyzeGates',
+      'cooldownHours',
+    ];
+    const partial = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) partial[key] = req.body[key];
+    }
+    const settings = updateAutoTradeSettings(partial);
+    res.json({ settings, ...getAutoTradeStatus() });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/paper/auto-trade/run', async (_req, res) => {
+  try {
+    const result = await runPaperAutoTrade(resolveSymbolPrice, { force: true });
+    const portfolio = await getEnrichedPortfolio(resolvePrices);
+    res.json({ ...result, portfolio });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/trading-preferences', (_req, res) => {
   res.json(getPreferences());
 });
@@ -383,11 +473,16 @@ app.listen(PORT, () => {
   console.log(`Local API running at http://localhost:${PORT}`);
   getScreenerData().catch((err) => console.error('Initial screener load failed:', err.message));
   startMediaRadarMonitor(getStocksForRadar);
+  startPaperAutoTradeMonitor(resolveSymbolPrice);
 
   subscribeMediaRadar((payload) => {
-    if (payload?.earlyHits?.length) {
+    if (payload?.mentions?.length || payload?.earlyHits?.length) {
       getStocksForRadar()
-        .then((stocks) => getStrategies(stocks, true))
+        .then(async (stocks) => {
+          await processMediaSnapshot(payload, stocks, { force: false });
+          await getStrategies(stocks, true);
+          await runPaperAutoTrade(resolveSymbolPrice).catch(() => {});
+        })
         .catch(() => {});
     }
   });
