@@ -48,6 +48,10 @@ export function getRiskContext({ paperStats = null, backtest = null, compoundPre
     Math.round(weights.highConfidenceThreshold / 6)
   );
 
+  if (autoSettings.accuracyMode) {
+    minStrategyScore = Math.max(minStrategyScore, autoSettings.minStrategyScore ?? 60);
+  }
+
   if (weights.highConfidenceThreshold >= 75) minStrategyScore += 1;
 
   const winRate = backtest?.winRate ?? paperStats?.winRate ?? 55;

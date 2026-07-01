@@ -1,3 +1,6 @@
+import { luxConfirmationQualifies } from './luxConfirmation.js';
+import { gainzQualifies } from './gainzAlgo.js';
+
 const MOMENTUM_OK = new Set(['strong', 'building', 'neutral']);
 
 function buildStructureConfluence(strategy) {
@@ -144,6 +147,22 @@ function qualifiesForTopPick(stock, strategy, media, mediaVerified, verifiedSugg
     isChartVerified &&
     stock.momentumTier !== 'weak';
 
+  const luxHit =
+    luxConfirmationQualifies(strategy?.luxConfirmation, {
+      strongOnly: false,
+    }) &&
+    strategy?.luxConfirmation?.filters?.smartTrail?.pass &&
+    strategy?.luxConfirmation?.filters?.trendStrength?.pass &&
+    MOMENTUM_OK.has(stock.momentumTier);
+
+  const gainzStd = strategy?.gainzAlgo?.standard;
+  const gainzHit =
+    gainzQualifies(gainzStd, { mode: 'standard' }) && MOMENTUM_OK.has(stock.momentumTier);
+
+  const wvfHit =
+    (strategy?.wvf?.capitulation || strategy?.wvf?.fearEasing) &&
+    MOMENTUM_OK.has(stock.momentumTier);
+
   return (
     classic ||
     strategyHit ||
@@ -152,7 +171,10 @@ function qualifiesForTopPick(stock, strategy, media, mediaVerified, verifiedSugg
     mediaStrategyBuy ||
     dualStructureHit ||
     mediaChartVerifiedPerf ||
-    premiumEntryHit
+    premiumEntryHit ||
+    luxHit ||
+    gainzHit ||
+    wvfHit
   );
 }
 
@@ -163,6 +185,9 @@ function buildSignalSources(stock, strategy, media, isChartVerified) {
     sources.push('momentum');
   }
   if (strategy?.recommendation === 'buy') sources.push('strategy');
+  if (strategy?.luxConfirmation?.signal === 'strong_buy') sources.push('lux-confirmation');
+  if (strategy?.gainzAlgo?.standard?.signal === 'buy') sources.push('gainz-algo');
+  if (strategy?.wvf?.capitulation || strategy?.wvf?.fearEasing) sources.push('wvf-capitulation');
   if (media || isChartVerified) sources.push('media-radar');
   return sources;
 }
@@ -180,6 +205,15 @@ function boostedScore(stock, strategy, media, verifiedSuggestion) {
   if (confluence?.tripleConfluence) score += 2;
   if (confluence?.premiumEntry) score += 4;
   if (confluence?.squeeze && confluence?.dualStructure) score += 1;
+
+  if (strategy?.luxConfirmation?.signal === 'strong_buy') score += 4;
+  else if (strategy?.luxConfirmation?.signal === 'buy') score += 2;
+
+  if (strategy?.gainzAlgo?.standard?.signal === 'buy') score += 3;
+  else if (strategy?.gainzAlgo?.alpha?.signal === 'buy') score += 2;
+
+  if (strategy?.wvf?.capitulation) score += 3;
+  else if (strategy?.wvf?.fearEasing) score += 2;
 
   if (verifiedSuggestion) {
     const perfScore = scoreChartVerifiedPerformance(stock, strategy, verifiedSuggestion);
@@ -260,6 +294,10 @@ export function mergeSignalsIntoScreener(
       chartVerified: isChartVerified,
       chartVerifiedPerfScore: verifiedPerfScore,
       chartVerifiedReason: verifiedSuggestion?.chartReason ?? null,
+      luxConfirmation: strategy?.luxConfirmation ?? null,
+      gainzAlgo: strategy?.gainzAlgo ?? null,
+      wvf: strategy?.wvf ?? null,
+      indicatorAudit: strategy?.indicatorAudit ?? verifiedSuggestion?.indicatorAudit ?? null,
       isTopPick: false,
     };
   });

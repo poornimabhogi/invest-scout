@@ -36,6 +36,8 @@ import {
 import {
   getAutoTradeSettings,
   updateAutoTradeSettings,
+  applyAccuracyModePreset,
+  ACCURACY_MODE_TRADING_PREFS,
 } from './services/paperAutoTradeSettings.js';
 import {
   runPaperAutoTrade,
@@ -416,18 +418,34 @@ app.put('/api/paper/auto-trade/settings', (req, res) => {
   try {
     const allowed = [
       'enabled',
+      'accuracyMode',
       'maxPositions',
       'positionSizePct',
       'minStrategyScore',
       'minVerifiedPerfScore',
+      'minBullishIndicators',
+      'maxBearishIndicators',
+      'requireDualStructureForTopPick',
       'buyTopPicks',
       'buyChartVerified',
       'buyPremiumEntry',
+      'buyLuxConfirmation',
+      'buyLuxStrongOnly',
+      'buyGainzAlgo',
+      'gainzAlgoMode',
+      'gainzMinConfidence',
+      'buyWvfCapitulation',
+      'wvfMinCoreBullish',
       'sellOnAvoid',
       'useStopLossTakeProfit',
       'requireChartAudit',
       'applySelfAnalyzeGates',
       'cooldownHours',
+      'useCapSplitting',
+      'investmentAmount',
+      'splitLargePct',
+      'splitMidPct',
+      'splitSmallPct',
     ];
     const partial = {};
     for (const key of allowed) {
@@ -435,6 +453,33 @@ app.put('/api/paper/auto-trade/settings', (req, res) => {
     }
     const settings = updateAutoTradeSettings(partial);
     res.json({ settings, ...getAutoTradeStatus() });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/paper/auto-trade/accuracy-mode', (req, res) => {
+  try {
+    const enable = req.body?.enable !== false;
+    const settings = applyAccuracyModePreset(enable);
+
+    let tradingPreferences = null;
+    if (enable) {
+      const existing = getPreferences() ?? {};
+      tradingPreferences = {
+        ...existing,
+        ...ACCURACY_MODE_TRADING_PREFS,
+        maxPositionSize: existing.maxPositionSize ?? 1000,
+        updatedAt: new Date().toISOString(),
+      };
+      savePreferences(tradingPreferences);
+    }
+
+    res.json({
+      settings,
+      tradingPreferences,
+      ...getAutoTradeStatus(),
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

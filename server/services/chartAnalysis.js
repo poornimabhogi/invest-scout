@@ -1,4 +1,6 @@
 import { computeSqueezeMomentum } from './squeezeMomentum.js';
+import { computeWilliamsVixFix } from './williamsVixFix.js';
+import { getLearningWeights } from './learningWeights.js';
 
 const POSITIVE = [
   'surge', 'soar', 'jump', 'rally', 'beat', 'growth', 'record', 'upgrade', 'buy',
@@ -159,6 +161,13 @@ export function analyzeChart(candles) {
         trend: 'insufficient',
         signals: [],
       },
+      wvf: {
+        value: null,
+        capitulation: false,
+        fearEasing: false,
+        signals: [],
+        recommendation: 'watch',
+      },
     };
   }
 
@@ -200,17 +209,21 @@ export function analyzeChart(candles) {
   const squeeze = computeSqueezeMomentum(candles);
   signals.push(...squeeze.signals);
 
+  const wvf = computeWilliamsVixFix(candles);
+  signals.push(...wvf.signals);
+
   let pattern = 'Consolidation';
   if (lifetimeReturn > 50 && last > (sma50 ?? last)) pattern = 'Long-term uptrend';
   else if (lifetimeReturn < -20) pattern = 'Long-term downtrend';
   else if (rsi < 40 && last > closes[closes.length - 5]) pattern = 'Oversold reversal setup';
+  else if (wvf.capitulation || wvf.fearEasing) pattern = 'WVF capitulation — potential washout low';
   else if (squeeze.squeezeOff && squeeze.momentum === 'bullish' && squeeze.trend === 'accelerating_up') {
     pattern = 'Squeeze fired — bullish momentum breakout';
   } else if (squeeze.squeezeOn) pattern = 'Volatility squeeze — breakout pending';
   else if (macd.trend === 'bullish') pattern = 'MACD bullish — uptrend momentum';
   else if (macd.trend === 'bearish') pattern = 'MACD bearish — downtrend pressure';
 
-  return { rsi, sma20, sma50, sma200, signals, lifetimeReturn, pattern, macd, squeeze };
+  return { rsi, sma20, sma50, sma200, signals, lifetimeReturn, pattern, macd, squeeze, wvf };
 }
 
 export function scoreNewsSentiment(headline) {
@@ -222,10 +235,19 @@ export function scoreNewsSentiment(headline) {
 }
 
 export function buildStrategyScore(stock, chartAnalysis, newsItems, smc = null, msb = null, utBot = null, ote = null) {
+  const w = getLearningWeights();
+  const rsi = chartAnalysis.rsi ?? 50;
+  const momScale = Math.min(1.2, Math.max(0.75, w.momentumMultiplier ?? 1));
+  const macdBullScale = (w.macdBullishBoost ?? 0.001) / 0.001;
+  const macdBearScale = (w.macdBearishPenalty ?? 0.001) / 0.001;
+
   let score = stock.compositeScore ?? 0;
 
-  if (chartAnalysis.rsi < 40) score += 5;
-  if (chartAnalysis.rsi > 70) score -= 3;
+  if (rsi < 40) score += 5;
+  if (rsi > 70) {
+    const rsiPen = 3 + Math.round(((rsi - 70) / 10) * (w.rsiOverboughtPenalty / 0.003) * 4);
+    score -= rsiPen;
+  }
   for (const s of chartAnalysis.signals) {
     if (s.includes('breakout') || s.includes('Golden') || s.includes('Volume spike')) score += 4;
     if (s.includes('Downtrend') || s.includes('overbought')) score -= 3;
@@ -234,15 +256,22 @@ export function buildStrategyScore(stock, chartAnalysis, newsItems, smc = null, 
   const newsScore = newsItems.reduce((sum, n) => sum + scoreNewsSentiment(n.headline), 0);
   score += newsScore * 2;
 
-  if (stock.momentumTier === 'strong') score += 5;
+  if (stock.momentumTier === 'strong') score += Math.round(5 * momScale);
+  else if (stock.momentumTier === 'building') score += Math.round(2 * momScale);
+  if (stock.momentumTier === 'strong' && rsi > 70) {
+    score -= Math.round(4 * (1 / momScale));
+  }
   if (stock.celebrityScore >= 2) score += 4;
-  if (chartAnalysis.macd?.trend === 'bullish') score += 3;
-  if (chartAnalysis.macd?.trend === 'bearish') score -= 2;
+  if (chartAnalysis.macd?.trend === 'bullish') score += Math.round(3 * macdBullScale);
+  if (chartAnalysis.macd?.trend === 'bearish') score -= Math.round(2 * macdBearScale);
 
   const sqz = chartAnalysis.squeeze;
   if (sqz?.squeezeOff && sqz.momentum === 'bullish' && sqz.trend === 'accelerating_up') score += 4;
   else if (sqz?.squeezeOn) score += 1;
   else if (sqz?.squeezeOff && sqz.momentum === 'bearish') score -= 2;
+
+  const wvf = chartAnalysis.wvf;
+  if (wvf?.capitulation || wvf?.fearEasing) score += 4;
 
   if (smc?.recommendation === 'buy') score += 4;
   else if (smc?.recommendation === 'avoid') score -= 3;
@@ -260,20 +289,33 @@ export function buildStrategyScore(stock, chartAnalysis, newsItems, smc = null, 
   if (utBot?.position === 'long') score += 2;
   if (utBot?.position === 'short') score -= 2;
 
-  // Dual structure + UT Bot confluence boost
   const smcBull = smc?.recommendation === 'buy' || smc?.trend === 'bullish';
   const msbBull = msb?.recommendation === 'buy' || msb?.market === 'bullish';
-  if (smcBull && msbBull) score += 5;
-  if (smcBull && msbBull && utBot?.position === 'long') score += 3;
+  const dualStructure = smcBull && msbBull;
+  if (dualStructure) score += 5;
+  if (dualStructure && utBot?.position === 'long') score += 3;
 
   if (ote?.recommendation === 'buy') score += 4;
   else if (ote?.recommendation === 'avoid') score -= 2;
   if (ote?.inOteZone && ote?.bias === 'bullish') score += 3;
-  if (smcBull && msbBull && ote?.inOteZone) score += 4;
+  if (dualStructure && ote?.inOteZone) score += 4;
 
   let recommendation = 'watch';
   if (score >= 15 && stock.aiRecommendation !== 'sell') recommendation = 'buy';
   else if (score < 5 || stock.aiRecommendation === 'sell') recommendation = 'avoid';
+
+  if (
+    recommendation === 'buy' &&
+    rsi > 72 &&
+    !dualStructure &&
+    (stock.momentumTier === 'strong' || (stock.momentumScore ?? 0) > 5)
+  ) {
+    recommendation = 'watch';
+    score = Math.min(score, 14);
+  } else if (recommendation === 'buy' && rsi > 70 && !dualStructure && momScale < 0.85) {
+    recommendation = 'watch';
+    score = Math.min(score, 14);
+  }
 
   return { score: Math.round(score * 10) / 10, recommendation, newsScore };
 }

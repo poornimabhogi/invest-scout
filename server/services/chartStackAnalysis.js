@@ -6,7 +6,7 @@ import { analyzeUtBot, buildStructureConfluence } from './utBot.js';
 import { analyzeOptimalTradeEntry } from './optimalTradeEntry.js';
 import { buildIndicatorAudit } from './chartIndicatorAudit.js';
 
-/** Full chart stack (RSI, MACD, Squeeze, SMC, MSB, UT Bot, OTE) — no news fetch */
+/** Full chart stack (RSI, MACD, Squeeze, SMC, MSB, UT Bot, OTE, WVF) — no news fetch */
 export function analyzeChartStack(candles, stock = {}) {
   const chartAnalysis = analyzeChart(candles);
   const smc = analyzeSmartMoneyConcepts(candles);
@@ -52,10 +52,12 @@ export function analyzeChartStack(candles, stock = {}) {
     symbol: stock.symbol,
     recommendation,
     strategyScore: score,
+    momentumScore: stock.momentumScore ?? 0,
     rsi: chartAnalysis.rsi,
     macdTrend: chartAnalysis.macd?.trend ?? 'insufficient',
     squeezeMomentum: chartAnalysis.squeeze?.momentum ?? 'insufficient',
     squeezeOn: chartAnalysis.squeeze?.squeezeOn ?? false,
+    wvfCapitulation: chartAnalysis.wvf?.capitulation ?? false,
     smcRecommendation: smc.recommendation,
     msbRecommendation: msb.recommendation,
     utBotRecommendation: utBot.recommendation,

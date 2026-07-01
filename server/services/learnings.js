@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
 import { forecastNextDay } from './forecast.js';
-import { DEFAULT_WEIGHTS as DEFAULT_WEIGHTS_IMPORT } from './learningWeights.js';
+import { DEFAULT_WEIGHTS as DEFAULT_WEIGHTS_IMPORT, clampLearningWeights } from './learningWeights.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', 'data');
@@ -33,7 +33,11 @@ function saveJson(file, data) {
 
 export function getLearningWeights() {
   const data = loadJson(LEARNINGS_FILE, { weights: { ...DEFAULT_WEIGHTS }, lessons: [], stats: {} });
-  return { ...DEFAULT_WEIGHTS, ...data.weights };
+  return clampLearningWeights({ ...DEFAULT_WEIGHTS, ...data.weights });
+}
+
+function clampWeights(weights) {
+  return clampLearningWeights(weights);
 }
 
 export function getLearningsState() {
@@ -125,6 +129,22 @@ function diagnosePrediction(pred, actualPrice) {
   }
 
   const rsi = pred.factors?.rsi ?? 50;
+  const goldenTrend = pred.factors?.goldenTrend;
+  const pullbackInUptrend = pred.factors?.pullbackInUptrend;
+  const macdTrend = pred.factors?.macdTrend;
+  const conflictingSignals = pred.factors?.conflictingSignals;
+
+  if (pullbackInUptrend && predictedDown && actualUp) {
+    diagnosis.push(
+      'Pullback-in-uptrend miss — short-term dip in golden trend; model over-weighted 5d momentum'
+    );
+  }
+  if (macdTrend === 'bearish' && goldenTrend && predictedDown && actualUp) {
+    diagnosis.push('MACD lag in uptrend — bearish MACD during price above SMA20/50 rally');
+  }
+  if (conflictingSignals && outcome !== 'correct') {
+    diagnosis.push('Conflicting momentum (5d vs 20d) — forecast should have been lower confidence');
+  }
   if (rsi > 70 && predictedUp && actualDown) {
     diagnosis.push('RSI overbought trap — momentum looked strong but mean-reversion won');
   }
@@ -163,6 +183,9 @@ function applyLearningFromResults(results) {
     momentum_reversal: 0,
     overconfidence: 0,
     range_miss: 0,
+    macd_lag_uptrend: 0,
+    pullback_uptrend: 0,
+    conflicting_momentum: 0,
   };
 
   for (const r of results) {
@@ -172,6 +195,9 @@ function applyLearningFromResults(results) {
       if (d.includes('Overconfidence')) counts.overconfidence++;
       if (d.includes('overbought trap')) counts.rsi_trap++;
       if (d.includes('Momentum reversal')) counts.momentum_reversal++;
+      if (d.includes('MACD lag in uptrend')) counts.macd_lag_uptrend++;
+      if (d.includes('Pullback-in-uptrend')) counts.pullback_uptrend++;
+      if (d.includes('Conflicting momentum')) counts.conflicting_momentum++;
     }
   }
 
@@ -182,7 +208,7 @@ function applyLearningFromResults(results) {
     adjustments.push('Increased RSI overbought penalty — too many false bullish calls near RSI 70+');
   }
   if (counts.momentum_reversal >= 2) {
-    weights.momentumMultiplier = Math.max(0.6, weights.momentumMultiplier - 0.08);
+    weights.momentumMultiplier = Math.max(0.75, weights.momentumMultiplier - 0.08);
     adjustments.push('Reduced momentum drift weight — strong momentum reversed next day');
   }
   if (counts.range_miss >= 2) {
@@ -193,9 +219,23 @@ function applyLearningFromResults(results) {
     weights.highConfidenceThreshold = Math.min(85, weights.highConfidenceThreshold + 2);
     adjustments.push('Raised high-confidence bar — model was overconfident on misses');
   }
+  if (counts.macd_lag_uptrend >= 2 || counts.pullback_uptrend >= 2) {
+    weights.trendDamping = Math.max(0.15, (weights.trendDamping ?? 0.35) - 0.08);
+    weights.pullbackDamping = Math.max(0.2, (weights.pullbackDamping ?? 0.45) - 0.1);
+    weights.macdBearishPenalty = Math.max(0.0005, weights.macdBearishPenalty - 0.0003);
+    adjustments.push(
+      'Reduced MACD bearish weight in uptrends — lagging indicator caused false down calls'
+    );
+  }
+  if (counts.conflicting_momentum >= 2) {
+    weights.highConfidenceThreshold = Math.min(85, weights.highConfidenceThreshold + 1);
+    adjustments.push('Raised confidence bar — too many misses when 5d/20d momentum conflicted');
+  }
   if (counts.direction_wrong >= 3 && results.length >= 5) {
-    weights.macdBearishPenalty = Math.min(0.004, weights.macdBearishPenalty + 0.0005);
+    weights.macdBearishPenalty = Math.min(0.003, weights.macdBearishPenalty + 0.0003);
     weights.macdBullishBoost = Math.max(0.0003, weights.macdBullishBoost - 0.0002);
+    weights.momentumMultiplier = Math.max(0.75, weights.momentumMultiplier - 0.05);
+    adjustments.push('Tightened short-term momentum after repeated direction misses');
     adjustments.push('Tightened MACD influence after repeated direction misses');
   }
 
@@ -216,10 +256,10 @@ function applyLearningFromResults(results) {
     lessons.unshift({ date: today, text: adj, applied: true });
   }
   state.lessons = lessons.slice(0, 30);
-  state.weights = weights;
+  state.weights = clampWeights(weights);
   saveLearnings(state);
 
-  return { adjustments, weights, stats: state.stats };
+  return { adjustments, weights: state.weights, stats: state.stats };
 }
 
 export { applyLearningFromResults };
@@ -252,6 +292,12 @@ export function recordHighConfidencePredictions(forecasts, threshold) {
         momentumScore: f.momentumScore ?? 0,
         drift: f.expectedChangePct / 100,
         atr: f.atr,
+        mom5: f.factors?.mom5,
+        mom20: f.factors?.mom20,
+        macdTrend: f.factors?.macdTrend,
+        goldenTrend: f.factors?.goldenTrend,
+        pullbackInUptrend: f.factors?.pullbackInUptrend,
+        conflictingSignals: f.factors?.conflictingSignals,
       },
       status: 'pending',
       actualPrice: null,
@@ -298,13 +344,21 @@ export async function resolvePendingPredictions(getCandlesAsync) {
 export async function runHistoricalSimulation(symbols, forecastFn, lookbackDays = 30) {
   const results = [];
   const threshold = getLearningWeights().highConfidenceThreshold;
+  const maxPerSymbol = 3;
+  const maxTotal = 20;
 
-  for (const symbol of symbols.slice(0, 12)) {
+  for (const symbol of symbols.slice(0, 10)) {
+    if (results.length >= maxTotal) break;
     try {
       const { candles } = await forecastFn(symbol);
       if (candles.length < lookbackDays + 40) continue;
 
-      for (let i = candles.length - lookbackDays - 1; i < candles.length - 1; i++) {
+      const start = candles.length - lookbackDays - 1;
+      const end = candles.length - 1;
+      const step = Math.max(1, Math.floor((end - start) / maxPerSymbol));
+      let symbolCount = 0;
+
+      for (let i = start; i < end && symbolCount < maxPerSymbol && results.length < maxTotal; i += step) {
         const slice = candles.slice(0, i + 1);
         const stock = { symbol, price: slice.at(-1).close, momentumScore: 0 };
         const forecast = forecastNextDay(slice, stock);
@@ -319,11 +373,21 @@ export async function runHistoricalSimulation(symbols, forecastFn, lookbackDays 
           highEstimate: forecast.highEstimate,
           direction: forecast.direction,
           confidence: forecast.confidence,
-          factors: { rsi: forecast.rsi, momentumScore: 0 },
+          factors: {
+            rsi: forecast.rsi,
+            momentumScore: 0,
+            mom5: forecast.factors?.mom5,
+            mom20: forecast.factors?.mom20,
+            macdTrend: forecast.factors?.macdTrend,
+            goldenTrend: forecast.factors?.goldenTrend,
+            pullbackInUptrend: forecast.factors?.pullbackInUptrend,
+            conflictingSignals: forecast.factors?.conflictingSignals,
+          },
           targetDate: tradingDayKey(candles[i + 1].time),
         };
         const result = diagnosePrediction(pred, actualPrice);
         results.push({ ...pred, ...result, simulated: true });
+        symbolCount++;
       }
     } catch {
       /* skip */

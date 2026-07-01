@@ -134,6 +134,17 @@ export interface SelfAnalyzeReport {
     riskGate?: { allow: boolean; reason: string };
     error?: string;
   };
+  forecastConflicts?: {
+    symbol: string;
+    issue: string;
+    forecastDirection?: string;
+    forecastConfidence?: number;
+    bullishIndicators?: number;
+    bearishIndicators?: number;
+    suggestion: string;
+  }[];
+  modelImprovements?: string[];
+  forecastsFiltered?: number;
 }
 
 export interface SelfAnalyzeState {

@@ -20,7 +20,9 @@ export interface MomentumSignals {
 
 import { StructureConfluence } from './utBot';
 
-export type SignalSource = 'celebrity' | 'strategy' | 'media-radar' | 'momentum';
+export type SignalSource = 'celebrity' | 'strategy' | 'media-radar' | 'momentum' | 'lux-confirmation' | 'gainz-algo' | 'wvf-capitulation';
+
+export type MarketCapScale = 'large' | 'mid' | 'small' | 'micro' | 'unknown';
 
 export interface Stock {
   symbol: string;
@@ -30,6 +32,8 @@ export interface Stock {
   changePercentage: number;
   riskLevel: RiskLevel;
   marketCap: number;
+  marketCapScale?: MarketCapScale;
+  peRatio?: number | null;
   volume: number;
   market: MarketType;
   sector: string;
@@ -50,6 +54,27 @@ export interface Stock {
   chartVerified?: boolean;
   chartVerifiedPerfScore?: number | null;
   chartVerifiedReason?: string | null;
+  luxConfirmation?: {
+    signal: string;
+    isStrong?: boolean;
+    classification?: number;
+    classificationLabel?: string;
+    candleColor?: string;
+    exitSignal?: boolean;
+  } | null;
+  gainzAlgo?: {
+    standard?: { signal: string; confidence?: number; allLayersPass?: boolean };
+    alpha?: { signal: string; confidence?: number };
+    pro?: { signal: string; confidence?: number; score?: number };
+  } | null;
+  wvf?: {
+    value?: number | null;
+    capitulation?: boolean;
+    fearEasing?: boolean;
+    recommendation?: string;
+    signals?: string[];
+  } | null;
+  indicatorAudit?: import('@/components/ChartIndicatorChecklist').IndicatorAudit | null;
 }
 
 export interface CelebrityInvestor {

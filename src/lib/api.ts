@@ -156,6 +156,15 @@ export const api = {
     return request('/paper/auto-trade/run', { method: 'POST' });
   },
 
+  applyPaperAutoTradeAccuracyMode(
+    enable = true
+  ): Promise<import('@/types/paperAutoTrade').AutoTradeStatus & { tradingPreferences?: unknown }> {
+    return request('/paper/auto-trade/accuracy-mode', {
+      method: 'POST',
+      body: JSON.stringify({ enable }),
+    });
+  },
+
   getMediaRadar(): Promise<MediaRadarResponse> {
     return request<MediaRadarResponse>('/media-radar');
   },

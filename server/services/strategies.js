@@ -6,6 +6,8 @@ import { analyzeMarketStructureBreak } from './marketStructureBreak.js';
 import { analyzeUtBot, buildStructureConfluence } from './utBot.js';
 import { analyzeOptimalTradeEntry } from './optimalTradeEntry.js';
 import { buildIndicatorAudit } from './chartIndicatorAudit.js';
+import { analyzeLuxConfirmation } from './luxConfirmation.js';
+import { analyzeGainzAlgo } from './gainzAlgo.js';
 
 const FINNHUB_BASE = 'https://finnhub.io/api/v1';
 const NEWS_CACHE_TTL = 30 * 60 * 1000;
@@ -94,6 +96,18 @@ export async function buildStrategyForStock(stock) {
   const news = await fetchNews(stock.symbol);
   const { score, recommendation, newsScore } = buildStrategyScore(stock, chartAnalysis, news, smc, msb, utBot, ote);
   const indicatorAudit = buildIndicatorAudit(chartAnalysis, smc, msb, utBot, ote, recommendation);
+  const luxConfirmation = analyzeLuxConfirmation(candles, stock, {
+    chartAnalysis,
+    utBot,
+    smc,
+    msb,
+    ote,
+  });
+  const gainzAlgo = {
+    standard: analyzeGainzAlgo(candles, stock, { chartAnalysis, utBot, smc, msb, ote }, 'standard'),
+    alpha: analyzeGainzAlgo(candles, stock, { chartAnalysis, utBot, smc, msb, ote }, 'alpha'),
+    pro: analyzeGainzAlgo(candles, stock, { chartAnalysis, utBot, smc, msb, ote }, 'pro'),
+  };
 
   return {
     symbol: stock.symbol,
@@ -151,6 +165,9 @@ export async function buildStrategyForStock(stock) {
       chartSignals: [...chartAnalysis.signals, ...smc.signals, ...msb.signals, ...utBot.signals, ...ote.signals],
     }),
     indicatorAudit,
+    luxConfirmation,
+    gainzAlgo,
+    wvf: chartAnalysis.wvf ?? null,
   };
 }
 
@@ -255,6 +272,18 @@ export async function getStockDetail(symbol, stockFromCache) {
   };
 
   const { score, recommendation } = buildStrategyScore(stock, analysis, news, smc, msb, utBot, ote);
+  const luxConfirmation = analyzeLuxConfirmation(chartCandles, stock, {
+    chartAnalysis: analysis,
+    utBot,
+    smc,
+    msb,
+    ote,
+  });
+  const gainzAlgo = {
+    standard: analyzeGainzAlgo(chartCandles, stock, { chartAnalysis: analysis, utBot, smc, msb, ote }, 'standard'),
+    alpha: analyzeGainzAlgo(chartCandles, stock, { chartAnalysis: analysis, utBot, smc, msb, ote }, 'alpha'),
+    pro: analyzeGainzAlgo(chartCandles, stock, { chartAnalysis: analysis, utBot, smc, msb, ote }, 'pro'),
+  };
 
   const perf1Y = computePerformance(candles1Y);
   const perfMax = computePerformance(candlesMax.length > 0 ? candlesMax : candles1Y);
@@ -291,6 +320,15 @@ export async function getStockDetail(symbol, stockFromCache) {
         trend: analysis.squeeze?.trend ?? 'insufficient',
         signals: analysis.squeeze?.signals ?? [],
       },
+      wvf: {
+        value: analysis.wvf?.value ?? null,
+        upperBand: analysis.wvf?.upperBand ?? null,
+        rangeHigh: analysis.wvf?.rangeHigh ?? null,
+        capitulation: analysis.wvf?.capitulation ?? false,
+        fearEasing: analysis.wvf?.fearEasing ?? false,
+        recommendation: analysis.wvf?.recommendation ?? 'watch',
+        signals: analysis.wvf?.signals ?? [],
+      },
     },
     news,
     strategy: {
@@ -302,6 +340,8 @@ export async function getStockDetail(symbol, stockFromCache) {
     msb,
     utBot,
     ote,
+    luxConfirmation,
+    gainzAlgo,
     dataSource: source,
   };
 }

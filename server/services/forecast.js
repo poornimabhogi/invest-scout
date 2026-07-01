@@ -20,6 +20,35 @@ function dailyReturns(closes) {
   return returns;
 }
 
+function avgMomentum(returns, days) {
+  const slice = returns.slice(-days);
+  if (!slice.length) return 0;
+  return slice.reduce((a, b) => a + b, 0) / slice.length;
+}
+
+function totalReturnMomentum(closes, days) {
+  if (closes.length < days + 1) return 0;
+  const start = closes[closes.length - days - 1];
+  const end = closes.at(-1);
+  if (!start || start <= 0) return 0;
+  return (end - start) / start / days;
+}
+
+function detectTrendRegime(closes, sma20, sma50, lastClose) {
+  const goldenTrend = sma20 && sma50 && lastClose > sma20 && sma20 > sma50;
+  const aboveSma50 = sma50 && lastClose > sma50;
+  const aboveSma20 = sma20 && lastClose > sma20;
+  return { goldenTrend, aboveSma50, aboveSma20 };
+}
+
+function histogramRising(macd) {
+  const series = macd.series ?? [];
+  if (series.length < 2) return false;
+  const last = series.at(-1)?.histogram;
+  const prev = series.at(-2)?.histogram;
+  return last != null && prev != null && last > prev;
+}
+
 /** Simple signal: would our rules have flagged a buy on this slice? */
 function isBuySetup(candles) {
   if (candles.length < 30) return false;
@@ -89,7 +118,7 @@ export function backtestSymbol(candles, lookbackDays = 90) {
 }
 
 /**
- * Next-session estimate — NOT a guarantee. Uses momentum drift + ATR range.
+ * Next-session estimate — NOT a guarantee. Uses regime-aware momentum + ATR range.
  */
 export function forecastNextDay(candles, stock = {}) {
   const weights = getLearningWeights();
@@ -97,32 +126,66 @@ export function forecastNextDay(candles, stock = {}) {
   const lastClose = closes.at(-1) ?? stock.price ?? 0;
   const atr = computeATR(candles);
   const returns = dailyReturns(closes);
-  const recentReturns = returns.slice(-5);
-  const momentum =
-    recentReturns.length > 0
-      ? recentReturns.reduce((a, b) => a + b, 0) / recentReturns.length
-      : 0;
+
+  const mom5 = avgMomentum(returns, 5);
+  const mom10 = avgMomentum(returns, 10);
+  const mom20 = totalReturnMomentum(closes, 20);
 
   const rsi = computeRSI(closes);
   const macd = computeMACD(closes);
+  const sma20 = computeSMA(closes, 20);
+  const sma50 = computeSMA(closes, 50);
+  const regime = detectTrendRegime(closes, sma20, sma50, lastClose);
   const backtest = backtestSymbol(candles);
 
-  let drift = momentum * weights.momentumMultiplier;
+  const pullbackInUptrend =
+    regime.goldenTrend && mom20 > 0.001 && mom5 < -0.003;
+
+  let drift;
+  if (pullbackInUptrend) {
+    drift =
+      (mom5 * weights.pullbackDamping * 0.3 +
+        mom10 * 0.35 +
+        mom20 * 0.35) *
+      weights.momentumMultiplier;
+  } else if (regime.goldenTrend) {
+    drift = (mom5 * 0.35 + mom10 * 0.35 + mom20 * 0.3) * weights.momentumMultiplier;
+  } else {
+    drift = (mom5 * 0.5 + mom10 * 0.3 + mom20 * 0.2) * weights.momentumMultiplier;
+  }
+
   if (rsi > 70) drift -= weights.rsiOverboughtPenalty;
+  if (rsi > 70 && (stock.momentumScore ?? 0) > 4) {
+    drift -= weights.rsiOverboughtPenalty * 1.5;
+  }
   if (rsi < 35) drift += weights.rsiOversoldBoost;
-  if (macd.trend === 'bullish') drift += weights.macdBullishBoost;
-  if (macd.trend === 'bearish') drift -= weights.macdBearishPenalty;
+
+  if (macd.trend === 'bullish') {
+    drift += weights.macdBullishBoost;
+  } else if (macd.trend === 'bearish') {
+    let penalty = weights.macdBearishPenalty;
+    if (regime.goldenTrend || regime.aboveSma50) {
+      penalty *= weights.trendDamping ?? 0.35;
+    }
+    if (histogramRising(macd)) penalty *= 0.5;
+    drift -= penalty;
+  }
+
+  if (regime.goldenTrend) drift += weights.trendAlignmentBoost ?? 0.0008;
+  else if (regime.aboveSma50 && mom20 > 0) drift += (weights.trendAlignmentBoost ?? 0.0008) * 0.5;
 
   const pointEstimate = lastClose * (1 + drift);
   const atrMult = weights.atrMultiplier;
-  const lowEstimate = pointEstimate - atr * atrMult;
-  const highEstimate = pointEstimate + atr * atrMult;
+  const conflictingSignals = mom5 < -0.002 && mom20 > 0.002;
+  const rangeMult = conflictingSignals || (macd.trend === 'bearish' && regime.goldenTrend) ? atrMult * 1.15 : atrMult;
+  const lowEstimate = pointEstimate - atr * rangeMult;
+  const highEstimate = pointEstimate + atr * rangeMult;
 
   const direction =
-    drift > 0.002 ? 'up' : drift < -0.002 ? 'down' : 'flat';
+    drift > 0.0015 ? 'up' : drift < -0.0015 ? 'down' : 'flat';
 
   const historicalWinRate = backtest.winRate;
-  const confidence = Math.min(
+  let confidence = Math.min(
     95,
     Math.max(
       weights.confidenceFloor,
@@ -135,6 +198,19 @@ export function forecastNextDay(candles, stock = {}) {
       )
     )
   );
+
+  if (conflictingSignals) confidence -= 10;
+  if (macd.trend === 'bearish' && regime.goldenTrend) confidence -= 7;
+  if (pullbackInUptrend && direction === 'down') confidence -= 8;
+  if (regime.goldenTrend && direction === 'up') confidence += 3;
+  if (rsi > 72 && direction === 'up' && (stock.momentumScore ?? 0) > 4) {
+    confidence -= 18;
+    drift -= weights.rsiOverboughtPenalty;
+  }
+  if (rsi > 70 && direction === 'up') {
+    confidence = Math.min(confidence, weights.highConfidenceThreshold + 8);
+  }
+  confidence = Math.min(95, Math.max(weights.confidenceFloor, confidence));
 
   return {
     symbol: stock.symbol,
@@ -149,6 +225,14 @@ export function forecastNextDay(candles, stock = {}) {
     atr: Math.round(atr * 100) / 100,
     rsi,
     backtest,
+    factors: {
+      mom5: Math.round(mom5 * 10000) / 100,
+      mom20: Math.round(mom20 * 10000) / 100,
+      macdTrend: macd.trend,
+      goldenTrend: regime.goldenTrend,
+      pullbackInUptrend,
+      conflictingSignals,
+    },
     disclaimer:
       'Statistical estimate only — not financial advice. Past win rates do not guarantee future results.',
   };

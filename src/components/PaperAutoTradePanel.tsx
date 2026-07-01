@@ -9,15 +9,19 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { BotIcon, PlayIcon, RefreshCwIcon } from 'lucide-react';
+import { BotIcon, PlayIcon, RefreshCwIcon, TargetIcon, PieChartIcon } from 'lucide-react';
 
 const STRATEGY_LABELS: Record<string, string> = {
   'top-pick': 'Top Pick',
   'chart-verified': 'Chart Verified',
   'premium-entry': 'Premium OTE',
+  'lux-confirmation': 'Lux Confirm',
+  'lux-strong': 'Lux Strong +',
+  'lux-exit': 'Lux Exit',
   'stop-loss': 'Stop Loss',
   'take-profit': 'Take Profit',
   'signal-exit': 'Signal Exit',
+  'wvf-capitulation': 'WVF Capitulation',
   manual: 'Manual',
 };
 
@@ -44,8 +48,29 @@ export function PaperAutoTradePanel() {
   };
 
   const handleToggle = async (enabled: boolean) => {
+    if (!settings) return;
+    if (enabled && settings.useCapSplitting !== false && !(settings.investmentAmount ?? 0)) {
+      toast.error('Set an investment amount before enabling cap-split auto-trade');
+      return;
+    }
     await saveSettings({ enabled });
     toast.success(enabled ? 'Auto-trade enabled' : 'Auto-trade paused');
+  };
+
+  const handleAccuracyMode = async (enable: boolean) => {
+    try {
+      await api.applyPaperAutoTradeAccuracyMode(enable);
+      queryClient.invalidateQueries({ queryKey: ['paperAutoTrade'] });
+      queryClient.invalidateQueries({ queryKey: ['paperPortfolio'] });
+      queryClient.invalidateQueries({ queryKey: ['tradingPreferences'] });
+      toast.success(
+        enable
+          ? 'Accuracy mode on — ≥4/7 bullish, dual structure, conservative risk'
+          : 'Standard mode restored'
+      );
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Failed to apply mode');
+    }
   };
 
   const handleRunNow = async () => {
@@ -72,7 +97,10 @@ export function PaperAutoTradePanel() {
     return <div className="text-sm text-muted-foreground">Loading auto-trade settings…</div>;
   }
 
-  const stats = data.strategyStats ?? {};
+  const cap = data?.capAllocation;
+  const splitSum =
+    (settings.splitLargePct ?? 50) + (settings.splitMidPct ?? 25) + (settings.splitSmallPct ?? 25);
+  const stats = data?.strategyStats ?? {};
 
   return (
     <Card className="border-dashed border-violet-200 bg-violet-50/30">
@@ -100,6 +128,132 @@ export function PaperAutoTradePanel() {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {settings.accuracyMode && (
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 px-3 py-2 text-xs text-emerald-900">
+            <p className="font-semibold flex items-center gap-1.5">
+              <TargetIcon size={14} />
+              Accuracy mode active
+            </p>
+            <p className="text-emerald-800/90 mt-0.5">
+              Top picks need ≥4/7 bullish, ≤2 bearish, dual structure or premium OTE, strategy score
+              ≥{settings.minStrategyScore}, chart perf ≥{settings.minVerifiedPerfScore}. Lux strong
+              confirmation enabled. Max 2 buys/day (Trading Preferences).
+            </p>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant={settings.accuracyMode ? 'default' : 'outline'}
+            className="gap-1"
+            onClick={() => handleAccuracyMode(true)}
+          >
+            <TargetIcon size={14} />
+            Accuracy mode
+          </Button>
+          {settings.accuracyMode && (
+            <Button size="sm" variant="ghost" onClick={() => handleAccuracyMode(false)}>
+              Use standard mode
+            </Button>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-sky-200 bg-sky-50/50 p-3 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold flex items-center gap-1.5 text-sky-900">
+              <PieChartIcon size={15} />
+              Smart cap split
+            </p>
+            <Switch
+              checked={settings.useCapSplitting !== false}
+              onCheckedChange={(v) => saveSettings({ useCapSplitting: v })}
+            />
+          </div>
+          <p className="text-xs text-sky-800/90">
+            Large cap = safe setup (chart verified, Lux, premium OTE). Mid/small use the same
+            signals with lighter gates so you can test strategies across cap sizes.
+          </p>
+
+          {settings.useCapSplitting !== false && (
+            <>
+              <div>
+                <Label className="text-xs">Total to invest ($)</Label>
+                <Input
+                  type="number"
+                  min={1000}
+                  step={1000}
+                  value={settings.investmentAmount ?? 100_000}
+                  onChange={(e) => saveSettings({ investmentAmount: Number(e.target.value) })}
+                  className="h-8 mt-1"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    { key: 'splitLargePct', label: 'Large (safe)', def: 50 },
+                    { key: 'splitMidPct', label: 'Mid', def: 25 },
+                    { key: 'splitSmallPct', label: 'Small', def: 25 },
+                  ] as const
+                ).map(({ key, label, def }) => (
+                  <div key={key}>
+                    <Label className="text-xs">{label} %</Label>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={settings[key] ?? def}
+                      onChange={(e) => saveSettings({ [key]: Number(e.target.value) })}
+                      className="h-8 mt-1"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {Math.abs(splitSum - 100) > 0.5 && (
+                <p className="text-xs text-amber-800">
+                  Split totals {splitSum}% — will normalize to 100% when trading.
+                </p>
+              )}
+
+              {cap?.enabled && (
+                <div className="space-y-2 text-xs">
+                  <p className="font-medium text-sky-900">Allocation (${cap.investmentAmount.toLocaleString()})</p>
+                  {(['large', 'mid', 'small'] as const).map((tier) => (
+                    <div key={tier} className="space-y-1">
+                      <div className="flex justify-between text-muted-foreground capitalize">
+                        <span>
+                          {tier} · {cap.splits[tier]}%
+                        </span>
+                        <span>
+                          ${cap.deployed[tier].toLocaleString()} / ${cap.budgets[tier].toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-sky-100 overflow-hidden">
+                        <div
+                          className={cn(
+                            'h-full rounded-full',
+                            tier === 'large' && 'bg-blue-500',
+                            tier === 'mid' && 'bg-indigo-500',
+                            tier === 'small' && 'bg-amber-500'
+                          )}
+                          style={{
+                            width: `${Math.min(100, cap.budgets[tier] > 0 ? (cap.deployed[tier] / cap.budgets[tier]) * 100 : 0)}%`,
+                          }}
+                        />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        ${cap.remaining[tier].toLocaleString()} remaining
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <Label className="text-xs">Max positions</Label>
@@ -169,10 +323,71 @@ export function PaperAutoTradePanel() {
           </label>
           <label className="flex items-center gap-2">
             <Switch
+              checked={settings.buyLuxConfirmation ?? false}
+              onCheckedChange={(v) => saveSettings({ buyLuxConfirmation: v })}
+            />
+            Lux confirmation
+          </label>
+          <label className="flex items-center gap-2">
+            <Switch
+              checked={settings.buyLuxStrongOnly !== false}
+              onCheckedChange={(v) => saveSettings({ buyLuxStrongOnly: v })}
+              disabled={!settings.buyLuxConfirmation}
+            />
+            Strong only (+)
+          </label>
+          <label className="flex items-center gap-2">
+            <Switch
+              checked={settings.buyGainzAlgo ?? false}
+              onCheckedChange={(v) => saveSettings({ buyGainzAlgo: v })}
+            />
+            GainzAlgo (free)
+          </label>
+          <label className="flex items-center gap-2">
+            <Switch
+              checked={settings.buyWvfCapitulation ?? false}
+              onCheckedChange={(v) => saveSettings({ buyWvfCapitulation: v })}
+            />
+            WVF capitulation
+          </label>
+          {settings.buyWvfCapitulation && (
+            <label className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground shrink-0 text-xs">Min core bullish</span>
+              <Input
+                type="number"
+                min={1}
+                max={7}
+                className="h-8 w-16"
+                value={settings.wvfMinCoreBullish ?? 4}
+                onChange={(e) => saveSettings({ wvfMinCoreBullish: Number(e.target.value) })}
+              />
+              <span className="text-xs text-muted-foreground">/7 (excl. WVF)</span>
+            </label>
+          )}
+          {settings.buyGainzAlgo && (
+            <label className="flex items-center gap-2 text-sm col-span-full">
+              <span className="text-muted-foreground shrink-0">Mode</span>
+              <select
+                className="border rounded px-2 py-1 text-sm bg-background"
+                value={settings.gainzAlgoMode ?? 'standard'}
+                onChange={(e) =>
+                  saveSettings({
+                    gainzAlgoMode: e.target.value as 'standard' | 'alpha' | 'pro',
+                  })
+                }
+              >
+                <option value="standard">Standard (4-layer)</option>
+                <option value="alpha">V2 Alpha</option>
+                <option value="pro">Pro score</option>
+              </select>
+            </label>
+          )}
+          <label className="flex items-center gap-2">
+            <Switch
               checked={settings.requireChartAudit ?? true}
               onCheckedChange={(v) => saveSettings({ requireChartAudit: v })}
             />
-            7-indicator audit
+            8-indicator audit
           </label>
           <label className="flex items-center gap-2">
             <Switch
@@ -183,12 +398,47 @@ export function PaperAutoTradePanel() {
           </label>
           <label className="flex items-center gap-2">
             <Switch
+              checked={settings.requireDualStructureForTopPick ?? false}
+              onCheckedChange={(v) => saveSettings({ requireDualStructureForTopPick: v })}
+              disabled={settings.accuracyMode}
+            />
+            Dual structure (top pick)
+          </label>
+          <label className="flex items-center gap-2">
+            <Switch
               checked={settings.sellOnAvoid}
               onCheckedChange={(v) => saveSettings({ sellOnAvoid: v })}
             />
             Exit on avoid
           </label>
         </div>
+
+        {!settings.accuracyMode && (
+          <div className="grid grid-cols-2 gap-3 max-w-md">
+            <div>
+              <Label className="text-xs">Min bullish (0–7)</Label>
+              <Input
+                type="number"
+                min={0}
+                max={7}
+                value={settings.minBullishIndicators ?? 0}
+                onChange={(e) => saveSettings({ minBullishIndicators: Number(e.target.value) })}
+                className="h-8 mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Max bearish (0–7)</Label>
+              <Input
+                type="number"
+                min={0}
+                max={7}
+                value={settings.maxBearishIndicators ?? 0}
+                onChange={(e) => saveSettings({ maxBearishIndicators: Number(e.target.value) })}
+                className="h-8 mt-1"
+              />
+            </div>
+          </div>
+        )}
 
         {(data.riskContext || data.selfAnalyzeGate) && (
           <div className="rounded-lg border bg-white p-3 text-xs space-y-1">

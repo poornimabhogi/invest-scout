@@ -123,16 +123,15 @@ export function MediaSuggestionsPanel({ suggestions, audits, stats, processedAt 
                   Premium entry — dual structure + OTE zone ✓
                 </p>
               )}
-                <a
-                  href={s.mediaUrl || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium line-clamp-2 flex items-start gap-1 hover:text-sky-600 mt-2"
-                >
-                  {s.mediaHeadline}
-                  <ExternalLinkIcon size={14} className="shrink-0 mt-0.5 opacity-50" />
-                </a>
-              )}
+              <a
+                href={s.mediaUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium line-clamp-2 flex items-start gap-1 hover:text-sky-600 mt-2"
+              >
+                {s.mediaHeadline}
+                <ExternalLinkIcon size={14} className="shrink-0 mt-0.5 opacity-50" />
+              </a>
 
               {s.figureTags && s.figureTags.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">

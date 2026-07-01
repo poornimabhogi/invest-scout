@@ -84,6 +84,14 @@ const INDICATORS = [
     tvTip: 'TradingView: Auto Fib Retracement — OTE zone between 0.618 and 0.786.',
   },
   {
+    name: 'Lux Confirmation (approx.)',
+    tradingView: 'LuxAlgo Signals & Overlays™ (invite-only)',
+    usedHere: true,
+    signal: 'Buy / Strong Buy (+) with Smart Trail + Trend Strength filters',
+    read: 'Open approximation of LuxAlgo confirmation mode — uses UT Bot as Smart Trail, momentum tier as trend strength, green-candle hold for strong signals. Not the paid Pine script.',
+    tvTip: 'TradingView: LuxAlgo Premium — enable Confirmation + Smart Trail filter + Trend Strength filter preset.',
+  },
+  {
     name: 'Bollinger Bands',
     tradingView: 'BB(20, 2)',
     usedHere: false,

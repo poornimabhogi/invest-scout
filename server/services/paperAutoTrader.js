@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   loadPortfolio,
   buyShares,
@@ -17,6 +20,16 @@ import {
 } from './riskManagement.js';
 import { analyzeSymbolIndicators } from './chartStackAnalysis.js';
 import { getLatestReport } from './learnings.js';
+
+import { luxConfirmationQualifies } from './luxConfirmation.js';
+import { gainzQualifies } from './gainzAlgo.js';
+import { wvfCapitulationQualifies } from './williamsVixFix.js';
+import {
+  capSplitBucket,
+  classifyMarketCapScale,
+  computeCapSplitState,
+  passesCapTierBuyGate,
+} from './marketCapScale.js';
 
 const RUN_COOLDOWN_MS = 10 * 60 * 1000;
 let lastRunMs = 0;
@@ -72,6 +85,49 @@ function buildBuyCandidates(merged, settings, verifiedSet, risk) {
 
     if (settings.buyPremiumEntry && stock.confluence?.premiumEntry) {
       add(stock, 'premium-entry', 'SMC + MSB + OTE premium entry', 100);
+    } else if (settings.buyWvfCapitulation) {
+      const wvf = stock.wvf ?? suggestionMap.get(stock.symbol)?.wvf;
+      const auditChecks =
+        stock.indicatorAudit?.checks ?? suggestionMap.get(stock.symbol)?.indicatorAudit?.checks;
+      if (
+        wvfCapitulationQualifies(wvf, {
+          minCoreBullish: settings.wvfMinCoreBullish ?? 4,
+          checks: auditChecks,
+        })
+      ) {
+        add(
+          stock,
+          'wvf-capitulation',
+          wvf.signals?.[0] ?? 'WVF capitulation + core indicator confluence',
+          86 + (settings.wvfMinCoreBullish ?? 4)
+        );
+      }
+    } else if (settings.buyGainzAlgo) {
+      const mode = settings.gainzAlgoMode ?? 'standard';
+      const pack = stock.gainzAlgo ?? suggestionMap.get(stock.symbol)?.gainzAlgo;
+      const gainz = pack?.[mode] ?? pack?.standard;
+      if (gainzQualifies(gainz, { mode, minConfidence: settings.gainzMinConfidence ?? 65 })) {
+        add(
+          stock,
+          `gainz-${mode}`,
+          gainz.checks?.[0] ?? gainz.signals?.[0] ?? `Gainz ${mode} buy`,
+          92 + Math.min((gainz.confidence ?? 0) / 10, 8)
+        );
+      }
+    } else if (settings.buyLuxConfirmation) {
+      const lux = stock.luxConfirmation ?? suggestionMap.get(stock.symbol)?.luxConfirmation;
+      if (
+        luxConfirmationQualifies(lux, { strongOnly: settings.buyLuxStrongOnly !== false }) &&
+        lux?.filters?.smartTrail?.pass &&
+        lux?.filters?.trendStrength?.pass
+      ) {
+        add(
+          stock,
+          lux.isStrong ? 'lux-strong' : 'lux-confirmation',
+          lux.signals?.[0] ?? 'Lux confirmation + Smart Trail filter',
+          95 + (lux.classification ?? 0)
+        );
+      }
     } else if (settings.buyChartVerified && chartVerified && perf >= minPerf) {
       add(
         stock,
@@ -109,10 +165,21 @@ function buildBuyCandidates(merged, settings, verifiedSet, risk) {
 }
 
 async function passesChartAudit(symbol, stock, snapshot, risk) {
-  if (!risk.requireChartAudit) return { ok: true, reason: 'Chart audit optional' };
+  if (!risk.requireChartAudit) return { ok: true, reason: 'Chart audit optional', analysis: null };
 
   if (snapshot?.confirmsMedia) {
-    return { ok: true, reason: snapshot.primaryReason ?? 'Cached indicator audit' };
+    return {
+      ok: true,
+      reason: snapshot.primaryReason ?? 'Cached indicator audit',
+      analysis: {
+        indicatorAudit: {
+          confirmsMedia: true,
+          primaryReason: snapshot.primaryReason,
+          summary: snapshot.summary,
+        },
+        confluence: stock.confluence,
+      },
+    };
   }
 
   try {
@@ -125,8 +192,68 @@ async function passesChartAudit(symbol, stock, snapshot, risk) {
           analysis,
         };
   } catch {
-    return { ok: false, reason: 'Could not run chart indicator audit' };
+    return { ok: false, reason: 'Could not run chart indicator audit', analysis: null };
   }
+}
+
+function passesTopPickQuality(stock, analysis, snapshot, settings) {
+  const minBullish = settings.accuracyMode
+    ? 4
+    : (settings.minBullishIndicators ?? 0);
+  const maxBearish = settings.accuracyMode
+    ? 2
+    : (settings.maxBearishIndicators ?? 0);
+  const requireStructure =
+    settings.accuracyMode || settings.requireDualStructureForTopPick;
+
+  if (minBullish <= 0 && maxBearish <= 0 && !requireStructure && !settings.accuracyMode) {
+    return { ok: true };
+  }
+
+  const summary = analysis?.indicatorAudit?.summary ?? snapshot?.summary;
+  const bullish = summary?.bullish ?? 0;
+  const bearish = summary?.bearish ?? 0;
+  const confluence = analysis?.confluence ?? stock.confluence;
+
+  if (settings.accuracyMode && stock.strategyRecommendation !== 'buy') {
+    return { ok: false, reason: 'Accuracy mode requires strategy buy (not watch-only)' };
+  }
+
+  if (minBullish > 0 && bullish < minBullish) {
+    return {
+      ok: false,
+      reason: `Top pick needs ${minBullish}/7 bullish indicators (has ${bullish})`,
+    };
+  }
+
+  if (maxBearish > 0 && bearish > maxBearish) {
+    return {
+      ok: false,
+      reason: `Too many bearish indicators (${bearish}/7, max ${maxBearish})`,
+    };
+  }
+
+  if (requireStructure) {
+    const hasStructure =
+      confluence?.premiumEntry ||
+      confluence?.tripleConfluence ||
+      confluence?.dualStructure;
+    if (!hasStructure) {
+      return {
+        ok: false,
+        reason: 'Top pick requires dual structure (SMC+MSB) or premium OTE',
+      };
+    }
+  }
+
+  if (settings.accuracyMode && (stock.strategyScore ?? 0) < (settings.minStrategyScore ?? 60)) {
+    return {
+      ok: false,
+      reason: `Strategy score ${stock.strategyScore ?? '—'} below accuracy minimum ${settings.minStrategyScore}`,
+    };
+  }
+
+  return { ok: true };
 }
 
 function shouldSellPosition(pos, stock, risk, settings) {
@@ -147,14 +274,27 @@ function shouldSellPosition(pos, stock, risk, settings) {
     }
   }
 
+  if (settings.buyLuxConfirmation && stock?.luxConfirmation?.exitSignal) {
+    return { strategy: 'lux-exit', signalReason: 'Lux exit — lost Smart Trail / confirmation' };
+  }
+
   return null;
 }
 
-function calcBuyShares(equity, cash, price, risk) {
+function calcBuyShares(equity, cash, price, risk, capState, capBucket) {
   const pct = (risk.positionSizePct ?? 8) / 100;
   let budget = equity * pct;
   const maxPos = risk.maxPositionSize;
   if (maxPos && maxPos > 0) budget = Math.min(budget, maxPos);
+
+  if (capState?.enabled && capBucket && capBucket !== 'unknown') {
+    const tierRemaining = capState.remaining[capBucket];
+    if (tierRemaining != null) {
+      if (tierRemaining <= 0) return 0;
+      budget = Math.min(budget, tierRemaining);
+    }
+  }
+
   budget = Math.min(budget, cash * 0.95);
   if (budget < price) return 0;
   return roundShares(budget / price);
@@ -262,6 +402,7 @@ export async function runPaperAutoTrade(resolvePrice, { force = false, fromSelfA
     const dailyLimit = risk.maxDailyTrades ?? 5;
 
     const candidates = buildBuyCandidates(merged, settings, verifiedSet, risk);
+    const capState = computeCapSplitState(settings, portfolio, enriched.positions, stockMap);
 
     for (const c of candidates) {
       if (held.has(c.symbol)) continue;
@@ -270,8 +411,33 @@ export async function runPaperAutoTrade(resolvePrice, { force = false, fromSelfA
       if (inCooldown(c.symbol, settings, portfolio)) continue;
 
       const stock = stockMap.get(c.symbol) ?? { symbol: c.symbol };
+      const capBucket = capSplitBucket(
+        stock.marketCapScale ?? classifyMarketCapScale(stock.marketCap)
+      );
+
+      if (settings.useCapSplitting) {
+        const tierGate = passesCapTierBuyGate(stock, capBucket, c.strategy, settings);
+        if (!tierGate.ok) continue;
+        if (capBucket !== 'unknown' && (capState.remaining[capBucket] ?? 0) <= 0) continue;
+      }
+
       const audit = await passesChartAudit(c.symbol, stock, c.indicatorSnapshot, risk);
       if (!audit.ok) continue;
+
+      if (c.strategy === 'top-pick') {
+        const qualitySettings =
+          settings.useCapSplitting && capBucket === 'large'
+            ? {
+                ...settings,
+                accuracyMode: true,
+                minBullishIndicators: 4,
+                maxBearishIndicators: 2,
+                requireDualStructureForTopPick: true,
+              }
+            : settings;
+        const quality = passesTopPickQuality(stock, audit.analysis, c.indicatorSnapshot, qualitySettings);
+        if (!quality.ok) continue;
+      }
 
       let price = c.price;
       try {
@@ -281,8 +447,14 @@ export async function runPaperAutoTrade(resolvePrice, { force = false, fromSelfA
       }
       if (!price || price <= 0) continue;
 
-      const shares = calcBuyShares(enriched.totalEquity, enriched.cash, price, risk);
+      const shares = calcBuyShares(enriched.totalEquity, enriched.cash, price, risk, capState, capBucket);
       if (shares <= 0) continue;
+
+      const buyCost = shares * price;
+      if (settings.useCapSplitting && capBucket !== 'unknown') {
+        capState.remaining[capBucket] = Math.max(0, (capState.remaining[capBucket] ?? 0) - buyCost);
+        capState.deployed[capBucket] = (capState.deployed[capBucket] ?? 0) + buyCost;
+      }
 
       const reason = audit.reason ? `${c.signalReason} · ${audit.reason}` : c.signalReason;
 
@@ -332,6 +504,7 @@ export async function runPaperAutoTrade(resolvePrice, { force = false, fromSelfA
       candidatesScanned: candidates.length,
       riskContext: risk,
       riskGate: selfGate,
+      capAllocation: capState,
       settings: getAutoTradeSettings(),
     };
   } finally {
@@ -346,6 +519,13 @@ export function getAutoTradeStatus() {
   const risk = getRiskContext({ paperStats });
   const selfAnalyzeState = getLatestReport();
   const selfGate = selfAnalyzeAllowsAutoTrade(selfAnalyzeState.report, risk);
+  const stockMap = getScreenerStockMapSync();
+  const capAllocation = computeCapSplitState(
+    settings,
+    portfolio,
+    buildCapSplitPositions(portfolio, stockMap),
+    stockMap
+  );
 
   return {
     settings,
@@ -361,7 +541,31 @@ export function getAutoTradeStatus() {
     },
     selfAnalyzeGate: selfGate,
     autoBuysToday: countAutoBuysToday(portfolio),
+    capAllocation,
   };
+}
+
+function getScreenerStockMapSync() {
+  try {
+    const cachePath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data', 'screener-cache.json');
+    if (!fs.existsSync(cachePath)) return new Map();
+    const cache = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+    return new Map((cache.stocks ?? []).map((s) => [s.symbol, s]));
+  } catch {
+    return new Map();
+  }
+}
+
+function buildCapSplitPositions(portfolio, stockMap) {
+  return Object.entries(portfolio.positions ?? {}).map(([symbol, pos]) => {
+    const stock = stockMap.get(symbol);
+    const price = stock?.price ?? pos.avgCost;
+    return {
+      symbol,
+      costBasis: pos.shares * pos.avgCost,
+      marketValue: pos.shares * price,
+    };
+  });
 }
 
 export function startPaperAutoTradeMonitor(resolvePrice, intervalMs = 15 * 60 * 1000) {

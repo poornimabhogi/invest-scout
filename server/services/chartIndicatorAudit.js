@@ -7,11 +7,19 @@ function checkStatus(label, bullish, bearish, detail, value = null) {
   return { label, status, detail, value };
 }
 
-export const INDICATOR_AUDIT_TOTAL = 7;
+export const INDICATOR_AUDIT_TOTAL = 8;
+
+const CORE_INDICATOR_KEYS = ['rsi', 'macd', 'squeeze', 'smc', 'msb', 'utBot', 'ote'];
+
+export function countCoreBullishIndicators(checks) {
+  if (!checks) return 0;
+  return CORE_INDICATOR_KEYS.filter((k) => checks[k]?.status === 'bullish').length;
+}
 
 export function buildIndicatorAudit(chartAnalysis, smc, msb, utBot, ote, recommendation) {
   const macd = chartAnalysis.macd ?? {};
   const squeeze = chartAnalysis.squeeze ?? {};
+  const wvf = chartAnalysis.wvf ?? {};
   const rsi = chartAnalysis.rsi ?? 50;
 
   const checks = {
@@ -69,6 +77,19 @@ export function buildIndicatorAudit(chartAnalysis, smc, msb, utBot, ote, recomme
           ? 'Near OTE zone'
           : ote?.signals?.[0]?.slice(0, 40) ?? 'n/a',
       ote?.oteScore ?? null
+    ),
+    wvf: checkStatus(
+      'WVF',
+      wvf.capitulation || wvf.fearEasing,
+      false,
+      wvf.capitulation
+        ? `Capitulation spike (${wvf.value})`
+        : wvf.fearEasing
+          ? 'Fear easing after spike'
+          : wvf.value != null
+            ? `Normal (${wvf.value})`
+            : 'n/a',
+      wvf.value ?? null
     ),
   };
 
@@ -140,6 +161,9 @@ export function buildIndicatorAudit(chartAnalysis, smc, msb, utBot, ote, recomme
   } else if (checks.rsi.status === 'bullish') {
     confirmsMedia = true;
     primaryReason = 'RSI oversold — potential bounce';
+  } else if (checks.wvf.status === 'bullish' && countCoreBullishIndicators(checks) >= 3) {
+    confirmsMedia = true;
+    primaryReason = `WVF capitulation + ${countCoreBullishIndicators(checks)}/7 core indicators bullish`;
   } else if (confluence?.dualStructure) {
     confirmsMedia = true;
     primaryReason = confluence.tripleConfluence

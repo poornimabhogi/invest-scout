@@ -185,7 +185,7 @@ export function PaperPortfolioPanel() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-slate-50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Total equity</p>
-            <p className="text-xl font-bold">${portfolio?.totalEquity.toLocaleString()}</p>
+            <p className="text-xl font-bold">${portfolio?.totalEquity?.toLocaleString() ?? '—'}</p>
           </div>
           <div className="bg-slate-50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Total return</p>
@@ -196,12 +196,12 @@ export function PaperPortfolioPanel() {
               )}
             >
               {(portfolio?.totalReturnPct ?? 0) >= 0 ? '+' : ''}
-              {portfolio?.totalReturnPct.toFixed(2)}%
+              {(portfolio?.totalReturnPct ?? 0).toFixed(2)}%
             </p>
           </div>
           <div className="bg-slate-50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Cash</p>
-            <p className="text-xl font-bold">${portfolio?.cash.toLocaleString()}</p>
+            <p className="text-xl font-bold">${portfolio?.cash?.toLocaleString() ?? '—'}</p>
           </div>
           <div className="bg-slate-50 rounded-lg p-3">
             <p className="text-xs text-muted-foreground">Closed win rate</p>

@@ -60,6 +60,22 @@ export async function fetchFinnhubQuotes(symbols, apiKey, onProgress) {
   return quotes;
 }
 
+function pickPeRatio(metric, price) {
+  if (!metric || typeof metric !== 'object') return null;
+  const candidates = [
+    metric.peBasicExclExtraTTM,
+    metric.peTTM,
+    metric.peNormalizedAnnual,
+    metric.peAnnual,
+    metric.peExclExtraAnnual,
+  ];
+  for (const v of candidates) {
+    const n = Number(v);
+    if (Number.isFinite(n) && n > 0 && n < 500) return Math.round(n * 100) / 100;
+  }
+  return null;
+}
+
 export function mapFinnhubToQuote(symbol, data) {
   const { quote, metric } = data;
   const price = quote.c;
@@ -73,6 +89,8 @@ export function mapFinnhubToQuote(symbol, data) {
       : 50;
   const change52w =
     fiftyTwoWeekLow > 0 ? ((price - fiftyTwoWeekLow) / fiftyTwoWeekLow) * 100 * 0.4 : 0;
+
+  const peRatio = pickPeRatio(metric, price);
 
   return {
     symbol,
@@ -88,6 +106,7 @@ export function mapFinnhubToQuote(symbol, data) {
       ? metric['10DayAverageTradingVolume'] * 1e6
       : 1e6,
     marketCap: metric['marketCapitalization'] ? metric['marketCapitalization'] * 1e6 : 0,
+    peRatio,
     fiftyDayAverage: price * (0.95 + rangePosition / 500),
     twoHundredDayAverage: price * (0.9 + rangePosition / 1000),
     fiftyTwoWeekChangePercent: change52w,
@@ -115,6 +134,7 @@ export function generateSeedQuotes(symbols) {
       regularMarketVolume: volume,
       averageDailyVolume3Month: volume * 0.85,
       marketCap: price * volume * 0.01,
+      peRatio: Math.round((12 + (h % 40)) * 10) / 10,
       fiftyDayAverage: price * (0.97 + (h % 10) / 200),
       twoHundredDayAverage: price * (0.92 + (h % 10) / 150),
       fiftyTwoWeekChangePercent: ((h % 80) - 20),

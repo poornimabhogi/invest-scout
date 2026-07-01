@@ -16,6 +16,7 @@ export interface IndicatorAudit {
     msb: IndicatorCheck;
     utBot: IndicatorCheck;
     ote?: IndicatorCheck;
+    wvf?: IndicatorCheck;
   };
   summary: { bullish: number; bearish: number; neutral: number; total: number };
   confirmsMedia?: boolean;

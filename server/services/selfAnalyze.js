@@ -74,15 +74,44 @@ function summarizeIndicatorAnalysis(indicatorAnalysis) {
   };
 }
 
-function buildAutoTradeCandidates(indicatorAnalysis, picks) {
+function buildAutoTradeCandidates(indicatorAnalysis, picks, forecasts = [], weights = null) {
   const pickMap = new Map(picks.map((p) => [p.symbol, p]));
+  const forecastMap = new Map(forecasts.map((f) => [f.symbol, f]));
+  const w = weights ?? getLearningWeights();
+
   return indicatorAnalysis
-    .filter(
-      (i) =>
+    .filter((i) => {
+      const bullish = i.indicatorAudit?.summary?.bullish ?? 0;
+      const bearish = i.indicatorAudit?.summary?.bearish ?? 0;
+      const forecast = forecastMap.get(i.symbol);
+      const rsi = i.rsi ?? forecast?.rsi ?? 50;
+      const dualStructure = i.confluence?.dualStructure;
+      const forecastAligned =
+        !forecast ||
+        forecast.direction !== 'down' ||
+        bullish >= 4;
+
+      if (forecast?.direction === 'up' && rsi > 72 && !dualStructure && (forecast.confidence ?? 0) >= 75) {
+        return false;
+      }
+      if (
+        forecast?.direction === 'up' &&
+        rsi > 70 &&
+        (i.momentumScore ?? 0) > 5 &&
+        (w.momentumMultiplier ?? 1) < 0.85
+      ) {
+        return false;
+      }
+
+      return (
         i.indicatorAudit?.confirmsMedia &&
         i.recommendation !== 'avoid' &&
-        (i.strategyScore ?? 0) >= 10
-    )
+        bullish >= 4 &&
+        bearish <= 2 &&
+        (i.strategyScore ?? 0) >= 50 &&
+        forecastAligned
+      );
+    })
     .sort((a, b) => (b.strategyScore ?? 0) - (a.strategyScore ?? 0))
     .slice(0, 10)
     .map((i) => ({
@@ -94,6 +123,86 @@ function buildAutoTradeCandidates(indicatorAnalysis, picks) {
       bullishIndicators: i.indicatorAudit.summary?.bullish ?? 0,
       confluence: i.confluence?.label ?? pickMap.get(i.symbol)?.confluence?.label,
     }));
+}
+
+function buildForecastConflicts(indicatorAnalysis, forecasts) {
+  const forecastMap = new Map(forecasts.map((f) => [f.symbol, f]));
+  const conflicts = [];
+
+  for (const ind of indicatorAnalysis) {
+    const forecast = forecastMap.get(ind.symbol);
+    if (!forecast) continue;
+
+    const bullish = ind.indicatorAudit?.summary?.bullish ?? 0;
+    const bearish = ind.indicatorAudit?.summary?.bearish ?? 0;
+
+    if (forecast.direction === 'down' && bullish >= 4) {
+      conflicts.push({
+        symbol: ind.symbol,
+        issue: 'Forecast bearish but chart audit bullish',
+        forecastDirection: forecast.direction,
+        forecastConfidence: forecast.confidence,
+        bullishIndicators: bullish,
+        suggestion: 'Trust chart structure over short-term drift; do not auto-log bearish forecast',
+      });
+    }
+    if (forecast.direction === 'up' && bearish >= 4) {
+      conflicts.push({
+        symbol: ind.symbol,
+        issue: 'Forecast bullish but chart audit bearish',
+        forecastDirection: forecast.direction,
+        forecastConfidence: forecast.confidence,
+        bearishIndicators: bearish,
+        suggestion: 'Reduce confidence or wait for structure confirmation',
+      });
+    }
+    if (forecast.factors?.conflictingSignals && forecast.confidence >= 70) {
+      conflicts.push({
+        symbol: ind.symbol,
+        issue: 'High confidence despite 5d/20d momentum conflict',
+        forecastDirection: forecast.direction,
+        forecastConfidence: forecast.confidence,
+        suggestion: 'Model flagged internal conflict — confidence should stay below threshold',
+      });
+    }
+    const rsi = ind.rsi ?? forecast.rsi ?? 50;
+    if (forecast.direction === 'up' && rsi > 72 && (ind.momentumScore ?? 0) > 4) {
+      conflicts.push({
+        symbol: ind.symbol,
+        issue: 'RSI overbought trap risk — strong momentum at RSI 72+',
+        forecastDirection: forecast.direction,
+        forecastConfidence: forecast.confidence,
+        bullishIndicators: bullish,
+        suggestion: 'Lessons: reduce bullish drift when RSI extended; require dual structure',
+      });
+    }
+  }
+
+  return conflicts.slice(0, 10);
+}
+
+function filterForecastsForRecording(forecasts, indicatorAnalysis, conflicts) {
+  const conflictSymbols = new Set(conflicts.map((c) => c.symbol));
+  const indMap = new Map(indicatorAnalysis.map((i) => [i.symbol, i]));
+  const w = getLearningWeights();
+
+  return forecasts.filter((f) => {
+    if (conflictSymbols.has(f.symbol)) return false;
+    if (f.factors?.conflictingSignals && f.confidence >= 70) return false;
+
+    const ind = indMap.get(f.symbol);
+    const rsi = f.rsi ?? ind?.rsi ?? 50;
+    if (f.direction === 'up' && rsi > 72 && (ind?.momentumScore ?? 0) > 4) return false;
+    if (f.direction === 'up' && rsi > 70 && f.confidence > w.highConfidenceThreshold + 10) return false;
+
+    if (!ind) return true;
+
+    const bullish = ind.indicatorAudit?.summary?.bullish ?? 0;
+    if (f.direction === 'down' && bullish >= 4) return false;
+    if (f.direction === 'up' && (ind.indicatorAudit?.summary?.bearish ?? 0) >= 4) return false;
+
+    return true;
+  });
 }
 
 export async function runSelfAnalysis({
@@ -134,13 +243,25 @@ export async function runSelfAnalysis({
   const picks = await getEnrichedTopPicks();
   const indicatorAnalysis = await analyzeTopPicksIndicators(picks, 15);
   const indicatorAuditSummary = summarizeIndicatorAnalysis(indicatorAnalysis);
-  const autoTradeCandidates = buildAutoTradeCandidates(indicatorAnalysis, picks);
 
   const strategySymbols = picks.filter((p) => p.strategyRecommendation === 'buy').map((p) => p.symbol);
   const allSymbols = [...new Set([...picks.map((p) => p.symbol), ...strategySymbols])];
   const forecasts = await buildForecastsForSymbols(allSymbols);
-  const newPredictions = recordHighConfidencePredictions(
+  const forecastConflicts = buildForecastConflicts(indicatorAnalysis, forecasts);
+  const recordableForecasts = filterForecastsForRecording(
     forecasts,
+    indicatorAnalysis,
+    forecastConflicts
+  );
+  const autoTradeCandidates = buildAutoTradeCandidates(
+    indicatorAnalysis,
+    picks,
+    forecasts,
+    learningResult.weights
+  );
+
+  const newPredictions = recordHighConfidencePredictions(
+    recordableForecasts,
     getLearningWeights().highConfidenceThreshold
   );
 
@@ -172,6 +293,9 @@ export async function runSelfAnalysis({
     })),
     indicatorAuditSummary,
     autoTradeCandidates,
+    forecastConflicts,
+    modelImprovements: learningResult.adjustments,
+    forecastsFiltered: forecasts.length - recordableForecasts.length,
     riskContext: {
       riskLevel: riskContext.riskLevel,
       positionSizePct: riskContext.positionSizePct,

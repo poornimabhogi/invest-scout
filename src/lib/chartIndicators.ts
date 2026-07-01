@@ -331,3 +331,119 @@ export function computeSqueezeMomentum(
     params: { bbLength, bbMult, kcLength, kcMult },
   };
 }
+
+export interface WvfPoint {
+  value: number | null;
+  midLine: number | null;
+  upperBand: number | null;
+  lowerBand: number | null;
+  rangeHigh: number | null;
+  rangeLow: number | null;
+  extreme: boolean;
+  barColor: string;
+}
+
+export interface WvfResult {
+  value: number | null;
+  upperBand: number | null;
+  rangeHigh: number | null;
+  rangeLow: number | null;
+  capitulation: boolean;
+  fearEasing: boolean;
+  extreme: boolean;
+  recommendation: 'buy' | 'watch';
+  series: WvfPoint[];
+  signals: string[];
+  params: { pd: number; bbl: number; mult: number; lb: number; ph: number; pl: number };
+}
+
+export function computeWilliamsVixFix(
+  candles: Candle[],
+  { pd = 22, bbl = 20, mult = 2.0, lb = 50, ph = 0.85, pl = 1.01 } = {}
+): WvfResult {
+  const minBars = Math.max(pd, bbl, lb) + 5;
+  if (!candles?.length || candles.length < minBars) {
+    return {
+      value: null,
+      upperBand: null,
+      rangeHigh: null,
+      rangeLow: null,
+      capitulation: false,
+      fearEasing: false,
+      extreme: false,
+      recommendation: 'watch',
+      series: [],
+      signals: [],
+      params: { pd, bbl, mult, lb, ph, pl },
+    };
+  }
+
+  const closes = candles.map((c) => c.close);
+  const lows = candles.map((c) => c.low);
+  const wvfSeries: (number | null)[] = [];
+
+  for (let i = 0; i < candles.length; i++) {
+    const hc = highestAt(closes, i, pd);
+    const low = lows[i];
+    if (hc == null || hc <= 0) wvfSeries.push(null);
+    else wvfSeries.push(((hc - low) / hc) * 100);
+  }
+
+  const series: WvfPoint[] = [];
+  for (let i = 0; i < candles.length; i++) {
+    const wvf = wvfSeries[i];
+    const midLine = smaAt(wvfSeries, i, bbl);
+    const sDev = stdevAt(wvfSeries, i, bbl);
+    const upperBand = midLine != null && sDev != null ? midLine + mult * sDev : null;
+    const lowerBand = midLine != null && sDev != null ? midLine - mult * sDev : null;
+    const hiWvf = highestAt(wvfSeries, i, lb);
+    const loWvf = lowestAt(wvfSeries, i, lb);
+    const rangeHigh = hiWvf != null ? hiWvf * ph : null;
+    const rangeLow = loWvf != null ? loWvf * pl : null;
+    const extreme =
+      wvf != null &&
+      ((upperBand != null && wvf >= upperBand) || (rangeHigh != null && wvf >= rangeHigh));
+
+    series.push({
+      value: wvf,
+      midLine,
+      upperBand,
+      lowerBand,
+      rangeHigh,
+      rangeLow,
+      extreme,
+      barColor: extreme ? '#84cc16' : '#9ca3af',
+    });
+  }
+
+  const last = series.at(-1)!;
+  const prev = series.at(-2);
+  const prev2 = series.at(-3);
+  const val = last?.value ?? null;
+  const capitulation = Boolean(last?.extreme);
+  let fearEasing = false;
+  const signals: string[] = [];
+
+  if (val != null) {
+    const hadExtreme = prev?.extreme || prev2?.extreme;
+    if (capitulation) signals.push('WVF capitulation spike — fear extreme, watch for potential low');
+    if (hadExtreme && prev?.value != null && val < prev.value && val > (last?.midLine ?? 0)) {
+      fearEasing = true;
+      signals.push('WVF fear easing — capitulation may be exhausting');
+    }
+  }
+
+  return {
+    value: val != null ? Math.round(val * 100) / 100 : null,
+    upperBand: last?.upperBand != null ? Math.round(last.upperBand * 100) / 100 : null,
+    rangeHigh: last?.rangeHigh != null ? Math.round(last.rangeHigh * 100) / 100 : null,
+    rangeLow: last?.rangeLow != null ? Math.round(last.rangeLow * 100) / 100 : null,
+    capitulation,
+    fearEasing,
+    extreme: capitulation,
+    recommendation: capitulation || fearEasing ? 'buy' : 'watch',
+    series,
+    signals,
+    params: { pd, bbl, mult, lb, ph, pl },
+  };
+}

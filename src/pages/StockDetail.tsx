@@ -7,15 +7,18 @@ import { Badge } from '@/components/ui/badge';
 import { CandlestickChart } from '@/components/charts/CandlestickChart';
 import { MacdChart } from '@/components/charts/MacdChart';
 import { SqueezeChart } from '@/components/charts/SqueezeChart';
+import { WilliamsVixFixChart } from '@/components/charts/WilliamsVixFixChart';
 import { SmcPanel } from '@/components/SmcPanel';
 import { MsObPanel } from '@/components/MsObPanel';
 import { UtBotPanel } from '@/components/UtBotPanel';
 import { OtePanel } from '@/components/OtePanel';
+import { LuxConfirmationPanel } from '@/components/LuxConfirmationPanel';
+import { GainzAlgoPanel } from '@/components/GainzAlgoPanel';
 import { api } from '@/lib/api';
 import { ChartRange } from '@/types/chart';
 import { ForecastPanel } from '@/components/ForecastPanel';
 import { PaperTradePanel } from '@/components/PaperPortfolio';
-import { computeMACD, computeSqueezeMomentum } from '@/lib/chartIndicators';
+import { computeMACD, computeSqueezeMomentum, computeWilliamsVixFix } from '@/lib/chartIndicators';
 import { cn } from '@/lib/utils';
 
 const RANGES: ChartRange[] = ['1D', '1W', '1M', '3M', '1Y', '5Y', 'MAX'];
@@ -61,8 +64,8 @@ const StockDetail = () => {
     );
   }
 
-  const { stock, performance, analysis, news, strategy, smc: detailSmc, msb: detailMsb, utBot: detailUtBot, ote: detailOte } = detail;
-  const candles = candleData?.candles ?? detail.candles;
+  const { stock, performance, analysis, news, strategy, smc: detailSmc, msb: detailMsb, utBot: detailUtBot, ote: detailOte, luxConfirmation, gainzAlgo } = detail;
+  const candles = candleData?.candles ?? detail.candles ?? [];
   const smc = candleData?.smc ?? detailSmc;
   const msb = candleData?.msb ?? detailMsb;
   const utBot = candleData?.utBot ?? detailUtBot;
@@ -85,6 +88,14 @@ const StockDetail = () => {
     trend: 'insufficient',
     signals: [],
   };
+  const wvfLive = candles.length >= 55 ? computeWilliamsVixFix(candles) : null;
+  const wvf = wvfLive ?? analysis.wvf ?? {
+    value: null,
+    capitulation: false,
+    fearEasing: false,
+    recommendation: 'watch',
+    signals: [],
+  };
 
   return (
     <div className="min-h-screen bg-trading-background">
@@ -99,6 +110,14 @@ const StockDetail = () => {
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-3xl font-bold">{stock.symbol}</h1>
               <Badge variant="outline">{stock.sector}</Badge>
+              {stock.marketCapScale && stock.marketCapScale !== 'unknown' && (
+                <Badge variant="outline" className="capitalize">
+                  {stock.marketCapScale === 'mid' ? 'Mid cap' : `${stock.marketCapScale} cap`}
+                </Badge>
+              )}
+              {stock.peRatio != null && stock.peRatio > 0 && (
+                <Badge variant="outline">P/E {stock.peRatio.toFixed(1)}</Badge>
+              )}
               <Badge
                 className={cn(
                   strategy.recommendation === 'buy' && 'bg-green-100 text-green-800',
@@ -234,6 +253,26 @@ const StockDetail = () => {
                 </p>
                 <SqueezeChart candles={candles} height={120} />
               </div>
+              <div className="mt-3">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  Williams Vix Fix [CM] — Lookback 22 · BB 20×2 · Percentile 85%
+                </p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Lime = capitulation spike (potential low) · Cyan = upper BB · Orange dashed = range high
+                </p>
+                <WilliamsVixFixChart candles={candles} height={120} />
+                {wvf.value != null && (
+                  <span>
+                    WVF <strong className={wvf.capitulation ? 'text-lime-600' : ''}>{wvf.value}</strong>
+                    {wvf.capitulation && (
+                      <Badge className="ml-2 text-[10px] bg-lime-100 text-lime-900">Capitulation</Badge>
+                    )}
+                    {wvf.fearEasing && !wvf.capitulation && (
+                      <Badge className="ml-2 text-[10px] bg-emerald-100 text-emerald-900">Fear easing</Badge>
+                    )}
+                  </span>
+                )}
+              </div>
               <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block w-3 h-0.5 bg-blue-600 rounded" />
@@ -318,7 +357,7 @@ const StockDetail = () => {
                 Pattern: <strong>{analysis.pattern}</strong> · RSI: <strong>{analysis.rsi}</strong>
               </p>
               <ul className="space-y-1">
-                {analysis.signals.map((s) => (
+                {analysis.signals?.map((s) => (
                   <li key={s} className="text-sm flex items-start gap-2">
                     <span className="text-sky-600">•</span>
                     {s}
@@ -331,6 +370,8 @@ const StockDetail = () => {
             {msb && <MsObPanel msb={msb} />}
             {utBot && <UtBotPanel utBot={utBot} />}
             {ote && <OtePanel ote={ote} />}
+            {luxConfirmation && <LuxConfirmationPanel lux={luxConfirmation} />}
+            {gainzAlgo && <GainzAlgoPanel gainz={gainzAlgo} />}
 
             <div className="bg-white rounded-lg border p-5">
               <h2 className="font-semibold mb-3">Latest News</h2>

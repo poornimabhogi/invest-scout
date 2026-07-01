@@ -117,6 +117,39 @@ export function SelfAnalyzePanel() {
                 )}
               </div>
 
+              {report.modelImprovements && report.modelImprovements.length > 0 && (
+                <div className="p-3 rounded-lg bg-amber-50 border border-amber-100 text-sm">
+                  <h4 className="font-semibold mb-1">Model improvements applied</h4>
+                  <ul className="text-xs space-y-0.5 text-muted-foreground">
+                    {report.modelImprovements.map((m) => (
+                      <li key={m}>• {m}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {report.forecastConflicts && report.forecastConflicts.length > 0 && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-sm">
+                  <h4 className="font-semibold mb-2">Forecast vs chart conflicts</h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {report.forecastConflicts.map((c) => (
+                      <div key={c.symbol} className="text-xs border rounded px-2 py-1.5 bg-white">
+                        <strong>{c.symbol}</strong> — {c.issue}
+                        {c.forecastConfidence != null && (
+                          <span className="text-muted-foreground"> ({c.forecastConfidence}% conf)</span>
+                        )}
+                        <p className="text-muted-foreground mt-0.5">{c.suggestion}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {(report.forecastsFiltered ?? 0) > 0 && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {report.forecastsFiltered} conflicting forecast(s) excluded from prediction journal
+                    </p>
+                  )}
+                </div>
+              )}
+
               {report.indicatorAuditSummary && report.indicatorAuditSummary.symbolsAnalyzed > 0 && (
                 <div className="p-4 rounded-lg bg-violet-50 border border-violet-100 text-sm">
                   <h4 className="font-semibold mb-2">7-indicator chart audit (Top Picks)</h4>

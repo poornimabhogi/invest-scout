@@ -42,6 +42,22 @@ const momentumTierColor: Record<MomentumTier, string> = {
   weak: 'bg-orange-100 text-orange-800',
 };
 
+const capScaleLabel: Record<string, string> = {
+  large: 'Large cap',
+  mid: 'Mid cap',
+  small: 'Small cap',
+  micro: 'Micro cap',
+  unknown: 'Cap N/A',
+};
+
+const capScaleColor: Record<string, string> = {
+  large: 'bg-blue-100 text-blue-800',
+  mid: 'bg-indigo-100 text-indigo-800',
+  small: 'bg-amber-100 text-amber-900',
+  micro: 'bg-orange-100 text-orange-900',
+  unknown: 'bg-gray-100 text-gray-600',
+};
+
 const confluenceLabel = {
   smc: 'SMC',
   msb: 'MSB',
@@ -137,6 +153,36 @@ export const StockCard = ({ stock }: StockCardProps) => {
               {stock.strategyScore != null && ` · ${stock.strategyScore}`}
             </Badge>
           )}
+          {stock.luxConfirmation?.signal === 'strong_buy' && (
+            <Badge className="text-xs gap-1 bg-violet-100 text-violet-900 border-violet-300">
+              Lux Strong +
+            </Badge>
+          )}
+          {stock.luxConfirmation?.signal === 'buy' && (
+            <Badge variant="outline" className="text-xs text-violet-700 border-violet-300">
+              Lux Confirm
+            </Badge>
+          )}
+          {stock.gainzAlgo?.standard?.signal === 'buy' && (
+            <Badge variant="outline" className="text-xs text-orange-700 border-orange-300">
+              Gainz Standard
+            </Badge>
+          )}
+          {stock.signalSources?.includes('gainz-algo') && stock.gainzAlgo?.standard?.signal !== 'buy' && (
+            <Badge variant="outline" className="text-xs text-orange-600 border-orange-200">
+              Gainz
+            </Badge>
+          )}
+          {stock.wvf?.capitulation && (
+            <Badge className="text-xs gap-1 bg-lime-100 text-lime-900 border-lime-300">
+              WVF Capitulation
+            </Badge>
+          )}
+          {stock.wvf?.fearEasing && !stock.wvf?.capitulation && (
+            <Badge variant="outline" className="text-xs text-emerald-700 border-emerald-300">
+              WVF Easing
+            </Badge>
+          )}
           {stock.signalSources.includes('momentum') && (
             <Badge variant="outline" className="text-xs gap-1">
               <ZapIcon size={10} />
@@ -162,6 +208,11 @@ export const StockCard = ({ stock }: StockCardProps) => {
             <span className={cn('text-xs font-medium px-2 py-1 rounded', momentumTierColor[stock.momentumTier])}>
               {momentumTierLabel[stock.momentumTier]}
             </span>
+            {stock.marketCapScale && (
+              <span className={cn('text-xs font-medium px-2 py-1 rounded', capScaleColor[stock.marketCapScale])}>
+                {capScaleLabel[stock.marketCapScale] ?? stock.marketCapScale}
+              </span>
+            )}
           </div>
           <p className="text-sm text-trading-secondary">{stock.name}</p>
           <p className="text-xs text-trading-secondary mt-1">{stock.sector}</p>
@@ -201,6 +252,12 @@ export const StockCard = ({ stock }: StockCardProps) => {
         <div>
           <p className="font-medium">Market Cap</p>
           <p className="text-trading-primary">${formatNumber(stock.marketCap)}</p>
+        </div>
+        <div>
+          <p className="font-medium">P/E Ratio</p>
+          <p className="text-trading-primary">
+            {stock.peRatio != null && stock.peRatio > 0 ? stock.peRatio.toFixed(1) : '—'}
+          </p>
         </div>
         <div>
           <p className="font-medium">Volume</p>

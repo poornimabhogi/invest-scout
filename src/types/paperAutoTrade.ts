@@ -1,12 +1,28 @@
 export interface AutoTradeSettings {
   enabled: boolean;
+  accuracyMode?: boolean;
   maxPositions: number;
   positionSizePct: number;
   minStrategyScore: number;
   minVerifiedPerfScore: number;
+  minBullishIndicators?: number;
+  maxBearishIndicators?: number;
+  requireDualStructureForTopPick?: boolean;
   buyTopPicks: boolean;
   buyChartVerified: boolean;
   buyPremiumEntry: boolean;
+  buyLuxConfirmation?: boolean;
+  buyLuxStrongOnly?: boolean;
+  buyGainzAlgo?: boolean;
+  gainzAlgoMode?: 'standard' | 'alpha' | 'pro';
+  gainzMinConfidence?: number;
+  buyWvfCapitulation?: boolean;
+  wvfMinCoreBullish?: number;
+  useCapSplitting?: boolean;
+  investmentAmount?: number;
+  splitLargePct?: number;
+  splitMidPct?: number;
+  splitSmallPct?: number;
   sellOnAvoid: boolean;
   useStopLossTakeProfit: boolean;
   requireChartAudit: boolean;
@@ -54,6 +70,18 @@ export interface AutoTradeStatus {
   riskContext?: AutoTradeSettings['lastRiskContext'];
   selfAnalyzeGate?: { allow: boolean; reason: string };
   autoBuysToday?: number;
+  capAllocation?: CapAllocationState;
+}
+
+export interface CapAllocationState {
+  enabled: boolean;
+  investmentAmount: number;
+  splits: { large: number; mid: number; small: number };
+  budgets: { large: number; mid: number; small: number };
+  deployed: { large: number; mid: number; small: number };
+  remaining: { large: number; mid: number; small: number };
+  totalDeployed: number;
+  totalRemaining: number;
 }
 
 export interface AutoTradeRunResult {

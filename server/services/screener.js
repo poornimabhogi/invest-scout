@@ -7,6 +7,7 @@ import {
   generateSeedQuotes,
   getApiKey,
 } from './marketProvider.js';
+import { classifyMarketCapScale } from './marketCapScale.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_FILE = path.join(__dirname, '..', 'data', 'screener-cache.json');
@@ -128,6 +129,8 @@ function mapQuoteToStock(quote, celebrityIndex) {
     change: quote.regularMarketChange ?? 0,
     changePercentage: quote.regularMarketChangePercent ?? 0,
     marketCap: quote.marketCap ?? 0,
+    marketCapScale: classifyMarketCapScale(quote.marketCap),
+    peRatio: quote.peRatio ?? null,
     volume: quote.regularMarketVolume ?? 0,
     market,
     sector: quote.sector || 'Unknown',
